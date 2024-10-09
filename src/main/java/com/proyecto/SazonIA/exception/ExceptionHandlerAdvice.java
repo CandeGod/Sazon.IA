@@ -1,0 +1,45 @@
+package com.proyecto.SazonIA.exception;
+
+import java.util.NoSuchElementException;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
+
+@ControllerAdvice
+public class ExceptionHandlerAdvice {
+ 
+    // Manejo de NoSuchElementException
+    @ExceptionHandler(NoSuchElementException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
+        return new ResponseEntity<>("The requested item is not registered", HttpStatus.NOT_FOUND);
+    }
+
+    // Manejo de errores de cliente HTTP (como un 404 o 400 al llamar la API externa)
+    @ExceptionHandler(HttpClientErrorException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleHttpClientErrorException(HttpClientErrorException e) {
+        return new ResponseEntity<>("Error occurred while fetching data from external API: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    // Manejo de errores de acceso a recursos (problemas de red o de conexión)
+    @ExceptionHandler(ResourceAccessException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ResponseEntity<String> handleResourceAccessException(ResourceAccessException e) {
+        return new ResponseEntity<>("Error accessing external API. Please try again later.", HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    // Manejo genérico para cualquier otra excepción no manejada explícitamente
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleGeneralException(Exception e) {
+        return new ResponseEntity<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    
+}
