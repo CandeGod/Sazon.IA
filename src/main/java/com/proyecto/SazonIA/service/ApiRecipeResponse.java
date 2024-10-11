@@ -4,7 +4,7 @@ package com.proyecto.SazonIA.service;
 
 import java.util.List;
 
-import com.proyecto.SazonIA.model.ApiRecipe;
+import com.proyecto.SazonIA.model.ApiRecipe.ApiRecipe;
 
 
 public class ApiRecipeResponse {

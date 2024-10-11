@@ -1,4 +1,4 @@
-package com.proyecto.SazonIA.model;
+package com.proyecto.SazonIA.model.ApiRecipe;
 
 import java.util.List;
 
