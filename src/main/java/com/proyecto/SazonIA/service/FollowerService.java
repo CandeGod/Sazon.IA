@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.proyecto.SazonIA.model.Follower;
 import com.proyecto.SazonIA.model.User;
 import com.proyecto.SazonIA.repository.FollowerRepository;
+import com.proyecto.SazonIA.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -18,12 +19,14 @@ public class FollowerService {
     
     @Autowired
     private FollowerRepository repo;
+    @Autowired
+    private UserRepository userRepository;
 
     // Seguir a un usuario
     public Follower followUser(User follower, User followed) {
         Follower newFollower = new Follower();
-        newFollower.setUser(follower);  // El que sigue
-        newFollower.setFollowed(followed);  // El que es seguido
+        newFollower.setUser(follower);  
+        newFollower.setFollowed(followed);  
         return repo.save(newFollower);
     }
 
@@ -44,6 +47,12 @@ public class FollowerService {
     public List<Follower> getFollowing(User follower) {
         return repo.findByUser(follower);
     }
+
+    // Método para encontrar un usuario por su ID
+    public User findUserById(int userId) {
+        return userRepository.findById(userId).orElse(null); 
+    }
+    
 
     
 }
