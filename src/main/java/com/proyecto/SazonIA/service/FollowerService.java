@@ -16,43 +16,51 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class FollowerService {
-    
+
     @Autowired
-    private FollowerRepository repo;
+    private FollowerRepository followerRepository;
     @Autowired
     private UserRepository userRepository;
 
     // Seguir a un usuario
     public Follower followUser(User follower, User followed) {
         Follower newFollower = new Follower();
-        newFollower.setUser(follower);  
-        newFollower.setFollowed(followed);  
-        return repo.save(newFollower);
+        newFollower.setUser(follower);
+        newFollower.setFollowed(followed);
+        return followerRepository.save(newFollower);
     }
 
     // Dejar de seguir a un usuario
     public void unfollowUser(User follower, User followed) {
-        Optional<Follower> existingFollower = repo.findByUserAndFollowed(follower, followed);
+        Optional<Follower> existingFollower = followerRepository.findByUserAndFollowed(follower, followed);
         if (existingFollower.isPresent()) {
-            repo.delete(existingFollower.get());
+            followerRepository.delete(existingFollower.get());
         }
     }
 
     // Obtener lista de seguidores de un usuario
     public List<Follower> getFollowers(User followed) {
-        return repo.findByFollowed(followed);
+        return followerRepository.findByFollowed(followed);
     }
 
     // Obtener lista de usuarios a los que sigue un usuario
     public List<Follower> getFollowing(User follower) {
-        return repo.findByUser(follower);
+        return followerRepository.findByUser(follower);
     }
 
     // Método para encontrar un usuario por su ID
-    public User findUserById(int userId) {
-        return userRepository.findById(userId).orElse(null); 
+    public Optional<User> findUserById(int userId) {
+        return userRepository.findById(userId);
     }
-    
 
-    
+    // Método para verificar si un usuario sigue a otro
+    public Optional<Follower> findByUserAndFollowed(User follower, User followed) {
+        return followerRepository.findByUserAndFollowed(follower, followed);
+    }
+
+    // Método para verificar si un usuario existe
+    public boolean userExists(int userId) {
+        return userRepository.existsById(userId);
+    }
+
 }
