@@ -1,4 +1,4 @@
-package com.proyecto.SazonIA.model.ApiRecipe;
+package com.proyecto.SazonIA.spoonacularApi;
 
 import java.util.List;
 
