@@ -1,6 +1,6 @@
 package com.proyecto.SazonIA.service;
 
-import org.bson.json.JsonObject;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,6 @@ import java.time.LocalDate;
 
 import com.proyecto.SazonIA.repository.OpenAIRequestRepository;
 import com.proyecto.SazonIA.repository.UserRepository;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.proyecto.SazonIA.model.OpenAIRequest;
 import com.proyecto.SazonIA.model.User;
 
