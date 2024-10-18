@@ -78,6 +78,24 @@ public class OpenAIRequestService {
         return recommendations;
     }
 
+    public List<OpenAIRequest> getAll(){
+        return openAIRequestRepository.findAll();
+    }
+
+    public List<OpenAIRequest> getHistoryById(Integer id){
+        return openAIRequestRepository.findByUserId(id);
+    }
+
+    public void delete (Integer id){
+        openAIRequestRepository.deleteByUserId(id);
+    }
+
+    
+
+
+
+
+
 
     
 }
