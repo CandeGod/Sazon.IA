@@ -13,27 +13,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
-    @Column(name = "Name", nullable = false)
-    private String name;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
 
-    @Column(name = "PaternalLastName", nullable = false)
-    private String paternalLastName;
+    @Column(name = "last_name_father", nullable = false)
+    private String lastNameFather;
 
-    @Column(name = "MaternalLastName", nullable = false)
-    private String maternalLastName;
+    @Column(name = "last_name_mother", nullable = false)
+    private String lastNameMother;
 
-    @Column(name = "Birthdate", nullable = false)
-    private java.sql.Date birthdate;
+    @Column(name = "birth_date", nullable = false)
+    private java.sql.Date birthDate;
 
-    @Column(name = "PhoneNumber", nullable = false)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "Email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "Password", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
+    // Getters and setters
     public int getUserId() {
         return userId;
     }
@@ -42,36 +43,36 @@ public class User {
         this.userId = userId;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getPaternalLastName() {
-        return paternalLastName;
+    public String getLastNameFather() {
+        return lastNameFather;
     }
 
-    public void setPaternalLastName(String paternalLastName) {
-        this.paternalLastName = paternalLastName;
+    public void setLastNameFather(String lastNameFather) {
+        this.lastNameFather = lastNameFather;
     }
 
-    public String getMaternalLastName() {
-        return maternalLastName;
+    public String getLastNameMother() {
+        return lastNameMother;
     }
 
-    public void setMaternalLastName(String maternalLastName) {
-        this.maternalLastName = maternalLastName;
+    public void setLastNameMother(String lastNameMother) {
+        this.lastNameMother = lastNameMother;
     }
 
-    public java.sql.Date getBirthdate() {
-        return birthdate;
+    public java.sql.Date getBirthDate() {
+        return birthDate;
     }
 
-    public void setBirthdate(java.sql.Date birthdate) {
-        this.birthdate = birthdate;
+    public void setBirthDate(java.sql.Date birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getPhoneNumber() {
@@ -100,10 +101,8 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [userId=" + userId + ", name=" + name + ", paternalLastName=" + paternalLastName
-                + ", maternalLastName=" + maternalLastName + ", birthdate=" + birthdate + ", phoneNumber=" + phoneNumber
+        return "User [userId=" + userId + ", firstName=" + firstName + ", lastNameFather=" + lastNameFather
+                + ", lastNameMother=" + lastNameMother + ", birthDate=" + birthDate + ", phoneNumber=" + phoneNumber
                 + ", email=" + email + ", password=" + password + "]";
     }
-
-    
 }
