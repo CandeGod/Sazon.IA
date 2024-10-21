@@ -46,9 +46,9 @@ public class FollowerController {
         if (follower.getUserId() == followed.getUserId()) {
             return new ResponseEntity<>("You cannot follow yourself", HttpStatus.BAD_REQUEST);
         }
-        /*if (service.isFollowing(follower, followed)) {
+        if (service.isFollowing(follower, followed)) {
             return new ResponseEntity<>("You are already following this user", HttpStatus.CONFLICT);
-        }*/
+        }
 
         service.followUser(follower, followed);
         return new ResponseEntity<>("User followed successfully", HttpStatus.CREATED);
@@ -69,9 +69,9 @@ public class FollowerController {
         if (follower.getUserId() == followed.getUserId()) {
             return new ResponseEntity<>("You cannot unfollow yourself", HttpStatus.BAD_REQUEST);
         }
-        /*if (!service.isFollowing(follower, followed)) {
+        if (!service.isFollowing(follower, followed)) {
             return new ResponseEntity<>("You are not following this user", HttpStatus.CONFLICT);
-        }*/
+        }
 
         service.unfollowUser(follower, followed);
         return new ResponseEntity<>("User unfollowed successfully", HttpStatus.OK);
