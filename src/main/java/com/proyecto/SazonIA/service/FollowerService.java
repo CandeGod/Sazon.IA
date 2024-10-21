@@ -52,6 +52,11 @@ public class FollowerService {
     public User findUserById(int userId) {
         return userRepository.findById(userId).orElse(null); 
     }
+
+    public boolean isFollowing(User follower, User followed) {
+        return repo.findByUserAndFollowed(follower, followed).isPresent();
+    }
+    
     
 
     

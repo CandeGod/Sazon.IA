@@ -90,7 +90,9 @@ public class OpenAIRequestService {
     }
 
     
-
+    public boolean userExists(Integer userId) {
+        return userRepository.existsById(userId);
+    }
 
 
 
