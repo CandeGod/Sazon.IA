@@ -3,7 +3,10 @@ package com.proyecto.SazonIA.service;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.proyecto.SazonIA.model.Follower;
@@ -43,9 +46,21 @@ public class FollowerService {
         return repo.findByFollowed(followed);
     }
 
+    public List<Follower> getFollowers(int page, int pageSize){
+        PageRequest pageReq =PageRequest.of(page, pageSize);
+        Page<Follower> follows = repo.findAll(pageReq);
+        return follows.getContent();
+    }
+
     // Obtener lista de usuarios a los que sigue un usuario
     public List<Follower> getFollowing(User follower) {
         return repo.findByUser(follower);
+    }
+
+    public List<Follower>getFollowing(int page, int pageSize){
+        PageRequest pageReq = PageRequest.of(page, pageSize);
+        Page<Follower> follows = repo.findAll(pageReq);
+        return follows.getContent();   
     }
 
     // Método para encontrar un usuario por su ID

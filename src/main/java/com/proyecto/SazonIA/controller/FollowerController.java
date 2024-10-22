@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.SazonIA.model.Follower;
@@ -26,7 +27,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping("followers")
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
+        RequestMethod.PUT })
 public class FollowerController {
     @Autowired
     private FollowerService service;
@@ -93,6 +95,16 @@ public class FollowerController {
         return new ResponseEntity<>(followers, HttpStatus.OK);
     }
 
+    @Operation(summary = "Get followers of a user with pagination")
+    @GetMapping(value = "paginationFollowers", params = { "page", "size" })
+    
+    public List<Follower> getFollowersPaginated(
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "2", required = false) int pageSize) {
+        List<Follower> followers = service.getFollowers(page, pageSize);
+        return followers;
+    }
+
     // Obtener a quién sigue un usuario
     @Operation(summary = "Get following of a user")
     @ApiResponse(responseCode = "200", description = "Following users retrieved", content = {
@@ -108,5 +120,13 @@ public class FollowerController {
         List<Follower> following = service.getFollowing(follower);
         return new ResponseEntity<>(following, HttpStatus.OK);
     }
-}
 
+    @Operation(summary = "Get following of a user with pagination")
+    @GetMapping(value = "paginationFollowing", params = {"page", "size"})
+    public List<Follower> getFollowingPaginated(
+        @RequestParam(value = "page", defaultValue = "0", required = false)int page,
+        @RequestParam(value = "size", defaultValue = "2", required = false)int pageSize){
+            List<Follower> followers = service.getFollowing(page, pageSize);
+            return followers;
+        }
+}
