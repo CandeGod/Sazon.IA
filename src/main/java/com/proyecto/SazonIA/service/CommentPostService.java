@@ -31,7 +31,7 @@ public class CommentPostService {
 
     public CommentPost addComment(CommentPost comment) {
         // Verificar si el usuario está registrado
-        User user = userRepository.findById(comment.getUserId()).orElse(null); // Cambiar Long a Integer
+        User user = userRepository.findById(comment.getUserId()).orElse(null);
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }

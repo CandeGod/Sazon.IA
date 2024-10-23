@@ -24,7 +24,7 @@ public class Post {
 
     @NotNull(message = "User ID must not be null")
     private Integer userId; 
-    
+
     @NotBlank(message = "Title must not be blank")
     @Size(max = 100, message = "Title cannot exceed 100 characters")
     private String title;
@@ -41,10 +41,14 @@ public class Post {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<CommentPost> comments;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private List<RatingPost> ratings;
+
     // Constructor por defecto
     public Post() {
         this.mediaUrls = new ArrayList<>();
         this.comments = new ArrayList<>();
+        this.ratings = new ArrayList<>();
         this.postDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
@@ -88,6 +92,14 @@ public class Post {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public List<RatingPost> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<RatingPost> ratings) {
+        this.ratings = ratings;
     }
 
     public String getPostDate() {
