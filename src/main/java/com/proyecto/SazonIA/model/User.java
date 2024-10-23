@@ -35,11 +35,11 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

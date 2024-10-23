@@ -9,10 +9,8 @@ import java.util.UUID;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,12 +19,12 @@ import jakarta.validation.constraints.Size;
 public class Post {
 
     @Id
-    @JsonIgnore // Ignorar en la documentación y serialización
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String postId;
 
     @NotNull(message = "User ID must not be null")
-    private Long userId;
-
+    private Integer userId; 
+    
     @NotBlank(message = "Title must not be blank")
     @Size(max = 100, message = "Title cannot exceed 100 characters")
     private String title;
@@ -35,33 +33,28 @@ public class Post {
     @Size(min = 10, max = 1000, message = "Content cannot exceed 1000 characters")
     private String content;
 
-    @JsonIgnore // Ignorar en la documentación y serialización
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String postDate;
 
     private List<String> mediaUrls;
 
-    @JsonIgnore // Ignorar en la documentación y serialización
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<CommentPost> comments;
-
-    @Min(value = 0, message = "Rating must be between 0 and 5")
-    @Max(value = 5, message = "Rating must be between 0 and 5")
-    private int rating;
 
     // Constructor por defecto
     public Post() {
         this.mediaUrls = new ArrayList<>();
         this.comments = new ArrayList<>();
-        this.rating = 0; // Inicialmente sin valoración
-        this.postDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // Establecer la fecha automáticamente
+        this.postDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     // Constructor con parámetros
-    public Post(Long userId, String title, String content) {
-        this(); // Llamada al constructor por defecto
-        this.userId = userId;
+    public Post(Integer userId, String title, String content) { // Cambiado a Long para userId
+        this(); 
+        this.userId = userId; // Establecer el id del User (referencia a MySQL)
         this.title = title;
         this.content = content;
-        this.postId = UUID.randomUUID().toString(); // Generación del ID
+        this.postId = UUID.randomUUID().toString(); 
     }
 
     // Getters y Setters
@@ -70,14 +63,14 @@ public class Post {
     }
 
     public void setPostId(String postId) {
-        this.postId = postId; // Permitir establecer el ID, si es necesario
+        this.postId = postId;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -102,7 +95,7 @@ public class Post {
     }
 
     public void setPostDate(String postDate) {
-        this.postDate = postDate; // Permitir establecer la fecha, si es necesario
+        this.postDate = postDate;
     }
 
     public List<String> getMediaUrls() {
@@ -121,11 +114,4 @@ public class Post {
         this.comments = comments;
     }
 
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
 }

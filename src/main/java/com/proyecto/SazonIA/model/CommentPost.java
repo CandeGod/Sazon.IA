@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Document(collection = "Comments")
+@Document(collection = "CommentOnPost")
 public class CommentPost {
     
     @Id
@@ -21,7 +21,7 @@ public class CommentPost {
     private String postId;
 
     @NotNull(message = "User ID must not be null")
-    private Long userId;
+    private Integer userId; 
 
     @NotBlank(message = "Content must not be blank")
     @Size(min = 10, max = 500, message = "Content cannot exceed 500 characters")
@@ -31,13 +31,13 @@ public class CommentPost {
 
     // Constructor por defecto
     public CommentPost() {
-        this.commentId = UUID.randomUUID().toString(); // Generación automática del ID
-        this.commentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // Establecer la fecha automáticamente
+        this.commentId = UUID.randomUUID().toString();
+        this.commentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     // Constructor con parámetros
-    public CommentPost(String postId, Long userId, String content) {
-        this(); // Llamada al constructor por defecto
+    public CommentPost(String postId, Integer userId, String content) { 
+        this();
         this.postId = postId;
         this.userId = userId;
         this.content = content;
@@ -56,11 +56,11 @@ public class CommentPost {
         this.postId = postId;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

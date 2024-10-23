@@ -14,4 +14,5 @@ public interface CommentPostRepository extends MongoRepository<CommentPost, Stri
 
     // Método para obtener comentarios paginados por postId
     Page<CommentPost> findByPostId(String postId, Pageable pageable);
+    void deleteByPostId(String postId);
 }
