@@ -45,6 +45,15 @@ public class RecipeService {
     }
 
     public void delete(String id) {
+        Recipe recipe = recipeRepository.findById(id).get();
+        List<Comment> comments = recipe.getComments();
+        for (Comment comment : comments) {
+            List<Comment> replies = comment.getReplies();
+            for (Comment reply : replies) {
+            deleteComments(reply.getReplies());
+            }
+            deleteComments(comments);
+        }
         recipeRepository.deleteById(id);
     }
 
@@ -58,6 +67,7 @@ public class RecipeService {
     public void deleteCommentFromRecipe(String id, String commentId) {
         Recipe recipe = recipeRepository.findById(id).get();
         Comment comment = commentRepository.findById(commentId).get();
+        deleteComments(comment.getReplies());
         recipe.getComments().remove(comment);
         recipeRepository.save(recipe);
         commentRepository.deleteById(commentId);
@@ -96,6 +106,7 @@ public class RecipeService {
         for (Comment c : comments) {
             List<Comment> replies = c.getReplies();
             replies.removeIf(r -> r.getId().equals(replyId));
+            deleteComments(replies);
         }
         recipe.setComments(comments);
         recipeRepository.save(recipe);
@@ -111,5 +122,11 @@ public class RecipeService {
         commentRepository.save(replyToUpdate);
         commentRepository.save(comment);
         recipeRepository.save(recipe);
+    }
+
+    public void deleteComments(List<Comment> comments) {
+        for (Comment c : comments) {
+            commentRepository.deleteById(c.getId());
+        }
     }
 }

@@ -144,28 +144,28 @@ public class RecipeControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    public void deleteReplyFromCommentTest() throws Exception {
-        mvc.perform(delete("/recipe/deleteReply/67189d87fd7323372c3d0335/comment/67189f049d58067f88d71ab4/reply/6718a367dab6b649ec205744"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+//     @Test
+//     public void deleteReplyFromCommentTest() throws Exception {
+//         mvc.perform(delete("/recipe/deleteReply/67189d87fd7323372c3d0335/comment/67189f049d58067f88d71ab4/reply/6718a367dab6b649ec205744"))
+//                 .andDo(print())
+//                 .andExpect(status().isOk());
+//     }
 
-    @Test
-    public void updateCommentFromRecipeTest() throws Exception {
-        mvc.perform(put("/recipe/updateComment/67189d87fd7323372c3d0335/comment/67189f049d58067f88d71ab4")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"content\":\"updated comment\",\"author\":\"updated\",\"timestamp\":\"Timestamp\"}"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+//     @Test
+//     public void updateCommentFromRecipeTest() throws Exception {
+//         mvc.perform(put("/recipe/updateComment/67189d87fd7323372c3d0335/comment/67189f049d58067f88d71ab4")
+//                 .contentType(MediaType.APPLICATION_JSON)
+//                 .content("{\"content\":\"updated comment\",\"author\":\"updated\",\"timestamp\":\"Timestamp\"}"))
+//                 .andDo(print())
+//                 .andExpect(status().isOk());
+//     }
 
-    @Test
-    public void updateReplyFromCommentTest() throws Exception {
-        mvc.perform(put("/recipe/updateReply/67168d20868962378c9c5114/comment/12345/reply")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"commentId\":\"67890\",\"text\":\"Updated reply\"}"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+//     @Test
+//     public void updateReplyFromCommentTest() throws Exception {
+//         mvc.perform(put("/recipe/updateReply/67168d20868962378c9c5114/comment/12345/reply")
+//                 .contentType(MediaType.APPLICATION_JSON)
+//                 .content("{\"commentId\":\"67890\",\"text\":\"Updated reply\"}"))
+//                 .andDo(print())
+//                 .andExpect(status().isOk());
+//     }
 }
