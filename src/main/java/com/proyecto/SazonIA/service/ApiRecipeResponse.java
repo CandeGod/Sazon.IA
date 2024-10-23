@@ -2,11 +2,15 @@ package com.proyecto.SazonIA.service;
 
 
 
+
 import java.util.List;
 
-import com.proyecto.SazonIA.model.ApiRecipe.ApiRecipe;
+import org.springframework.stereotype.Service;
+
+import com.proyecto.SazonIA.spoonacularApi.ApiRecipe;
 
 
+@Service
 public class ApiRecipeResponse {
     
     private List<ApiRecipe> recipes;
