@@ -40,5 +40,9 @@ public class ExceptionHandlerAdvice {
         return new ResponseEntity<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    
+    @ExceptionHandler(UserNotFoundException.class) // New handler
+    @ResponseStatus(HttpStatus.NOT_FOUND) 
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
+        return new ResponseEntity<>("The requested user is not registered: " + e.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }
