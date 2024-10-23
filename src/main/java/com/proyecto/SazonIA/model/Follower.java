@@ -1,8 +1,6 @@
 package com.proyecto.SazonIA.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -13,12 +11,12 @@ import jakarta.persistence.ManyToOne;
 public class Follower {
     @Id
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "followedId", nullable = false)
+    @JoinColumn(name = "followed_id", nullable = false)
     private User followed;
 
 
