@@ -1,70 +1,64 @@
 package com.proyecto.SazonIA.service;
 
 import com.proyecto.SazonIA.model.FavoritePost;
+import com.proyecto.SazonIA.model.FavoritePostId;
 import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.repository.FavoritePostRepository;
-import com.proyecto.SazonIA.repository.UserRepository;
+import com.proyecto.SazonIA.repository.PostRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FavoritePostService {
 
     @Autowired
-    private FavoritePostRepository favoritePostRepository; // Repositorio para los favoritos
-    private UserRepository userRepository; 
+    private FavoritePostRepository favoritePostRepository;
 
     @Autowired
-    private PostService postService; // Para verificar si el post existe
+    private PostRepository postRepository; // El repositorio de MongoDB para las publicaciones
 
-    // Agregar un post a favoritos
-    public void addFavoritePost(Integer userId, String postId) {
-        // Verifica si el usuario existe
-        if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found"); // O lanza una excepción adecuada
-        }
+    // Método para obtener las publicaciones guardadas como favoritas por un usuario
+    public List<Post> getContentFavoritePostsByUserId(Integer userId) {
+        // Buscar todas las relaciones de favoritos para el usuario
+        List<FavoritePost> favoritePosts = favoritePostRepository.findByIdUserId(userId);
 
-        // Verifica si el post existe
-        Optional<Post> postOptional = postService.getPostById(postId);
-        if (!postOptional.isPresent()) {
-            throw new RuntimeException("Post not found"); // O lanza una excepción adecuada
-        }
+        // Obtener los IDs de las publicaciones favoritas
+        List<String> postIds = favoritePosts.stream()
+                .map(favoritePost -> favoritePost.getId().getPostId())
+                .collect(Collectors.toList());
 
-        // Verifica si el favorito ya existe
-        if (favoritePostRepository.existsByUserIdAndPostId(userId, postId)) {
-            throw new RuntimeException("Post already added to favorites");
-        }
-
-        // Guarda el favorito
-        FavoritePost favoritePost = new FavoritePost();
-        favoritePost.setUserId(userId);
-        favoritePost.setPostId(postId);
-        favoritePostRepository.save(favoritePost);
+        // Recuperar el contenido de las publicaciones favoritas desde MongoDB
+        return postRepository.findAllById(postIds); // Método de MongoRepository para obtener varias publicaciones por
+                                                    // sus IDs
     }
 
-    // Remover un post de favoritos
+    // Guardar una publicación favorita
+    public FavoritePost saveFavoritePost(Integer userId, String postId) {
+        FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
+        FavoritePost favoritePost = new FavoritePost(favoritePostId);
+        return favoritePostRepository.save(favoritePost);
+    }
+
+    // Obtener todas las publicaciones favoritas de un usuario
+    public List<FavoritePost> getFavoritePostsByUserId(Integer userId) {
+        return favoritePostRepository.findByIdUserId(userId);
+    }
+
+    // Eliminar una publicación favorita por ID de usuario y publicación
     public void removeFavoritePost(Integer userId, String postId) {
-        // Verifica si el post existe
-        postService.getPostById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
-
-        FavoritePost favoritePost = favoritePostRepository.findByUserIdAndPostId(userId, postId)
-                .orElseThrow(() -> new RuntimeException("Favorite post not found"));
-        favoritePostRepository.delete(favoritePost);
+        FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
+        favoritePostRepository.deleteById(favoritePostId);
     }
 
-    // Obtener una publicación favorita por ID
-    public Post getFavoritePostContent(Integer userId, String postId) {
-        // Verifica si el post existe
-        postService.getPostById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
-
-        // Verifica si el post está en los favoritos
-        FavoritePost favoritePost = favoritePostRepository.findByUserIdAndPostId(userId, postId)
-                .orElseThrow(() -> new RuntimeException("Favorite post not found"));
-
-        // Retorna la publicación
-        return postService.getPostById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+    // Verificar si una publicación está marcada como favorita
+    public boolean isPostFavoritedByUser(Integer userId, String postId) {
+        FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
+        Optional<FavoritePost> favoritePost = favoritePostRepository.findById(favoritePostId);
+        return favoritePost.isPresent();
     }
 }
