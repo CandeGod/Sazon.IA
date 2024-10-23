@@ -10,8 +10,6 @@ import com.proyecto.SazonIA.model.Recipe;
 import com.proyecto.SazonIA.repository.CommentRepository;
 import com.proyecto.SazonIA.repository.RecipeRepository;
 
-
-
 @Service
 public class RecipeService {
 
@@ -33,6 +31,19 @@ public class RecipeService {
         return recipeRepository.findById(id).get();
     }
 
+    public Recipe getBy_Id(int _id) {
+        return recipeRepository.findAll().stream().filter(recipe -> recipe.getRecipeId() == _id).findFirst().get();
+    }
+
+    public int getIdRecipe() {
+        List<Recipe> recipes = recipeRepository.findAll();
+        if (recipes.size() > 0) {
+            return recipes.get(recipes.size() - 1).getRecipeId() + 1;
+        } else {
+            return 1;
+        }
+    }
+
     public void delete(String id) {
         recipeRepository.deleteById(id);
     }
@@ -40,14 +51,14 @@ public class RecipeService {
     public void addCommentToRecipe(String id, Comment comment) {
         Recipe recipe = recipeRepository.findById(id).get();
         Comment savedComment = commentRepository.save(comment);
-        recipe.getComents().add(savedComment);
+        recipe.getComments().add(savedComment);
         recipeRepository.save(recipe);
     }
 
     public void deleteCommentFromRecipe(String id, String commentId) {
         Recipe recipe = recipeRepository.findById(id).get();
         Comment comment = commentRepository.findById(commentId).get();
-        recipe.getComents().remove(comment);
+        recipe.getComments().remove(comment);
         recipeRepository.save(recipe);
         commentRepository.deleteById(commentId);
     }
@@ -55,9 +66,9 @@ public class RecipeService {
     public void updateCommentFromRecipe(String idRecipe, String idComment, Comment comment) {
         Recipe recipe = recipeRepository.findById(idRecipe).get();
         Comment newComment = commentRepository.findById(idComment).get();
-        int index = recipe.getComents().indexOf(newComment);
-        recipe.getComents().remove(index);
-        recipe.getComents().set(index, comment);
+        int index = recipe.getComments().indexOf(newComment);
+        recipe.getComments().remove(index);
+        recipe.getComments().set(index, comment);
         Comment commentToUpdate = commentRepository.findById(comment.getId()).get();
         commentRepository.save(commentToUpdate);
         recipeRepository.save(recipe);
@@ -67,10 +78,9 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findById(idRecipe).get();
         Comment comment = commentRepository.findById(commentId).get();
         Comment newReply = commentRepository.save(reply);
-        int index = recipe.getComents().indexOf(comment);
-        recipe.getComents().remove(index);
-        recipe.getComents().set(index, comment);
         comment.getReplies().add(newReply);
+        recipe.getComments().removeIf(r -> r.getId().equals(comment.getId()));
+        recipe.getComments().add(comment);
         commentRepository.save(comment);
         recipeRepository.save(recipe);
     }
@@ -80,8 +90,14 @@ public class RecipeService {
         Comment comment = commentRepository.findById(commentId).get();
         Comment reply = commentRepository.findById(replyId).get();
         comment.getReplies().remove(reply);
-        commentRepository.deleteById(replyId);
         commentRepository.save(comment);
+        commentRepository.deleteById(replyId);
+        List<Comment> comments = recipe.getComments();
+        for (Comment c : comments) {
+            List<Comment> replies = c.getReplies();
+            replies.removeIf(r -> r.getId().equals(replyId));
+        }
+        recipe.setComments(comments);
         recipeRepository.save(recipe);
     }
 

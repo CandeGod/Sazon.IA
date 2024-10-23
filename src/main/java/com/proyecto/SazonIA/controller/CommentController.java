@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.SazonIA.model.Comment;
 import com.proyecto.SazonIA.service.CommentService;
-import com.proyecto.SazonIA.service.RecipeService;
 
 @RestController
 @RequestMapping("/comment")
@@ -29,8 +28,6 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @Autowired
-    private RecipeService recipeService;
 
     @Operation(summary = "Get all Comments")
     @ApiResponse(responseCode = "200", description = "Found Comments", content = {
@@ -53,6 +50,7 @@ public class CommentController {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Comment.class))) })
     @PostMapping
     public void save(@RequestBody Comment comment) {
+        comment.setCommentId(commentService.getIdComment());
         commentService.save(comment);
     }
 
@@ -74,12 +72,4 @@ public class CommentController {
         commentService.delete(id);
     }
 
-    @Operation(summary = "Add a new comment to a recipe")
-    @ApiResponse(responseCode = "200", description = "Comment added", content = {
-        @Content(mediaType = "application/json", schema = @Schema(implementation = Comment.class)) })
-    @PostMapping("/recipe/{recipeId}")
-    public ResponseEntity<?> addCommentToRecipe(@PathVariable String recipeId, @RequestBody Comment comment) {
-        recipeService.addCommentToRecipe(recipeId, comment);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 }

@@ -19,11 +19,14 @@ public class Recipe {
     @NotBlank(message = "Id is mandatory")
     @JsonProperty("id")
     private String id;
+    @NotBlank(message = "recipeId is mandatory")
+    @Field(name = "recipeId")
+    @JsonProperty("recipeId")
+    private int recipeId;
     @NotBlank(message = "Name is mandatory")
     @Field(name = "name")
     @JsonProperty("name")
     private String name;
-    @NotBlank(message = "Ingredients are mandatory")
     @Field(name = "ingredients")
     @JsonProperty("ingredients")
     private List<String> ingredients;
@@ -52,6 +55,14 @@ public class Recipe {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getRecipeId() {
+        return recipeId;
+    }
+
+    public void setRecipeId(int recipeId) {
+        this.recipeId = recipeId;
     }
 
     public String getName() {
@@ -94,11 +105,11 @@ public class Recipe {
         this.difficulty = difficulty;
     }
 
-    public List<Comment> getComents() {
+    public List<Comment> getComments() {
         return coments;
     }
 
-    public void setComents(List<Comment> coments) {
+    public void setComments(List<Comment> coments) {
         this.coments = coments;
     }
 
@@ -106,6 +117,7 @@ public class Recipe {
     public String toString() {
         return "Recipe{" +
                 "id='" + id + '\'' +
+                ", recipeId=" + recipeId +
                 ", name='" + name + '\'' +
                 ", ingredients='" + ingredients + '\'' +
                 ", instructions='" + instructions + '\'' +

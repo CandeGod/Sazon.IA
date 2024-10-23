@@ -26,4 +26,17 @@ public class CommentService {
     public void delete(String id) {
         commentRepository.deleteById(id);
     }
+
+    public Comment getByCommentId(int commentId) {
+        return commentRepository.findAll().stream().filter(comment -> comment.getCommentId() == commentId).findFirst().get();
+    }
+
+    public int getIdComment() {
+        List<Comment> comments = commentRepository.findAll();
+        if (comments.size() > 0) {
+            return comments.get(comments.size() - 1).getCommentId() + 1;
+        } else {
+            return 1;
+        }
+    }
 }

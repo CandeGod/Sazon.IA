@@ -15,6 +15,10 @@ public class Comment {
     @NotBlank(message = "Id is mandatory")
     @JsonProperty("id")
     private String id;
+    @NotBlank(message = "Comment Id is mandatory")
+    @Field(name = "commentId")
+    @JsonProperty("commentId")
+    private int commentId;
     @NotBlank(message = "Content is mandatory")
     @Field(name = "content")
     @JsonProperty("content")
@@ -41,6 +45,14 @@ public class Comment {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(int commentId) {
+        this.commentId = commentId;
     }
 
     public String getContent() {
@@ -79,6 +91,7 @@ public class Comment {
     public String toString() {
         return "Comment{" +
                 "id='" + id + '\'' +
+                ", commentId=" + commentId +
                 ", content='" + content + '\'' +
                 ", author='" + author + '\'' +
                 ", timestamp='" + timestamp + '\'' +
