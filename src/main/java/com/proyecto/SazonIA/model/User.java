@@ -11,34 +11,35 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    @Column(name = "user_id", nullable = false)
+    private Integer userId;
 
-    @Column(name = "Name", nullable = false)
+    @Column(name = "first_name", nullable = false)
     private String name;
 
-    @Column(name = "PaternalLastName", nullable = false)
+    @Column(name = "last_name_father", nullable = false)
     private String paternalLastName;
 
-    @Column(name = "MaternalLastName", nullable = false)
+    @Column(name = "last_name_mother", nullable = false)
     private String maternalLastName;
 
-    @Column(name = "Birthdate", nullable = false)
+    @Column(name = "birth_date", nullable = false)
     private java.sql.Date birthdate;
 
-    @Column(name = "PhoneNumber", nullable = false)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "Email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "Password", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

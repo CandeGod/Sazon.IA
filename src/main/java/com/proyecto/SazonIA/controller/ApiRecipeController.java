@@ -7,16 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.proyecto.SazonIA.model.ApiRecipe.ApiRecipe;
+import com.proyecto.SazonIA.spoonacularApi.ApiRecipe;
 import com.proyecto.SazonIA.service.ApiRecipeService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
+@Tag(name = "Api spoonacular", description = "Operations related to the spoonacular api")
 public class ApiRecipeController {
 
     @Autowired
