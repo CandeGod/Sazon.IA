@@ -42,9 +42,9 @@ public class Recipe {
     @Field(name = "difficulty")
     @JsonProperty("difficulty")
     private String difficulty;
-    @Field(name = "coments")
-    @JsonProperty("coments")
-    private List<Comment> coments;
+    @Field(name = "comments")
+    @JsonProperty("comments")
+    private List<Comment> comments;
 
     public Recipe() {
     }
@@ -106,11 +106,11 @@ public class Recipe {
     }
 
     public List<Comment> getComments() {
-        return coments;
+        return comments;
     }
 
-    public void setComments(List<Comment> coments) {
-        this.coments = coments;
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override
@@ -123,7 +123,7 @@ public class Recipe {
                 ", instructions='" + instructions + '\'' +
                 ", preparationTime='" + preparationTime + '\'' +
                 ", difficulty='" + difficulty + '\'' +
-                ", coments='" + coments + '\n' +
+                ", comments='" + comments + '\n' +
                 '}';
     }
 }
