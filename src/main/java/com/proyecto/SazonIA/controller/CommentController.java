@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import com.proyecto.SazonIA.service.CommentService;
 @RestController
 @RequestMapping("/comment")
 @CrossOrigin(origins = "*")
+@Tag(name = "Comments", description = "Operations related to Comments in Sazón.IA")
 public class CommentController {
     @Autowired
     private CommentService commentService;

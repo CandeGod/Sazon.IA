@@ -147,10 +147,10 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @DeleteMapping("/deleteReply/{id}/comment/{commentId}/reply/{replyId}")
-        public ResponseEntity<?> deleteReply(@PathVariable String id, @PathVariable String commentId,
+        @DeleteMapping("/deleteReply/{idRecipe}/comment/{commentId}/reply/{replyId}")
+        public ResponseEntity<?> deleteReply(@PathVariable String idRecipe, @PathVariable String commentId,
                         @PathVariable String replyId) {
-                recipeService.deleteReplyFromComment(id, commentId, replyId);
+                recipeService.deleteReplyFromComment(idRecipe, commentId, replyId);
                 return new ResponseEntity<>(HttpStatus.OK);
         }
 
