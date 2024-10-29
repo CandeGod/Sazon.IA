@@ -1,83 +1,95 @@
 package com.proyecto.SazonIA.model;
 
-import org.springframework.data.mongodb.core.mapping.MongoId;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-
-import java.util.List;
-
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.FieldType;
+import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Document(collection = "Recipe")
+import java.util.List;
+
+@Entity
+@Table(name = "Recipe")
 public class Recipe {
-    
-    @MongoId
-    @Field(targetType = FieldType.OBJECT_ID)
-    @NotBlank(message = "Id is mandatory")
-    @JsonProperty("id")
-    private String id;
-    @NotBlank(message = "recipeId is mandatory")
-    @Field(name = "recipeId")
-    @JsonProperty("recipeId")
-    private int recipeId;
-    @NotBlank(message = "Name is mandatory")
-    @Field(name = "name")
-    @JsonProperty("name")
-    private String name;
-    @Field(name = "ingredients")
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("recipe_id")
+    private Integer recipe_id;
+
+    @NotBlank(message = "Recipe name is mandatory or at least must contain one character")
+    @Size(min = 1, max = 100, message = "The content must be between 1 and 100 characters")
+    @Column(name = "recipe_name", nullable = false)
+    @JsonProperty("recipe_name")
+    private String recipe_name;
+
+    @NotBlank(message = "Ingredients are mandatory or at least must contain one character")
+    @Size(min = 1, max = 250, message = "The content must be between 1 and 250 characters")
+    @Column(name = "ingredients", nullable = false)
     @JsonProperty("ingredients")
-    private List<String> ingredients;
-    @NotBlank(message = "Instructions are mandatory")
-    @Field(name = "instructions")
+    private String ingredients;
+
+    @NotBlank(message = "Instructions are mandatory or at least must contain one character")
+    @Size(min = 1, max = 500, message = "The content must be between 1 and 500 characters")
+    @Column(name = "instructions", nullable = false)
     @JsonProperty("instructions")
     private String instructions;
-    @NotBlank(message = "Preparation Time is mandatory")
-    @Field(name = "preparationTime")
-    @JsonProperty("preparationTime")
-    private String preparationTime;
-    @NotBlank(message = "Difficulty is mandatory")
-    @Field(name = "difficulty")
+
+    @NotBlank(message = "Preparation time is mandatory or at least must contain one character")
+    @Size(min = 1, max = 20, message = "The content must be between 1 and 20 characters")
+    @Column(name = "preparation_time", nullable = false)
+    @JsonProperty("preparation_time")
+    private String preparation_time;
+
+    @NotBlank(message = "Difficulty is mandatory or at least must contain one character")
+    @Size(min = 1, max = 10, message = "The content must be between 1 and 10 characters")
+    @Column(name = "difficulty", nullable = false)
     @JsonProperty("difficulty")
     private String difficulty;
-    @Field(name = "comments")
-    @JsonProperty("comments")
-    private List<Comment> comments;
+
+    @Column(name = "recipe_time_stamp", nullable = false)
+    @JsonProperty("recipe_time_stamp")
+    private java.sql.Timestamp recipe_time_stamp;
+
+    @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
+
+    @OneToMany(mappedBy = "recipe")
+    private List<CommentRecipe> comments;
 
     public Recipe() {
     }
 
-    public String getId() {
-        return id;
+    public Integer getRecipe_id() {
+        return recipe_id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setRecipe_id(Integer recipe_id) {
+        this.recipe_id = recipe_id;
     }
 
-    public int getRecipeId() {
-        return recipeId;
+    public String getRecipe_name() {
+        return recipe_name;
     }
 
-    public void setRecipeId(int recipeId) {
-        this.recipeId = recipeId;
+    public void setRecipe_name(String recipe_name) {
+        this.recipe_name = recipe_name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<String> getIngredients() {
+    public String getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(List<String> ingredients) {
+    public void setIngredients(String ingredients) {
         this.ingredients = ingredients;
     }
 
@@ -89,12 +101,12 @@ public class Recipe {
         this.instructions = instructions;
     }
 
-    public String getPreparationTime() {
-        return preparationTime;
+    public String getPreparation_time() {
+        return preparation_time;
     }
 
-    public void setPreparationTime(String preparationTime) {
-        this.preparationTime = preparationTime;
+    public void setPreparation_time(String preparation_time) {
+        this.preparation_time = preparation_time;
     }
 
     public String getDifficulty() {
@@ -105,25 +117,43 @@ public class Recipe {
         this.difficulty = difficulty;
     }
 
-    public List<Comment> getComments() {
+    public java.sql.Timestamp getRecipe_time_stamp() {
+        return recipe_time_stamp;
+    }
+
+    public void setRecipe_time_stamp(java.sql.Timestamp recipe_time_stamp) {
+        this.recipe_time_stamp = recipe_time_stamp;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<CommentRecipe> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(List<CommentRecipe> comments) {
         this.comments = comments;
     }
 
     @Override
     public String toString() {
         return "Recipe{" +
-                "id='" + id + '\'' +
-                ", recipeId=" + recipeId +
-                ", name='" + name + '\'' +
+                "recipe_id=" + recipe_id +
+                ", recipe_name='" + recipe_name + '\'' +
                 ", ingredients='" + ingredients + '\'' +
                 ", instructions='" + instructions + '\'' +
-                ", preparationTime='" + preparationTime + '\'' +
+                ", preparation_time='" + preparation_time + '\'' +
                 ", difficulty='" + difficulty + '\'' +
-                ", comments='" + comments + '\n' +
+                ", time_stamp=" + recipe_time_stamp +
+                ", user=" + user +
+                ", comments=" + comments +
                 '}';
     }
+
 }
