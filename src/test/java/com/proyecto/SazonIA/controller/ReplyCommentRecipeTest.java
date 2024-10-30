@@ -2,6 +2,7 @@ package com.proyecto.SazonIA.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -18,7 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ReplyCommentRecipeTest {
-    
+
     @Autowired
     private MockMvc mvc;
 
@@ -33,7 +34,8 @@ public class ReplyCommentRecipeTest {
     @Test
     public void getCommentRecipeByIdTest() throws Exception {
         int idReply = 2;
-        mvc.perform(get("/replycomment/{idReply}", idReply)
+        mvc.perform(get("/replycomment/GetById?idReply=" + idReply)
+                .param("idReply", String.valueOf(idReply))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.reply_id", is(idReply)));
@@ -44,7 +46,9 @@ public class ReplyCommentRecipeTest {
         String newCommentRecipeJson = "{"
                 + "\"content\":\"Test Comment\""
                 + "}";
-        mvc.perform(post("/replycomment/{idRecipe}/{idUser}", 1, 1)
+        mvc.perform(post("/replycomment/SaveReply")
+                .param("idComment", "2")
+                .param("idUser", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newCommentRecipeJson))
                 .andExpect(status().isOk());
@@ -53,10 +57,11 @@ public class ReplyCommentRecipeTest {
     @Test
     public void updateCommentRecipeTest() throws Exception {
         String updatedCommentRecipeJson = "{"
-                + "\"reply_id\":\"3\","
+                + "\"reply_id\":\"2\","
                 + "\"content\":\"Updated Test Comment\""
                 + "}";
-        mvc.perform(put("/replycomment/{idComment}", 3)
+        mvc.perform(put("/replycomment/UpdateReply")
+                .param("idReply", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedCommentRecipeJson))
                 .andExpect(status().isOk());
@@ -64,8 +69,9 @@ public class ReplyCommentRecipeTest {
 
     @Test
     public void deleteCommentRecipeTest() throws Exception {
-        int idReplyComment = 4;
-        mvc.perform(get("/replycomment/{idComment}", idReplyComment)
+        int idReplyComment = 3;
+        mvc.perform(delete("/replycomment/DeleteReply")
+                .param("idReply", String.valueOf(idReplyComment))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
