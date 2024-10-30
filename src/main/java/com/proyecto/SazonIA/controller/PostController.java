@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,29 +17,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/posts")
 @Tag(name = "Posts", description = "Operations related to posts in Sazón.IA")
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
-        RequestMethod.PUT })
 public class PostController {
 
     @Autowired
     private PostService postService;
 
-    @Operation(summary = "Get 20 random posts")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Random posts retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("/random")
-    public ResponseEntity<List<Post>> getRandomPosts(@RequestParam(value = "count", defaultValue = "20") int count) {
-        List<Post> randomPosts = postService.getRandomPosts(count);
-        return ResponseEntity.ok(randomPosts);
-    }
-
-    /*
     @Operation(summary = "Get all posts with pagination")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Posts retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
@@ -50,7 +38,7 @@ public class PostController {
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         List<Post> posts = postService.getAllPosts(page, pageSize);
         return new ResponseEntity<>(posts, HttpStatus.OK);
-    }*/
+    }
 
     @Operation(summary = "Get posts by user ID with pagination")
     @ApiResponses(value = {
@@ -75,8 +63,12 @@ public class PostController {
     })
     @GetMapping("/{postId}")
     public ResponseEntity<Post> getPostById(@PathVariable String postId) {
-        Post post = postService.getPostById(postId).orElseThrow();
-        return ResponseEntity.ok(post);
+        Optional<Post> post = postService.getPostById(postId);
+        if (post.isPresent()) {
+            return ResponseEntity.ok(post.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        }
     }
 
     @Operation(summary = "Create a new post")

@@ -1,18 +1,26 @@
 package com.proyecto.SazonIA.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "User")
+@JsonIgnoreProperties({"recipes", "comments", "replies"})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    private Integer user_id;
 
     @Column(name = "first_name", nullable = false)
     private String name;
@@ -35,12 +43,23 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    public Integer getUserId() {
-        return userId;
+    @OneToMany(mappedBy = "user")
+    private List<Recipe> recipes;
+
+    @OneToMany(mappedBy = "user")
+    private List<CommentRecipe> comments;
+
+    @OneToMany(mappedBy = "user")
+    private List<ReplyCommentRecipe> replies;
+
+    public User() {
+    }
+    public Integer getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser_id(Integer user_id) {
+        this.user_id = user_id;
     }
 
     public String getName() {
@@ -99,12 +118,46 @@ public class User {
         this.password = password;
     }
 
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
+    }
+
+    public List<CommentRecipe> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentRecipe> comments) {
+        this.comments = comments;
+    }
+
+    public List<ReplyCommentRecipe> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<ReplyCommentRecipe> replies) {
+        this.replies = replies;
+    }
     @Override
     public String toString() {
-        return "User [userId=" + userId + ", name=" + name + ", paternalLastName=" + paternalLastName
-                + ", maternalLastName=" + maternalLastName + ", birthdate=" + birthdate + ", phoneNumber=" + phoneNumber
-                + ", email=" + email + ", password=" + password + "]";
+        return "User{" +
+                "user_id=" + user_id +
+                ", name='" + name + '\'' +
+                ", paternalLastName='" + paternalLastName + '\'' +
+                ", maternalLastName='" + maternalLastName + '\'' +
+                ", birthdate=" + birthdate +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", recipes=" + recipes +
+                ", comments=" + comments +
+                ", replies=" + replies +
+                '}';
     }
+
 
     
 }

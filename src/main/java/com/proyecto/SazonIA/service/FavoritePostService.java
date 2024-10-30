@@ -49,8 +49,8 @@ public class FavoritePostService {
         }
     }
 
-    // Guardar una publicación favorita
-    public FavoritePost saveFavoritePost(FavoritePost favoritePost) {
+     // Guardar una publicación favorita
+     public FavoritePost saveFavoritePost(FavoritePost favoritePost) {
         String postId = favoritePost.getId().getPostId();
 
         // Verificar si el post existe

@@ -47,7 +47,7 @@ public class FollowerController {
         if (follower == null || followed == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        if (follower.getUserId() == followed.getUserId()) {
+        if (follower.getUser_id() == followed.getUser_id()) {
             return new ResponseEntity<>("You cannot follow yourself", HttpStatus.BAD_REQUEST);
         }
         if (service.isFollowing(follower, followed)) {
@@ -72,7 +72,7 @@ public class FollowerController {
         if (follower == null || followed == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        if (follower.getUserId() == followed.getUserId()) {
+        if (follower.getUser_id() == followed.getUser_id()) {
             return new ResponseEntity<>("You cannot unfollow yourself", HttpStatus.BAD_REQUEST);
         }
         if (!service.isFollowing(follower, followed)) {

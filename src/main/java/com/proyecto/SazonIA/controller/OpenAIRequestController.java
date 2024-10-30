@@ -39,13 +39,13 @@ public class OpenAIRequestController {
     @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
     @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
     @PostMapping("/recommendations")
-    public ResponseEntity<String> getRecommendations(@RequestParam Integer userId, @RequestParam String prompt) {
+    public ResponseEntity<String> getRecommendations(@RequestParam Integer user_id, @RequestParam String prompt) {
 
-        if (!openAIRequestService.userExists(userId)) {
+        if (!openAIRequestService.userExists(user_id)) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
 
-        String recommendations = openAIRequestService.getRecommendations(userId, prompt);
+        String recommendations = openAIRequestService.getRecommendations(user_id, prompt);
         return new ResponseEntity<>(recommendations, HttpStatus.OK);
     }
 
@@ -60,14 +60,14 @@ public class OpenAIRequestController {
     @Operation(summary = "Get a user's history")
     @ApiResponse(responseCode = "200", description = "Found recommendations of a user", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OpenAIRequest.class))) })
-    @GetMapping("/history/{userId}")
-    public ResponseEntity<?> getHistoryByUserId(@PathVariable Integer userId) {
+    @GetMapping("/history/{user_id}")
+    public ResponseEntity<?> getHistoryByUserId(@PathVariable Integer user_id) {
         // Verificar si el usuario existe
-        if (!openAIRequestService.userExists(userId)) {
+        if (!openAIRequestService.userExists(user_id)) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
 
-        List<OpenAIRequest> history = openAIRequestService.getHistoryById(userId);
+        List<OpenAIRequest> history = openAIRequestService.getHistoryById(user_id);
 
         if (history.isEmpty()) {
             return new ResponseEntity<>("No recommendations found for this user", HttpStatus.OK);
@@ -79,14 +79,14 @@ public class OpenAIRequestController {
     @Operation(summary = "Delete a user's history")
     @ApiResponse(responseCode = "200", description = "Delete a user's history", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OpenAIRequest.class))) })
-    @DeleteMapping("/history/{userId}")
-    public ResponseEntity<String> deleteHistoryById(@PathVariable Integer userId) {
+    @DeleteMapping("/history/{user_id}")
+    public ResponseEntity<String> deleteHistoryById(@PathVariable Integer user_id) {
         
-        if (!openAIRequestService.userExists(userId)) {
+        if (!openAIRequestService.userExists(user_id)) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
 
-        openAIRequestService.delete(userId);
+        openAIRequestService.delete(user_id);
         return new ResponseEntity<>("History deleted successfully", HttpStatus.OK);
     }
 

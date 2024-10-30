@@ -1,68 +1,125 @@
 package com.proyecto.SazonIA.controller;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.proyecto.SazonIA.service.PostService;
 
-import com.proyecto.SazonIA.model.Post;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.hamcrest.Matchers.hasSize;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Optional;
-
-@WebMvcTest(PostController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class PostControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Mock
-    private PostService postService;
+        @Mock
+        private PostController postController;
 
-    @InjectMocks
-    private PostController postController; // Opcional, a veces no es necesario.
+        @Test
+        public void createPostTest() throws Exception {
+                // Crea el cuerpo de la solicitud como un String JSON
+                String requestBody = "{\n" +
+                                "  \"userId\": 3,\n" + // Asegúrate de que el userId sea un número sin comillas
+                                "  \"title\": \"Título de Prueba\",\n" +
+                                "  \"content\": \"Contenido de prueba para la publicación.\"\n" +
+                                "}";
 
-    private Post post; // Asumiendo que tienes una clase Post.
+                // Realiza la solicitud POST para crear una nueva publicación
+                mockMvc.perform(post("/posts")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody))
+                                .andDo(print()) // Imprime la solicitud y respuesta en la consola
+                                .andExpect(status().isCreated()) // Verifica que el estado sea 201 Created
+                                .andExpect(jsonPath("$.userId", is(3))) // Verifica el userId
+                                .andExpect(jsonPath("$.postId").exists()) // Verifica que el postId existe
+                                .andExpect(jsonPath("$.title", is("Título de Prueba"))) // Verifica el título
+                                .andExpect(jsonPath("$.content", is("Contenido de prueba para la publicación."))); // Verifica
+                                                                                                                   // el
+                                                                                                                   // contenido
+        }
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this); // Inicializa los mocks.
-        post = new Post(); // Inicializa el objeto Post.
-        post.setTitle("Test Title"); // Establece un título de prueba.
-        // Puedes inicializar otros campos del objeto post según sea necesario.
-    }
+        @Test
+        public void getPostByIdTest() throws Exception {
+                mockMvc.perform(get("/posts/9a3b8339-4eec-40da-bfd1-c6d172449010").accept(MediaType.APPLICATION_JSON))
+                                .andDo(print())
+                                .andExpect(status().isOk())
+                                .andExpect(MockMvcResultMatchers.jsonPath("$.postId",
+                                                is("9a3b8339-4eec-40da-bfd1-c6d172449010")));
+        }
 
-    @Test
-    void createPost_shouldReturnCreatedPost() throws Exception {
-        when(postService.createPost(any(Integer.class), any(String.class), any(String.class), any()))
-                .thenReturn(post);
+        @Test
+        public void updatePostTest() throws Exception {
+                // ID de la publicación a actualizar
+                String postId = "9a3b8339-4eec-40da-bfd1-c6d172449010";
 
-        mockMvc.perform(post("/posts")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(post)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value("Test Title"));
-    }
+                // Cuerpo de la solicitud JSON con los nuevos valores para la actualización
+                String updateRequestBody = "{\n" +
+                                "  \"title\": \"Título Actualizado\",\n" +
+                                "  \"content\": \"Contenido actualizado de la publicación.\"\n" +
+                                "}";
 
-    @Test
-    void getPostById_shouldReturnPost() throws Exception {
-        when(postService.getPostById(any())).thenReturn(Optional.of(post));
+                // Realiza la solicitud PUT para actualizar la publicación
+                mockMvc.perform(put("/posts/" + postId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(updateRequestBody))
+                                .andDo(print()) // Imprime la solicitud y la respuesta en la consola
+                                .andExpect(status().isOk()) // Verifica que el estado sea 200 OK
+                                .andExpect(jsonPath("$.postId", is(postId))) // Verifica que el postId sea el mismo
+                                .andExpect(jsonPath("$.title", is("Título Actualizado"))) // Verifica el nuevo título
+                                .andExpect(jsonPath("$.content", is("Contenido actualizado de la publicación."))); // Verifica
+                                                                                                                   // el
+                                                                                                                   // nuevo
+                                                                                                                   // contenido
+        }
 
-        mockMvc.perform(get("/posts/{postId}", "00644766-7153-4559-8870-6f4cfba2029b"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Test Title"));
-    }
+        @Test
+        public void deletePostTest() throws Exception {
+                // ID de la publicación a eliminar
+                String postId = "a4e411b1-2499-4736-8f69-8c86f02ec527";
+
+                // Realiza la solicitud DELETE para eliminar la publicación
+                mockMvc.perform(delete("/posts/" + postId))
+                                .andDo(print()) // Imprime la solicitud y la respuesta en la consola
+                                .andExpect(status().isNoContent()); // Verifica que el estado sea 204 No Content
+        }
+
+        @Test
+        public void getRandomPostsTest() throws Exception {
+                mockMvc.perform(get("/posts/random?count=4").accept(MediaType.APPLICATION_JSON))
+                                .andDo(print())
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$", hasSize(3))); // Verifica que se devuelven 5 publicaciones
+                                                                       // aleatorias
+        }
+
+        @Test
+        public void getPostsByUserPaginatedTest() throws Exception {
+                int userId = 1;
+                int page = 0;
+                int pageSize = 2;
+
+                mockMvc.perform(get("/posts/user/" + userId)
+                                .param("page", String.valueOf(page))
+                                .param("pageSize", String.valueOf(pageSize))
+                                .accept(MediaType.APPLICATION_JSON))
+                                .andDo(print())
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$", hasSize(pageSize))); // Verifica que el tamaño de la página
+                                                                              // coincide con pageSize
+        }
+
 }

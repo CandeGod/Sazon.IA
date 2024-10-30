@@ -18,8 +18,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/commentsPost")
 @Tag(name = "Comments on Posts", description = "Operations related to comments on posts in Sazón.IA")
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
-        RequestMethod.PUT })
 public class CommentPostController {
 
     @Autowired
@@ -77,20 +75,16 @@ public class CommentPostController {
     @Operation(summary = "Delete a comment by User ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Comment deleted successfully", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Comment not found or user not authorized", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Comment not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @DeleteMapping("/user/{userId}")
-    public ResponseEntity<Void> deleteComment(
-            @PathVariable Integer userId,
-            @RequestParam String commentId) {
-
-        boolean isDeleted = commentService.deleteComment(commentId, userId);
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable String commentId) {
+        boolean isDeleted = commentService.deleteComment(commentId);
         if (isDeleted) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.status(404).build();
         }
     }
-
 }

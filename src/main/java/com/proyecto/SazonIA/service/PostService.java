@@ -8,9 +8,6 @@ import com.proyecto.SazonIA.repository.CommentPostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,26 +26,12 @@ public class PostService {
     @Autowired
     private CommentPostRepository commentPostRepository;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-     // Método para obtener 20 publicaciones aleatorias
-    public List<Post> getRandomPosts(int count) {
-        Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.sample(count)
-        );
-        
-        AggregationResults<Post> results = mongoTemplate.aggregate(aggregation, "Posts", Post.class);
-        return results.getMappedResults();
-    }
-
-    /*/
     // Obtener todas las publicaciones con paginación
     public List<Post> getAllPosts(int page, int pageSize) {
         PageRequest pageReq = PageRequest.of(page, pageSize);
         Page<Post> posts = postRepository.findAll(pageReq);
         return posts.getContent();
-    } */
+    }
 
     // Obtener publicaciones de un usuario con paginación
     public List<Post> getPostsByUser(Integer userId, int page, int pageSize) {
@@ -69,7 +52,7 @@ public class PostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         // Crea y guarda el Post en MongoDB con el userId de MySQL
-        Post post = new Post(user.getUserId(), title, content);
+        Post post = new Post(user.getUser_id(), title, content);
         post.setMediaUrls(mediaUrls); // Establecer mediaUrls
         post.setPostId(UUID.randomUUID().toString()); // Generar el ID antes de guardar
         return postRepository.save(post);
