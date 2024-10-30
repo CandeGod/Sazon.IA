@@ -27,7 +27,7 @@ public class CommentPost {
     private String postId;
 
     @NotNull(message = "User ID must not be null")
-    private Integer user_id;
+    private Integer userId;
 
     @NotBlank(message = "Content must not be blank")
     @Size(min = 10, max = 500, message = "Content cannot exceed 500 characters")
@@ -47,10 +47,10 @@ public class CommentPost {
     }
 
     // Constructor con parámetros
-    public CommentPost(String postId, Integer user_id, String content) {
+    public CommentPost(String postId, Integer userId, String content) {
         this();
         this.postId = postId;
-        this.user_id = user_id;
+        this.userId = userId;
         this.content = content;
     }
 
@@ -68,11 +68,11 @@ public class CommentPost {
     }
 
     public Integer getUserId() {
-        return user_id;
+        return userId;
     }
 
-    public void setUserId(Integer user_id) {
-        this.user_id = user_id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getContent() {
