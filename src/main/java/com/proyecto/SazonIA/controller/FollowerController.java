@@ -61,8 +61,10 @@ public class FollowerController {
     // Dejar de seguir a un usuario
     @Operation(summary = "Unfollow a user")
     @ApiResponse(responseCode = "200", description = "User unfollowed", content = @Content(mediaType = "application/json"))
-    @DeleteMapping("/unfollow/{userId}/{followedId}")
-    public ResponseEntity<String> unfollowUser(@PathVariable int userId, @PathVariable int followedId) {
+    @DeleteMapping("/unfollow")
+    public ResponseEntity<String> unfollowUser(
+            @RequestParam("userId") int userId,
+            @RequestParam("followedId") int followedId) {
         User follower = service.findUserById(userId);
         User followed = service.findUserById(followedId);
 
@@ -99,7 +101,7 @@ public class FollowerController {
 
     @Operation(summary = "Get followers of a user with pagination")
     @GetMapping(value = "paginationFollowers", params = { "page", "size" })
-    
+
     public List<Follower> getFollowersPaginated(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "size", defaultValue = "2", required = false) int pageSize) {
@@ -124,11 +126,11 @@ public class FollowerController {
     }
 
     @Operation(summary = "Get following of a user with pagination")
-    @GetMapping(value = "paginationFollowing", params = {"page", "size"})
+    @GetMapping(value = "paginationFollowing", params = { "page", "size" })
     public List<Follower> getFollowingPaginated(
-        @RequestParam(value = "page", defaultValue = "0", required = false)int page,
-        @RequestParam(value = "size", defaultValue = "2", required = false)int pageSize){
-            List<Follower> followers = service.getFollowing(page, pageSize);
-            return followers;
-        }
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "2", required = false) int pageSize) {
+        List<Follower> followers = service.getFollowing(page, pageSize);
+        return followers;
+    }
 }
