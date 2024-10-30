@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.SazonIA.model.CommentRecipe;
 import com.proyecto.SazonIA.model.ReplyCommentRecipe;
+import com.proyecto.SazonIA.service.CommentRecipeService;
 import com.proyecto.SazonIA.service.ReplyCommentRecipeService;
+import com.proyecto.SazonIA.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -26,6 +28,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/replycomment")
 @CrossOrigin(origins = "*")
@@ -33,6 +38,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class ReplyCommentRecipeController {
     @Autowired
     private ReplyCommentRecipeService replyCommentService;
+
+    @Autowired
+    private CommentRecipeService commentService;
+
+    @Autowired
+    private UserService userService;
 
     // @Operation(summary = "Get all Comments")
     // @ApiResponse(responseCode = "200", description = "Found Comments", content =
@@ -61,8 +72,11 @@ public class ReplyCommentRecipeController {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
     @ApiResponse(responseCode = "500", description = "Internal server error", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-    @PostMapping
-    public ResponseEntity<?> save(@RequestBody ReplyCommentRecipe reply) {
+    @PostMapping("/{idComment}/{idUser}")
+    public ResponseEntity<?> save(@RequestBody ReplyCommentRecipe reply, @PathVariable Integer idComment, @PathVariable Integer idUser) {
+        reply.setComment(commentService.getById(idComment));
+        reply.setUser(userService.getById(idUser));
+        reply.setReply_time_stamp(Timestamp.valueOf(LocalDateTime.now()) + "");
         replyCommentService.save(reply);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -76,6 +90,10 @@ public class ReplyCommentRecipeController {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
     @PutMapping("/{idReply}")
     public ResponseEntity<?> update(@PathVariable Integer idReply, @RequestBody ReplyCommentRecipe reply) {
+        ReplyCommentRecipe aux = replyCommentService.getById(idReply);
+        reply.setReply_time_stamp(aux.getReply_time_stamp());
+        reply.setUser(userService.getById(aux.getUser().getUser_id()));
+        reply.setComment(commentService.getById(aux.getComment().getComment_id()));
         replyCommentService.save(reply);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -23,7 +23,7 @@ public class RatingPost {
     private String postId; // ID del post asociado al rating
 
     @NotNull(message = "User ID must not be null")
-    private Integer userId; // ID del usuario que realiza la valoración
+    private Integer user_id; // ID del usuario que realiza la valoración
 
     @Min(value = 0, message = "Rating must be at least 0")
     @Max(value = 5, message = "Rating must be at most 5")
@@ -35,10 +35,10 @@ public class RatingPost {
     }
 
     // Constructor con parámetros
-    public RatingPost(String postId, Integer userId, Integer value) {
+    public RatingPost(String postId, Integer user_id, Integer value) {
         this(); // Llama al constructor por defecto para generar ratingId
         this.postId = postId;
-        this.userId = userId;
+        this.user_id = user_id;
         this.value = value;
     }
 
@@ -60,11 +60,11 @@ public class RatingPost {
     }
 
     public Integer getUserId() {
-        return userId;
+        return user_id;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUserId(Integer user_id) {
+        this.user_id = user_id;
     }
 
     public Integer getValue() {

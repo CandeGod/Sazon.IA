@@ -59,14 +59,14 @@ public class CommentPostController {
             @ApiResponse(responseCode = "404", description = "Comment or Post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PutMapping("/post/{postId}/comment/{commentId}/user/{userId}")
+    @PutMapping("/post/{postId}/comment/{commentId}/user/{user_id}")
 public ResponseEntity<CommentPost> updateComment(
         @PathVariable String postId,
         @PathVariable String commentId,
-        @PathVariable Integer userId,
+        @PathVariable Integer user_id,
         @RequestBody CommentPost updatedComment) {
     
-    CommentPost editedComment = commentService.editComment(postId, commentId, userId, updatedComment);
+    CommentPost editedComment = commentService.editComment(postId, commentId, user_id, updatedComment);
     return ResponseEntity.ok(editedComment);
 }
 

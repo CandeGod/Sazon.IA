@@ -1,5 +1,6 @@
 package com.proyecto.SazonIA.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -15,6 +16,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "replycommentrecipe")
+@JsonIgnoreProperties({"comment", "user", "reply_time_stamp"})
 public class ReplyCommentRecipe {
 
     @Id
@@ -31,11 +33,11 @@ public class ReplyCommentRecipe {
 
     @Column(name = "reply_time_stamp", nullable = false)
     @JsonProperty("reply_time_stamp")
-    private java.sql.Timestamp reply_time_stamp;
+    private String reply_time_stamp;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private User author;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "comment_id", nullable = false)
@@ -60,20 +62,20 @@ public class ReplyCommentRecipe {
         this.content = content;
     }
 
-    public java.sql.Timestamp getReply_time_stamp() {
+    public String getReply_time_stamp() {
         return reply_time_stamp;
     }
 
-    public void setReply_time_stamp(java.sql.Timestamp reply_time_stamp) {
+    public void setReply_time_stamp(String reply_time_stamp) {
         this.reply_time_stamp = reply_time_stamp;
     }
 
-    public User getAuthor() {
-        return author;
+    public User getUser() {
+        return user;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public CommentRecipe getComment() {
@@ -91,7 +93,7 @@ public class ReplyCommentRecipe {
                 "reply_id=" + reply_id +
                 ", content='" + content + '\'' +
                 ", time_stamp=" + reply_time_stamp +
-                ", author=" + author +
+                ", user=" + user +
                 ", comment=" + comment +
                 '}';
     }

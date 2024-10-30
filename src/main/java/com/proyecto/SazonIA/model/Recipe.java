@@ -12,12 +12,14 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
 @Entity
 @Table(name = "Recipe")
+@JsonIgnoreProperties({"user", "comments", "recipe_time_stamp"})
 public class Recipe {
 
     @Id
@@ -57,10 +59,10 @@ public class Recipe {
 
     @Column(name = "recipe_time_stamp", nullable = false)
     @JsonProperty("recipe_time_stamp")
-    private java.sql.Timestamp recipe_time_stamp;
+    private String recipe_time_stamp;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "recipe")
@@ -117,11 +119,11 @@ public class Recipe {
         this.difficulty = difficulty;
     }
 
-    public java.sql.Timestamp getRecipe_time_stamp() {
+    public String getRecipe_time_stamp() {
         return recipe_time_stamp;
     }
 
-    public void setRecipe_time_stamp(java.sql.Timestamp recipe_time_stamp) {
+    public void setRecipe_time_stamp(String recipe_time_stamp) {
         this.recipe_time_stamp = recipe_time_stamp;
     }
 
