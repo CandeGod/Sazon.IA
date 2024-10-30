@@ -23,7 +23,7 @@ public class RatingCommentPost {
     private String commentId; // ID del comentario asociado al rating
 
     @NotNull(message = "User ID must not be null")
-    private Integer user_id; // ID del usuario que realiza la valoración
+    private Integer userId; // ID del usuario que realiza la valoración
 
     @Min(value = 0, message = "Rating must be at least 0")
     @Max(value = 5, message = "Rating must be at most 5")
@@ -35,10 +35,10 @@ public class RatingCommentPost {
     }
 
     // Constructor con parámetros
-    public RatingCommentPost(String commentId, Integer user_id, Integer value) {
+    public RatingCommentPost(String commentId, Integer userId, Integer value) {
         this(); // Llama al constructor por defecto para generar ratingId
         this.commentId = commentId;
-        this.user_id = user_id;
+        this.userId = userId;
         this.value = value;
     }
 
@@ -60,11 +60,11 @@ public class RatingCommentPost {
     }
 
     public Integer getUserId() {
-        return user_id;
+        return userId;
     }
 
-    public void setUserId(Integer user_id) {
-        this.user_id = user_id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getValue() {

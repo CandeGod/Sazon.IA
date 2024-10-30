@@ -58,12 +58,12 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @GetMapping("/user/{user_id}/posts")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<Post>> getPostsByUserPaginated(
-            @PathVariable Integer user_id,
+            @PathVariable Integer userId,
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
-        List<Post> posts = postService.getPostsByUser(user_id, page, pageSize);
+        List<Post> posts = postService.getPostsByUser(userId, page, pageSize);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
@@ -87,7 +87,7 @@ public class PostController {
     })
     @PostMapping
     public ResponseEntity<Post> createPost(@Valid @RequestBody Post post) {
-        Post createdPost = postService.createPost(post.getUser_id(), post.getTitle(), post.getContent(),
+        Post createdPost = postService.createPost(post.getUserId(), post.getTitle(), post.getContent(),
                 post.getMediaUrls());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }

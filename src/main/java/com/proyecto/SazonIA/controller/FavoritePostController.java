@@ -31,11 +31,9 @@ public class FavoritePostController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @GetMapping("/posts/{user_id}")
-    public ResponseEntity<List<Post>> getContentFavoritePostsByUser(@PathVariable Integer user_id) {
+    @GetMapping("/posts/{userId}")
+    public ResponseEntity<List<Post>> getContentFavoritePostsByUser(@PathVariable Integer userId) {
         // Llamar al servicio para obtener las publicaciones favoritas del usuario
-        List<Post> favoritePosts = favoritePostService.getContentFavoritePostsByUserId(user_id);
-        
         List<Post> favoritePosts = favoritePostService.getContentFavoritePostsByUserId(userId);
 
         // Devolver la lista de publicaciones como respuesta
@@ -49,10 +47,14 @@ public class FavoritePostController {
             @ApiResponse(responseCode = "404", description = "User or post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PostMapping("/{user_id}/{postId}")
-    public ResponseEntity<FavoritePost> saveFavoritePost(@PathVariable Integer user_id, @PathVariable String postId) {
-        FavoritePost savedFavoritePost = favoritePostService.saveFavoritePost(user_id, postId);
-        return ResponseEntity.ok(savedFavoritePost);
+    @PostMapping("/{userId}")
+    public ResponseEntity<FavoritePost> saveFavoritePost(@PathVariable Integer userId,
+            @RequestBody FavoritePost favoritePost) {
+        // Establecer userId en el objeto FavoritePost
+        favoritePost.getId().setUserId(userId);
+
+        FavoritePost savedFavoritePost = favoritePostService.saveFavoritePost(favoritePost);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedFavoritePost);
     }
 
     @Operation(summary = "Get all favorite posts by user ID")
@@ -61,9 +63,9 @@ public class FavoritePostController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @GetMapping("/{user_id}")
-    public ResponseEntity<List<FavoritePost>> getFavoritePostsByUser_id(@PathVariable Integer user_id) {
-        List<FavoritePost> favoritePosts = favoritePostService.getFavoritePostsByUserId(user_id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<FavoritePost>> getFavoritePostsByUserId(@PathVariable Integer userId) {
+        List<FavoritePost> favoritePosts = favoritePostService.getFavoritePostsByUserId(userId);
         return ResponseEntity.ok(favoritePosts);
     }
 
@@ -73,9 +75,9 @@ public class FavoritePostController {
             @ApiResponse(responseCode = "404", description = "Favorite post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @DeleteMapping("/{user_id}/{postId}")
-    public ResponseEntity<Void> removeFavoritePost(@PathVariable Integer user_id, @PathVariable String postId) {
-        favoritePostService.removeFavoritePost(user_id, postId);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> removeFavoritePost(@PathVariable Integer userId, @RequestParam String postId) {
+        favoritePostService.removeFavoritePost(userId, postId);
         return ResponseEntity.noContent().build();
     }
 
@@ -85,10 +87,13 @@ public class FavoritePostController {
             @ApiResponse(responseCode = "404", description = "Post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @GetMapping("/check/{user_id}/{postId}")
-    public ResponseEntity<Boolean> isPostFavoritedByUser(@PathVariable Integer user_id, @PathVariable String postId) {
-        boolean isFavorited = favoritePostService.isPostFavoritedByUser(user_id, postId);
-        return ResponseEntity.ok(isFavorited);
+    @GetMapping("post/{userId}")
+    public ResponseEntity<Post> getContentFavoritePostByUserAndPostId(@PathVariable Integer userId, @RequestParam String postId) {
+        // Llamar al servicio para obtener la publicación favorita específica del usuario
+        Post favoritePost = favoritePostService.getContentFavoritePostByUserIdAndPostId(userId, postId);
+
+        // Devolver el contenido de la publicación como respuesta
+        return ResponseEntity.ok(favoritePost);
     }
 
 }
