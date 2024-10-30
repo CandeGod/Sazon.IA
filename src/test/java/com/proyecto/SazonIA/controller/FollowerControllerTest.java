@@ -105,7 +105,7 @@ public class FollowerControllerTest {
     @Test
     public void unfollowUserNotFollowingTest() throws Exception {
         mvc.perform(delete("/followers/unfollow")
-                .param("userId", "2")
+                .param("userId", "3")
                 .param("followedId", "1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
