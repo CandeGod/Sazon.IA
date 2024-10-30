@@ -35,7 +35,7 @@ public class FavoritePostController {
         // Llamar al servicio para obtener las publicaciones favoritas del usuario
         List<Post> favoritePosts = favoritePostService.getContentFavoritePostsByUserId(user_id);
         
-        List<Post> favoritePosts = favoritePostService.getContentFavoritePostsByUserId(userId);
+        // List<Post> favoritePosts = favoritePostService.getContentFavoritePostsByUserId(userId);
         
         // Devolver la lista de publicaciones como respuesta
         return ResponseEntity.ok(favoritePosts);
