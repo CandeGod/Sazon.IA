@@ -13,9 +13,9 @@ import jakarta.transaction.Transactional;
 public interface OpenAIRequestRepository extends JpaRepository<OpenAIRequest,Integer>{
     @Modifying
     @Transactional
-    @Query("DELETE FROM OpenAIRequest o WHERE o.user.userId = ?1")
+    @Query("DELETE FROM OpenAIRequest o WHERE o.user.user_id = ?1")
     void deleteByUserId(Integer userId);
     
-    @Query("SELECT o FROM OpenAIRequest o WHERE o.user.userId = ?1")
+    @Query("SELECT o FROM OpenAIRequest o WHERE o.user.user_id = ?1")
     List<OpenAIRequest> findByUserId(Integer userId);
 }

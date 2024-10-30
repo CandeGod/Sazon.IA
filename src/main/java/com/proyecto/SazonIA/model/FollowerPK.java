@@ -17,7 +17,7 @@ public class FollowerPK implements Serializable{
             return true;
         if (!(o instanceof FollowerPK followerPK))
             return false;
-        return user.getUserId() == followerPK.user.getUserId() && Objects.equals(followed, followerPK.followed);
+        return user.getUser_id() == followerPK.user.getUser_id() && Objects.equals(followed, followerPK.followed);
     }
 
     @Override

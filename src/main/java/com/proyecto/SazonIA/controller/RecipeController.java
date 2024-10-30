@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.proyecto.SazonIA.model.Comment;
 import com.proyecto.SazonIA.model.Recipe;
+import com.proyecto.SazonIA.model.User;
 import com.proyecto.SazonIA.service.RecipeService;
-import com.proyecto.SazonIA.service.CommentService;
+import com.proyecto.SazonIA.service.UserService;
 
 @RestController
 @RequestMapping("/recipe")
@@ -34,15 +34,16 @@ public class RecipeController {
 
         @Autowired
         private RecipeService recipeService;
+
         @Autowired
-        private CommentService commentService;
+        private UserService userService;
 
         @Operation(summary = "Get all Recipes")
         @ApiResponse(responseCode = "200", description = "Found Recipes", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @GetMapping
         public List<Recipe> getAll() {
-                return recipeService.getAll();
+                return recipeService.getAllRecipes();
         }
 
         @Operation(summary = "Get a recipe by Id")
@@ -53,7 +54,7 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @GetMapping("/{idRecipe}")
-        public ResponseEntity<Recipe> get(@PathVariable String idRecipe) {
+        public ResponseEntity<Recipe> getById(@PathVariable Integer idRecipe) {
                 return new ResponseEntity<>(recipeService.getById(idRecipe), HttpStatus.OK);
         }
 
@@ -62,9 +63,10 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "500", description = "Internal server error", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @PostMapping
-        public ResponseEntity<?> add(@RequestBody Recipe recipe) {
-                recipe.setRecipeId(recipeService.getIdRecipe());
+        @PostMapping("/{idUser}")
+        public ResponseEntity<?> save(@RequestBody Recipe recipe, @PathVariable Integer idUser) {
+                User user = userService.getById(idUser);
+                recipe.setUser(user);
                 recipeService.save(recipe);
                 return new ResponseEntity<>(HttpStatus.OK);
 
@@ -78,8 +80,7 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @PutMapping("/{idRecipe}")
-        public ResponseEntity<?> update(@RequestBody Recipe recipe, @PathVariable String idRecipe) {
-                recipe.setId(idRecipe);
+        public ResponseEntity<?> update(@RequestBody Recipe recipe, @PathVariable Integer idRecipe) {
                 recipeService.save(recipe);
                 return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -92,94 +93,9 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @DeleteMapping("/{idRecipe}")
-        public ResponseEntity<?> delete(@PathVariable String idRecipe) {
+        public ResponseEntity<?> delete(@PathVariable Integer idRecipe) {
                 recipeService.delete(idRecipe);
                 return new ResponseEntity<>(HttpStatus.OK);
 
         }
-
-        @Operation(summary = "Add a new comment to a recipe")
-        @ApiResponse(responseCode = "200", description = "The comment has been added", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "500", description = "Internal server error", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @PutMapping("/addComment/{idRecipe}/comment")
-        public ResponseEntity<?> addComment(@RequestBody Comment comment, @PathVariable String idRecipe) {
-                comment.setCommentId(commentService.getIdComment());
-                recipeService.addCommentToRecipe(idRecipe, comment);
-                return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        @Operation(summary = "Add a reply to a comment")
-        @ApiResponse(responseCode = "200", description = "The reply has been added", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "500", description = "Internal server error", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @PutMapping("/addReply/{idRecipe}/comment/{commentId}/reply")
-        public ResponseEntity<?> addNewReply(@RequestBody Comment reply, @PathVariable String idRecipe,
-                        @PathVariable String commentId) {
-                                reply.setCommentId(commentService.getIdComment());
-                recipeService.addReplyToComment(idRecipe, commentId, reply);
-                return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        @Operation(summary = "Delete a comment from a recipe")
-        @ApiResponse(responseCode = "200", description = "The comment has been deleted", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "500", description = "Internal server error", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @DeleteMapping("/deleteComment/{id}/comment/{commentId}")
-        public ResponseEntity<?> deleteComment(@PathVariable String id, @PathVariable String commentId) {
-                recipeService.deleteCommentFromRecipe(id, commentId);
-                return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        @Operation(summary = "Delete a reply from a comment")
-        @ApiResponse(responseCode = "200", description = "The reply has been deleted", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "500", description = "Internal server error", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @DeleteMapping("/deleteReply/{idRecipe}/comment/{commentId}/reply/{replyId}")
-        public ResponseEntity<?> deleteReply(@PathVariable String idRecipe, @PathVariable String commentId,
-                        @PathVariable String replyId) {
-                recipeService.deleteReplyFromComment(idRecipe, commentId, replyId);
-                return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        @Operation(summary = "Update a comment from a recipe")
-        @ApiResponse(responseCode = "200", description = "The comment has been updated", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "500", description = "Internal server error", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @PutMapping("/updateComment/{idRecipe}/{idComment}/comment")
-        public ResponseEntity<?> updateCommentFromReply(@RequestBody Comment comment, @PathVariable String idRecipe,
-                        @PathVariable String idComment) {
-                recipeService.updateCommentFromRecipe(idRecipe, idComment, comment);
-                return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        @Operation(summary = "Update a reply from a comment")
-        @ApiResponse(responseCode = "200", description = "The reply has been updated", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "500", description = "Internal server error", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
-                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @PutMapping("/updateReply/{idRecipe}/comment/{commentId}/reply")
-        public ResponseEntity<?> updateReplyFromComment(@RequestBody Comment reply, @PathVariable String idRecipe,
-                        @PathVariable String commentId) {
-                recipeService.updateReplyFromComment(idRecipe, commentId, reply);
-                return new ResponseEntity<>(HttpStatus.OK);
-        }
-
 }
