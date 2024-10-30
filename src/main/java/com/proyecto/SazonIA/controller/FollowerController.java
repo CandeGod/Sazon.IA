@@ -38,16 +38,16 @@ public class FollowerController {
     // Seguir a un usuario
     @Operation(summary = "Follow a user")
     @ApiResponse(responseCode = "201", description = "User followed", content = @Content(mediaType = "application/json"))
-    @PostMapping("/follow/{userId}/{followedId}")
-    public ResponseEntity<String> followUser(@PathVariable int userId, @PathVariable int followedId) {
-        User follower = service.findUserById(userId);
+    @PostMapping("/follow/{user_id}/{followedId}")
+    public ResponseEntity<String> followUser(@PathVariable int user_id, @PathVariable int followedId) {
+        User follower = service.findUserById(user_id);
         User followed = service.findUserById(followedId);
 
         // Validaciones
         if (follower == null || followed == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        if (follower.getUserId() == followed.getUserId()) {
+        if (follower.getUser_id() == followed.getUser_id()) {
             return new ResponseEntity<>("You cannot follow yourself", HttpStatus.BAD_REQUEST);
         }
         if (service.isFollowing(follower, followed)) {
@@ -61,18 +61,16 @@ public class FollowerController {
     // Dejar de seguir a un usuario
     @Operation(summary = "Unfollow a user")
     @ApiResponse(responseCode = "200", description = "User unfollowed", content = @Content(mediaType = "application/json"))
-    @DeleteMapping("/unfollow")
-    public ResponseEntity<String> unfollowUser(
-            @RequestParam("userId") int userId,
-            @RequestParam("followedId") int followedId) {
-        User follower = service.findUserById(userId);
+    @DeleteMapping("/unfollow/{user_id}/{followedId}")
+    public ResponseEntity<String> unfollowUser(@PathVariable int user_id, @PathVariable int followedId) {
+        User follower = service.findUserById(user_id);
         User followed = service.findUserById(followedId);
 
         // Validaciones
         if (follower == null || followed == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        if (follower.getUserId() == followed.getUserId()) {
+        if (follower.getUser_id() == followed.getUser_id()) {
             return new ResponseEntity<>("You cannot unfollow yourself", HttpStatus.BAD_REQUEST);
         }
         if (!service.isFollowing(follower, followed)) {

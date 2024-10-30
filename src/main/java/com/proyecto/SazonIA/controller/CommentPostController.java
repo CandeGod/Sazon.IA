@@ -61,20 +61,19 @@ public class CommentPostController {
             @ApiResponse(responseCode = "404", description = "Comment or Post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PutMapping("user/{userId}")
-    public ResponseEntity<CommentPost> updateComment(
-            @PathVariable Integer userId,        
-            @RequestParam String postId,
-            @RequestParam String commentId,
-            @RequestBody CommentPost updatedComment) {
+    @PutMapping("/post/{postId}/comment/{commentId}/user/{user_id}")
+public ResponseEntity<CommentPost> updateComment(
+        @PathVariable String postId,
+        @PathVariable String commentId,
+        @PathVariable Integer user_id,
+        @RequestBody CommentPost updatedComment) {
     
-        // Llamada al servicio de actualización con userId desde el PathVariable
-        CommentPost editedComment = commentService.editComment(postId, commentId, userId, updatedComment);
-        return ResponseEntity.ok(editedComment);
-    }
-    
+    CommentPost editedComment = commentService.editComment(postId, commentId, user_id, updatedComment);
+    return ResponseEntity.ok(editedComment);
+}
 
-    @Operation(summary = "Delete a comment by User ID")
+
+    @Operation(summary = "Delete a comment by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Comment deleted successfully", content = @Content),
             @ApiResponse(responseCode = "404", description = "Comment not found or user not authorized", content = @Content),

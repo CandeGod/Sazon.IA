@@ -69,7 +69,7 @@ public class PostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         // Crea y guarda el Post en MongoDB con el userId de MySQL
-        Post post = new Post(user.getUserId(), title, content);
+        Post post = new Post(user.getUser_id(), title, content);
         post.setMediaUrls(mediaUrls); // Establecer mediaUrls
         post.setPostId(UUID.randomUUID().toString()); // Generar el ID antes de guardar
         return postRepository.save(post);

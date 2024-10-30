@@ -23,7 +23,7 @@ public class Post {
     private String postId;
 
     @NotNull(message = "User ID must not be null")
-    private Integer userId; 
+    private Integer user_id; 
 
     @NotBlank(message = "Title must not be blank")
     @Size(max = 100, message = "Title cannot exceed 100 characters")
@@ -70,9 +70,9 @@ public class Post {
     }
 
     // Constructor con parámetros
-    public Post(Integer userId, String title, String content) {
+    public Post(Integer user_id, String title, String content) { // Cambiado a Long para userId
         this(); 
-        this.userId = userId; // Establecer el id del User (referencia a MySQL)
+        this.user_id = user_id; // Establecer el id del User (referencia a MySQL)
         this.title = title;
         this.content = content;
         this.postId = UUID.randomUUID().toString(); 
@@ -87,12 +87,12 @@ public class Post {
         this.postId = postId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUserId(Integer user_id) {
+        this.user_id = user_id;
     }
 
     public String getTitle() {
