@@ -1,6 +1,5 @@
 package com.proyecto.SazonIA.service;
 
-import com.proyecto.SazonIA.exception.PostNotFoundException;
 import com.proyecto.SazonIA.model.FavoritePost;
 import com.proyecto.SazonIA.model.FavoritePostId;
 import com.proyecto.SazonIA.model.Post;
@@ -11,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FavoritePostService {
@@ -20,7 +21,7 @@ public class FavoritePostService {
 
     @Autowired
     private PostRepository postRepository; // El repositorio de MongoDB para las publicaciones
-    /*
+
     // Método para obtener las publicaciones guardadas como favoritas por un usuario
     public List<Post> getContentFavoritePostsByUserId(Integer userId) {
         // Buscar todas las relaciones de favoritos para el usuario
@@ -32,34 +33,15 @@ public class FavoritePostService {
                 .collect(Collectors.toList());
 
         // Recuperar el contenido de las publicaciones favoritas desde MongoDB
-        return postRepository.findAllById(postIds); // Método de MongoRepository para obtener varias publicaciones por sus IDs
-    }*/
-
-    // Método para obtener el contenido de una publicación favorita específica de un usuario
-    public Post getContentFavoritePostByUserIdAndPostId(Integer userId, String postId) {
-        // Verificar si existe una relación de favorito para el usuario y el postId
-        boolean isFavorite = favoritePostRepository.existsById(new FavoritePostId(userId, postId));
-
-        if (isFavorite) {
-            // Buscar y devolver el contenido completo de la publicación favorita desde MongoDB
-            return postRepository.findById(postId)
-                    .orElseThrow(() -> new PostNotFoundException(postId));
-        } else {
-            throw new PostNotFoundException("Favorite post not found for user with id " + userId);
-        }
+        return postRepository.findAllById(postIds); // Método de MongoRepository para obtener varias publicaciones por
+                                                    // sus IDs
     }
 
-     // Guardar una publicación favorita
-     public FavoritePost saveFavoritePost(FavoritePost favoritePost) {
-        String postId = favoritePost.getId().getPostId();
-
-        // Verificar si el post existe
-        if (postRepository.existsById(postId)) {
-            // Guardar como favorito si el post existe
-            return favoritePostRepository.save(favoritePost);
-        } else {
-            throw new PostNotFoundException(postId);
-        }
+    // Guardar una publicación favorita
+    public FavoritePost saveFavoritePost(Integer userId, String postId) {
+        FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
+        FavoritePost favoritePost = new FavoritePost(favoritePostId);
+        return favoritePostRepository.save(favoritePost);
     }
 
     // Obtener todas las publicaciones favoritas de un usuario
@@ -73,4 +55,10 @@ public class FavoritePostService {
         favoritePostRepository.deleteById(favoritePostId);
     }
 
+    // Verificar si una publicación está marcada como favorita
+    public boolean isPostFavoritedByUser(Integer userId, String postId) {
+        FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
+        Optional<FavoritePost> favoritePost = favoritePostRepository.findById(favoritePostId);
+        return favoritePost.isPresent();
+    }
 }

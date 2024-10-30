@@ -4,7 +4,6 @@ import com.proyecto.SazonIA.model.FavoritePost;
 import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.service.FavoritePostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,7 @@ public class FavoritePostController {
     @Autowired
     private FavoritePostService favoritePostService;
 
-    /*@Operation(summary = "Get content of favorite posts by user ID")
+    @Operation(summary = "Get content of favorite posts by user ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Favorite posts retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
@@ -38,11 +37,11 @@ public class FavoritePostController {
 
         // Devolver la lista de publicaciones como respuesta
         return ResponseEntity.ok(favoritePosts);
-    }*/
+    }
 
     @Operation(summary = "Save a post as favorite")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Favorite post saved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FavoritePost.class))),
+            @ApiResponse(responseCode = "200", description = "Favorite post saved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FavoritePost.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "404", description = "User or post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
@@ -81,10 +80,10 @@ public class FavoritePostController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Get content of a specific favorite post by user ID and post ID")
+    @Operation(summary = "Check if a post is favorited by user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Favorite post retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
-            @ApiResponse(responseCode = "404", description = "Post not found", content = @Content),
+            @ApiResponse(responseCode = "200", description = "Post favoritism status retrieved successfully", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "User or post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("post/{userId}")
@@ -95,5 +94,4 @@ public class FavoritePostController {
         // Devolver el contenido de la publicación como respuesta
         return ResponseEntity.ok(favoritePost);
     }
-
 }

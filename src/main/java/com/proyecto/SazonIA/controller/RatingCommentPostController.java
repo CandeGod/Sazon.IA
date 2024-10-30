@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
 import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +22,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
 @RequestMapping("/ratings/comments")
 @Tag(name = "Rating Comments", description = "Operations related to ratings of comments in Sazón.IA")
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
 public class RatingCommentPostController {
 
     @Autowired
@@ -38,6 +38,18 @@ public class RatingCommentPostController {
     public ResponseEntity<RatingCommentPost> createRatingComment(@Valid @RequestBody RatingCommentPost ratingComment) {
         RatingCommentPost createdRating = ratingCommentService.createRatingComment(ratingComment.getCommentId(), ratingComment.getUserId(), ratingComment.getValue());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRating);
+    }
+
+    @Operation(summary = "Get ratings by comment ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ratings retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = RatingCommentPost.class))),
+            @ApiResponse(responseCode = "404", description = "Comment not found", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @GetMapping("/comment/{commentId}")
+    public ResponseEntity<List<RatingCommentPost>> getRatingsByCommentId(@PathVariable String commentId) {
+        List<RatingCommentPost> ratings = ratingCommentService.getRatingsByCommentId(commentId);
+        return ResponseEntity.ok(ratings);
     }
 
     @Operation(summary = "Update an existing rating")
