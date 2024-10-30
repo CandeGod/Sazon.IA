@@ -71,7 +71,10 @@ public class FollowerControllerTest {
     // Pruebas para unfollowUser
     @Test
     public void unfollowUserTest() throws Exception {
-        mvc.perform(delete("/followers/unfollow/1/2").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(delete("/followers/unfollow")
+                .param("userId", "1")
+                .param("followedId", "2")
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("User unfollowed successfully")));
@@ -79,7 +82,10 @@ public class FollowerControllerTest {
 
     @Test
     public void unfollowUserNotFoundTest() throws Exception {
-        mvc.perform(delete("/followers/unfollow/1/0").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(delete("/followers/unfollow")
+                .param("userId", "1")
+                .param("followedId", "0")
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("User not found")));
@@ -87,7 +93,10 @@ public class FollowerControllerTest {
 
     @Test
     public void unfollowUserSelfUnfollowTest() throws Exception {
-        mvc.perform(delete("/followers/unfollow/1/1").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(delete("/followers/unfollow")
+                .param("userId", "1")
+                .param("followedId", "1")
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("You cannot unfollow yourself")));
@@ -95,7 +104,10 @@ public class FollowerControllerTest {
 
     @Test
     public void unfollowUserNotFollowingTest() throws Exception {
-        mvc.perform(delete("/followers/unfollow/1/3").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(delete("/followers/unfollow")
+                .param("userId", "2")
+                .param("followedId", "1")
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(content().string(containsString("You are not following this user")));
