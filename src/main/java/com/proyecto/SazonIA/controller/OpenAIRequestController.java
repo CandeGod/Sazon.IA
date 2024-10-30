@@ -35,7 +35,7 @@ public class OpenAIRequestController {
         this.openAIRequestService = openAIRequestService;
     }
 
-    @Operation(summary = "Get recommendations from OpenAI API")
+    @Operation(summary = "generate recommendations from OpenAI API")
     @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
     @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
     @PostMapping("/recommendations")
@@ -60,7 +60,7 @@ public class OpenAIRequestController {
     @Operation(summary = "Get a user's history")
     @ApiResponse(responseCode = "200", description = "Found recommendations of a user", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OpenAIRequest.class))) })
-    @GetMapping("/user/{user_id}")
+    @GetMapping("/history/{user_id}")
     public ResponseEntity<?> getHistoryByUserId(@PathVariable Integer user_id) {
         // Verificar si el usuario existe
         if (!openAIRequestService.userExists(user_id)) {
@@ -79,7 +79,7 @@ public class OpenAIRequestController {
     @Operation(summary = "Delete a user's history")
     @ApiResponse(responseCode = "200", description = "Delete a user's history", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OpenAIRequest.class))) })
-    @DeleteMapping("/{user_id}")
+    @DeleteMapping("/history/{user_id}")
     public ResponseEntity<String> deleteHistoryById(@PathVariable Integer user_id) {
         
         if (!openAIRequestService.userExists(user_id)) {

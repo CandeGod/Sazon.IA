@@ -38,9 +38,9 @@ public class FollowerController {
     // Seguir a un usuario
     @Operation(summary = "Follow a user")
     @ApiResponse(responseCode = "201", description = "User followed", content = @Content(mediaType = "application/json"))
-    @PostMapping("/follow/{user_id}/{followedId}")
-    public ResponseEntity<String> followUser(@PathVariable int user_id, @PathVariable int followedId) {
-        User follower = service.findUserById(user_id);
+    @PostMapping("/follow/{userId}/{followedId}")
+    public ResponseEntity<String> followUser(@PathVariable int userId, @PathVariable int followedId) {
+        User follower = service.findUserById(userId);
         User followed = service.findUserById(followedId);
 
         // Validaciones
@@ -61,9 +61,11 @@ public class FollowerController {
     // Dejar de seguir a un usuario
     @Operation(summary = "Unfollow a user")
     @ApiResponse(responseCode = "200", description = "User unfollowed", content = @Content(mediaType = "application/json"))
-    @DeleteMapping("/unfollow/{user_id}/{followedId}")
-    public ResponseEntity<String> unfollowUser(@PathVariable int user_id, @PathVariable int followedId) {
-        User follower = service.findUserById(user_id);
+    @DeleteMapping("/unfollow")
+    public ResponseEntity<String> unfollowUser(
+            @RequestParam("userId") int userId,
+            @RequestParam("followedId") int followedId) {
+        User follower = service.findUserById(userId);
         User followed = service.findUserById(followedId);
 
         // Validaciones
@@ -99,7 +101,7 @@ public class FollowerController {
 
     @Operation(summary = "Get followers of a user with pagination")
     @GetMapping(value = "paginationFollowers", params = { "page", "size" })
-    
+
     public List<Follower> getFollowersPaginated(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "size", defaultValue = "2", required = false) int pageSize) {
@@ -124,11 +126,11 @@ public class FollowerController {
     }
 
     @Operation(summary = "Get following of a user with pagination")
-    @GetMapping(value = "paginationFollowing", params = {"page", "size"})
+    @GetMapping(value = "paginationFollowing", params = { "page", "size" })
     public List<Follower> getFollowingPaginated(
-        @RequestParam(value = "page", defaultValue = "0", required = false)int page,
-        @RequestParam(value = "size", defaultValue = "2", required = false)int pageSize){
-            List<Follower> followers = service.getFollowing(page, pageSize);
-            return followers;
-        }
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "2", required = false) int pageSize) {
+        List<Follower> followers = service.getFollowing(page, pageSize);
+        return followers;
+    }
 }
