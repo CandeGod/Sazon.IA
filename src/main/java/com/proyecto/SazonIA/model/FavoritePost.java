@@ -3,8 +3,6 @@ package com.proyecto.SazonIA.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 @Entity
 @Table(name = "FavoritePost")
 public class FavoritePost {
@@ -12,7 +10,6 @@ public class FavoritePost {
     @EmbeddedId
     private FavoritePostId id;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
