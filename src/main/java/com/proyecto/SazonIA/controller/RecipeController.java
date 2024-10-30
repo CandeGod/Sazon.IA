@@ -14,11 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.SazonIA.model.Recipe;
@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/recipe")
 @CrossOrigin(origins = "*")
-@Tag(name = "Recipes", description = "Operations related to recipes in Sazón.IA")
+@Tag(name = "Recipes from users", description = "Operations related to recipes in Sazón.IA")
 public class RecipeController {
 
         @Autowired
@@ -48,6 +48,13 @@ public class RecipeController {
                 return recipeService.getAllRecipes();
         }
 
+        @Operation(summary = "Get recipes by pagination")
+        @GetMapping(value = "pagination", params = { "page", "pageSize" })
+        public List<Recipe> getAllPagination(@RequestParam(value = "page", defaultValue  = "0", required = false) int page,
+                        @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+                return recipeService.getAll(page, pageSize);
+        }
+
         @Operation(summary = "Get a recipe by Id")
         @ApiResponse(responseCode = "200", description = "The recipe has been found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
@@ -55,8 +62,8 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @GetMapping("/{idRecipe}")
-        public ResponseEntity<Recipe> getById(@PathVariable Integer idRecipe) {
+        @GetMapping(value = "getById", params = { "idRecipe" })
+        public ResponseEntity<Recipe> getById(@RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
                 return new ResponseEntity<>(recipeService.getById(idRecipe), HttpStatus.OK);
         }
 
@@ -65,8 +72,8 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "500", description = "Internal server error", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @PostMapping("/{idUser}")
-        public ResponseEntity<?> save(@RequestBody Recipe recipe, @PathVariable Integer idUser) {
+        @PostMapping(value = "PostRecipe", params = { "idUser" })
+        public ResponseEntity<?> save(@RequestBody Recipe recipe, @RequestParam(value = "idUser", required = true) Integer idUser) {
                 User user = userService.getById(idUser);
                 recipe.setUser(user);
                 recipe.setRecipe_time_stamp(Timestamp.valueOf(LocalDateTime.now()) + "");
@@ -82,8 +89,8 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @PutMapping("/{idRecipe}")
-        public ResponseEntity<?> update(@RequestBody Recipe recipe, @PathVariable Integer idRecipe) {
+        @PutMapping(value = "UpdateRecipe", params = { "idRecipe" })
+        public ResponseEntity<?> update(@RequestBody Recipe recipe, @RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
                 Recipe aux = recipeService.getById(idRecipe);
                 User usAux = userService.getById(aux.getUser().getUser_id());
                 recipe.setUser(usAux);
@@ -99,8 +106,8 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @DeleteMapping("/{idRecipe}")
-        public ResponseEntity<?> delete(@PathVariable Integer idRecipe) {
+        @DeleteMapping(value = "DeleteRecipe", params = { "idRecipe" })
+        public ResponseEntity<?> delete(@RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
                 recipeService.delete(idRecipe);
                 return new ResponseEntity<>(HttpStatus.OK);
 
