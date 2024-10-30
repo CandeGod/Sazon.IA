@@ -25,6 +25,8 @@ import com.proyecto.SazonIA.model.Recipe;
 import com.proyecto.SazonIA.model.User;
 import com.proyecto.SazonIA.service.RecipeService;
 import com.proyecto.SazonIA.service.UserService;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/recipe")
@@ -67,6 +69,7 @@ public class RecipeController {
         public ResponseEntity<?> save(@RequestBody Recipe recipe, @PathVariable Integer idUser) {
                 User user = userService.getById(idUser);
                 recipe.setUser(user);
+                recipe.setRecipe_time_stamp(Timestamp.valueOf(LocalDateTime.now()) + "");
                 recipeService.save(recipe);
                 return new ResponseEntity<>(HttpStatus.OK);
 
@@ -81,6 +84,10 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @PutMapping("/{idRecipe}")
         public ResponseEntity<?> update(@RequestBody Recipe recipe, @PathVariable Integer idRecipe) {
+                Recipe aux = recipeService.getById(idRecipe);
+                User usAux = userService.getById(aux.getUser().getUser_id());
+                recipe.setUser(usAux);
+                recipe.setRecipe_time_stamp(aux.getRecipe_time_stamp());
                 recipeService.save(recipe);
                 return new ResponseEntity<>(HttpStatus.OK);
         }

@@ -2,6 +2,8 @@ package com.proyecto.SazonIA.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "User")
+@JsonIgnoreProperties({"recipes", "comments", "replies"})
 public class User {
 
     @Id
@@ -43,10 +46,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Recipe> recipes;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "user")
     private List<CommentRecipe> comments;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "user")
     private List<ReplyCommentRecipe> replies;
 
     public User() {

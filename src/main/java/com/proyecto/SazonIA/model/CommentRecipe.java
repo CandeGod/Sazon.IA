@@ -14,10 +14,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table (name = "commentrecipe")
+@JsonIgnoreProperties({"replies", "recipe", "user", "comment_time_stamp"})
 public class CommentRecipe {
     
     @Id
@@ -34,11 +37,11 @@ public class CommentRecipe {
 
     @Column(name = "comment_time_stamp", nullable = false)
     @JsonProperty("comment_time_stamp")
-    private java.sql.Timestamp comment_time_stamp;
+    private String comment_time_stamp;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private User author;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "recipe_id", nullable = false)
@@ -66,20 +69,20 @@ public class CommentRecipe {
         this.content = content;
     }
 
-    public java.sql.Timestamp getComment_time_stamp() {
+    public String getComment_time_stamp() {
         return comment_time_stamp;
     }
 
-    public void setComment_time_stamp(java.sql.Timestamp comment_time_stamp) {
+    public void setComment_time_stamp(String comment_time_stamp) {
         this.comment_time_stamp = comment_time_stamp;
     }
 
-    public User getAuthor() {
-        return author;
+    public User getUser() {
+        return user;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Recipe getRecipe() {
@@ -104,7 +107,7 @@ public class CommentRecipe {
                 "comment_id=" + comment_id +
                 ", content='" + content + '\'' +
                 ", time_stamp=" + comment_time_stamp +
-                ", author=" + author +
+                ", user=" + user +
                 ", recipe=" + recipe +
                 ", replies=" + replies +
                 '}';

@@ -23,6 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.SazonIA.model.CommentRecipe;
 import com.proyecto.SazonIA.service.CommentRecipeService;
+import com.proyecto.SazonIA.service.RecipeService;
+import com.proyecto.SazonIA.service.UserService;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/comment")
@@ -31,6 +36,12 @@ import com.proyecto.SazonIA.service.CommentRecipeService;
 public class CommentRecipeController {
     @Autowired
     private CommentRecipeService commentService;
+
+    @Autowired
+    private RecipeService recipeService;
+
+    @Autowired
+    private UserService userService;
 
     // @Operation(summary = "Get all Comments")
     // @ApiResponse(responseCode = "200", description = "Found Comments", content =
@@ -67,8 +78,11 @@ public class CommentRecipeController {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
     @ApiResponse(responseCode = "500", description = "Internal server error", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-    @PostMapping
-    public ResponseEntity<?> save(@RequestBody CommentRecipe comment) {
+    @PostMapping("/{idRecipe}/{idUser}")
+    public ResponseEntity<?> save(@RequestBody CommentRecipe comment, @PathVariable Integer idRecipe, @PathVariable Integer idUser) {
+        comment.setComment_time_stamp(Timestamp.valueOf(LocalDateTime.now()) + "");
+        comment.setUser(userService.getById(idUser));
+        comment.setRecipe(recipeService.getById(idRecipe));
         commentService.save(comment);
         return new ResponseEntity<>(HttpStatus.OK);
 
@@ -83,6 +97,10 @@ public class CommentRecipeController {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
     @PutMapping("/{idComment}")
     public ResponseEntity<?> update(@PathVariable Integer idComment, @RequestBody CommentRecipe comment) {
+        CommentRecipe aux = commentService.getById(idComment);
+        comment.setUser(aux.getUser());
+        comment.setRecipe(aux.getRecipe());
+        comment.setComment_time_stamp(aux.getComment_time_stamp());
         commentService.save(comment);
         return new ResponseEntity<>(HttpStatus.OK);
     }
