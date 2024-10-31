@@ -38,7 +38,7 @@ public class OpenAIRequestControllerTest {
     // Pruebas para el método getRecommendations
     @Test
     public void getRecommendationsTest() throws Exception {
-        mvc.perform(post("/api/openai/recommendations")
+        mvc.perform(post("/chatbot/recommendations")
                 .param("user_id", "1")
                 .param("prompt", "What is the best recipe?")
                 .accept(MediaType.APPLICATION_JSON))
@@ -49,19 +49,19 @@ public class OpenAIRequestControllerTest {
 
     @Test
     public void getRecommendationsUserNotFoundTest() throws Exception {
-        mvc.perform(post("/api/openai/recommendations")
+        mvc.perform(post("/chatbot/recommendations")
                 .param("user_id", "0")
                 .param("prompt", "What is the best recipe?")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString("User not found")));
+                .andExpect(content().string(containsString("User with specified ID not found")));
     }
 
     // Pruebas para el método getAll
     @Test
     public void getAllRecommendationsTest() throws Exception {
-        mvc.perform(get("/api/openai")
+        mvc.perform(get("/chatbot")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -71,7 +71,7 @@ public class OpenAIRequestControllerTest {
     // Pruebas para el método getHistoryByUserId
     @Test
     public void getHistoryByUserIdTest() throws Exception {
-        mvc.perform(get("/api/openai/history/1")
+        mvc.perform(get("/chatbot/history/1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -80,38 +80,38 @@ public class OpenAIRequestControllerTest {
 
     @Test
     public void getHistoryByUserIdUserNotFoundTest() throws Exception {
-        mvc.perform(get("/api/openai/history/0")
+        mvc.perform(get("/chatbot/history/0")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString("User not found")));
+                .andExpect(content().string(containsString("User with specified ID not found")));
     }
 
     @Test
     public void getHistoryByUserIdNoRecommendationsTest() throws Exception {
-        mvc.perform(get("/api/openai/history/2")
+        mvc.perform(get("/chatbot/history/2")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("No recommendations found for this user")));
+                .andExpect(content().string(containsString("No recommendation history found for the specified user")));
     }
 
     // Pruebas para el método deleteHistoryById
     @Test
     public void deleteHistoryByIdTest() throws Exception {
-        mvc.perform(delete("/api/openai/history/1")
+        mvc.perform(delete("/chatbot/history/1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("History deleted successfully")));
+                .andExpect(content().string(containsString("User's history deleted successfully")));
     }
 
     @Test
     public void deleteHistoryByIdUserNotFoundTest() throws Exception {
-        mvc.perform(delete("/api/openai/history/0")
+        mvc.perform(delete("/chatbot/history/0")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString("User not found")));
+                .andExpect(content().string(containsString("User with specified ID not found")));
     }
 }
