@@ -4,7 +4,6 @@ package com.proyecto.SazonIA.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-
 import com.proyecto.SazonIA.spoonacularApi.ApiRecipe;
 
 

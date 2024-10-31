@@ -13,13 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.time.LocalDate;
-
-import com.proyecto.SazonIA.repository.OpenAIRequestRepository;
-import com.proyecto.SazonIA.repository.UserRepository;
 import com.proyecto.SazonIA.model.OpenAIRequest;
 import com.proyecto.SazonIA.model.User;
+import com.proyecto.SazonIA.repository.OpenAIRequestRepository;
+import com.proyecto.SazonIA.repository.UserRepository;
+
+import java.util.List;
+import java.time.LocalDate;
 
 import jakarta.transaction.Transactional;
 

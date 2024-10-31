@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.proyecto.SazonIA.spoonacularApi.ApiRecipe;
 import com.proyecto.SazonIA.service.ApiRecipeService;
+import com.proyecto.SazonIA.spoonacularApi.ApiRecipe;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

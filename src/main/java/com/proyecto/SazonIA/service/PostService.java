@@ -1,10 +1,5 @@
 package com.proyecto.SazonIA.service;
 
-import com.proyecto.SazonIA.model.Post;
-import com.proyecto.SazonIA.model.User;
-import com.proyecto.SazonIA.repository.PostRepository;
-import com.proyecto.SazonIA.repository.UserRepository;
-import com.proyecto.SazonIA.repository.CommentPostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +7,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
+
+import com.proyecto.SazonIA.model.Post;
+import com.proyecto.SazonIA.model.User;
+import com.proyecto.SazonIA.repository.CommentPostRepository;
+import com.proyecto.SazonIA.repository.PostRepository;
+import com.proyecto.SazonIA.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;

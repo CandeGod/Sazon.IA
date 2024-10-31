@@ -1,10 +1,11 @@
 package com.proyecto.SazonIA.controller;
 
-import com.proyecto.SazonIA.model.CommentPost;
-import com.proyecto.SazonIA.service.CommentPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.proyecto.SazonIA.model.CommentPost;
+import com.proyecto.SazonIA.service.CommentPostService;
 
 import java.util.List;
 

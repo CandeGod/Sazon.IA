@@ -8,6 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.hamcrest.Matchers.hasSize;
@@ -89,7 +92,7 @@ public class PostControllerTest {
         @Test
         public void deletePostTest() throws Exception {
                 // ID de la publicación a eliminar
-                String postId = "bda8b5cb-1a7d-4567-8661-5bf119af9ea7";
+                String postId = "68d22916-a1d5-4352-aae2-5f83d80891e6";
 
                 // Realiza la solicitud DELETE para eliminar la publicación
                 mockMvc.perform(delete("/posts/" + postId))

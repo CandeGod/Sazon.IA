@@ -7,6 +7,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -29,9 +32,9 @@ public class RatingPostControllerTest {
     @Test
     public void createRatingPostTest() throws Exception {
         String requestBody = "{\n" +
-                "  \"postId\": \"bda8b5cb-1a7d-4567-8661-5bf119af9ea7\",\n" +
-                "  \"userId\": 2,\n" +
-                "  \"value\": 5\n" +
+                "  \"postId\": \"288295b2-8c8f-4c87-93d6-da3925d322af\",\n" +
+                "  \"userId\": 4,\n" +
+                "  \"value\": 4\n" +
                 "}";
 
         mockMvc.perform(post("/ratings")
@@ -39,10 +42,10 @@ public class RatingPostControllerTest {
                 .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.postId", is("bda8b5cb-1a7d-4567-8661-5bf119af9ea7")))
+                .andExpect(jsonPath("$.postId", is("288295b2-8c8f-4c87-93d6-da3925d322af")))
                 .andExpect(jsonPath("$.ratingId").exists()) // Verifica que el raiting existe
-                .andExpect(jsonPath("$.userId", is(2)))
-                .andExpect(jsonPath("$.value", is(5)));
+                .andExpect(jsonPath("$.userId", is(4)))
+                .andExpect(jsonPath("$.value", is(4)));
     }
 
     @Test
@@ -63,7 +66,7 @@ public class RatingPostControllerTest {
 
     @Test
     public void deleteRatingPostTest() throws Exception {
-        String ratingId = "d5cba3da-28e6-4740-bb6f-55825e77bcc9";
+        String ratingId = "e6b4a091-6497-40b5-9332-218c936695ac";
 
         mockMvc.perform(delete("/ratings/" + ratingId))
                 .andDo(print())
