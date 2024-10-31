@@ -32,7 +32,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/replycomment")
+@RequestMapping("/replyscomments")
 @CrossOrigin(origins = "*")
 @Tag(name = "Replys from comments", description = "Operations related to Replies in a recipe in Sazón.IA")
 public class ReplyCommentRecipeController {
@@ -63,8 +63,13 @@ public class ReplyCommentRecipeController {
         @ApiResponse(responseCode = "404", description = "No comments registered", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @GetMapping(value = "GetById", params = { "idReply" })
-        public ReplyCommentRecipe getById(@RequestParam(value = "idReply", required = true) Integer idReply) {
-                return replyCommentService.getById(idReply);
+        public ResponseEntity<ReplyCommentRecipe> getById(
+                        @RequestParam(value = "idReply", required = true) Integer idReply) {
+                if (replyCommentService.getById(idReply) == null) {
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+                }
+                return new ResponseEntity<>(replyCommentService.getById(idReply), HttpStatus.OK);
         }
 
         @Operation(summary = "Save a new reply")
@@ -73,9 +78,17 @@ public class ReplyCommentRecipeController {
         @ApiResponse(responseCode = "500", description = "Internal server error", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @PostMapping(value = "SaveReply", params = { "idComment", "idUser" })
-        public ResponseEntity<?> save(@RequestBody ReplyCommentRecipe reply, @RequestParam(value = "idComment", required = true) Integer idComment,
+        public ResponseEntity<?> save(@RequestBody ReplyCommentRecipe reply,
+                        @RequestParam(value = "idComment", required = true) Integer idComment,
                         @RequestParam(value = "idUser", required = true) Integer idUser) {
+                if (commentService.getById(idComment) == null) {
+                        return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
+
+                }
                 reply.setComment(commentService.getById(idComment));
+                if (userService.getById(idUser) == null) {
+                        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                }
                 reply.setUser(userService.getById(idUser));
                 reply.setReply_time_stamp(Timestamp.valueOf(LocalDateTime.now()) + "");
                 replyCommentService.save(reply);
@@ -90,13 +103,17 @@ public class ReplyCommentRecipeController {
         @ApiResponse(responseCode = "404", description = "The reply was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @PutMapping(value = "UpdateReply", params = { "idReply" })
-        public ResponseEntity<?> update(@RequestParam(value = "idReply", required = true) Integer idReply, @RequestBody ReplyCommentRecipe reply) {
+        public ResponseEntity<?> update(@RequestParam(value = "idReply", required = true) Integer idReply,
+                        @RequestBody ReplyCommentRecipe reply) {
                 ReplyCommentRecipe aux = replyCommentService.getById(idReply);
+                if (replyCommentService.getById(idReply) == null) {
+                        return new ResponseEntity<>("Reply not found", HttpStatus.NOT_FOUND);
+                }
                 reply.setReply_time_stamp(aux.getReply_time_stamp());
                 reply.setUser(userService.getById(aux.getUser().getUser_id()));
                 reply.setComment(commentService.getById(aux.getComment().getComment_id()));
                 replyCommentService.save(reply);
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>("Reply Updated", HttpStatus.OK);
         }
 
         @Operation(summary = "Delete a reply by Id")
@@ -108,6 +125,9 @@ public class ReplyCommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @DeleteMapping(value = "DeleteReply", params = { "idReply" })
         public ResponseEntity<?> delete(@RequestParam(value = "idReply", required = true) Integer idReply) {
+                if (replyCommentService.getById(idReply) == null) {
+                        return new ResponseEntity<>("Reply not found", HttpStatus.NOT_FOUND);
+                }
                 replyCommentService.delete(idReply);
                 return new ResponseEntity<>(HttpStatus.OK);
         }

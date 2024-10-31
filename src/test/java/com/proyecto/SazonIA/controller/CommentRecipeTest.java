@@ -1,6 +1,7 @@
 package com.proyecto.SazonIA.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -33,8 +34,9 @@ public class CommentRecipeTest {
 
     @Test
     public void getCommentRecipeByIdTest() throws Exception {
-        int idComment = 1; // Assuming a comment recipe with ID 1 exists
-        mvc.perform(get("/comment/{idComment}", idComment)
+        int idComment = 1;
+        mvc.perform(get("/comments/GetById")
+                .param("idComment", String.valueOf(idComment))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comment_id", is(idComment)));
@@ -42,10 +44,14 @@ public class CommentRecipeTest {
 
     @Test
     public void saveCommentRecipeTest() throws Exception {
+        int idRecipe = 2;
+        int idUser = 1;
         String newCommentRecipeJson = "{"
                 + "\"content\":\"Test Comment\""
                 + "}";
-        mvc.perform(post("/comment/{idRecipe}/{idUser}", 1, 1)
+        mvc.perform(post("/comments/SaveComment")
+                .param("idRecipe", String.valueOf(idRecipe))
+                .param("idUser", String.valueOf(idUser))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newCommentRecipeJson))
                 .andExpect(status().isOk());
@@ -54,10 +60,11 @@ public class CommentRecipeTest {
     @Test
     public void updateCommentRecipeTest() throws Exception {
         String updatedCommentRecipeJson = "{"
-                + "\"comment_id\":\"4\","
+                + "\"comment_id\":\"3\","
                 + "\"content\":\"Updated Test Comment\""
                 + "}";
-        mvc.perform(put("/comment/{idComment}", 4)
+        mvc.perform(put("/comments/UpdateComment")
+                .param("idComment", "3")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedCommentRecipeJson))
                 .andExpect(status().isOk());
@@ -65,8 +72,9 @@ public class CommentRecipeTest {
 
     @Test
     public void deleteCommentRecipeTest() throws Exception {
-        int idComment = 4;
-        mvc.perform(get("/comment/{idComment}", idComment)
+        int idComment = 6;
+        mvc.perform(delete("/comments/DeleteComment")
+                .param( "idComment", String.valueOf(idComment))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

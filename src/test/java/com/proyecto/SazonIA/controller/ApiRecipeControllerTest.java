@@ -22,7 +22,7 @@ public class ApiRecipeControllerTest {
 
     @Test
     public void getRandomRecipeTest() throws Exception{
-        mvc.perform(get("/random-recipe").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/randomRecipe").accept(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk());
     }
