@@ -2,8 +2,6 @@ package com.proyecto.SazonIA.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -26,6 +24,7 @@ public class CommentPost {
     @NotBlank(message = "Post ID must not be blank")
     private String postId;
 
+    @JsonProperty(access = JsonProperty.Access.AUTO)
     @NotNull(message = "User ID must not be null")
     private Integer userId;
 
@@ -36,14 +35,34 @@ public class CommentPost {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String commentDate;
 
+    private int ratingSum = 0;  // Suma total de las calificaciones
+    private int ratingCount = 0; // Contador de calificaciones
+
+    // Método para obtener el promedio
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<RatingCommentPost> ratings; // Lista para almacenar las valoraciones
+    public double getRatingAverage() {
+        return ratingCount > 0 ? (double) ratingSum / ratingCount : 0.0;
+    }
+
+    // Métodos de modificación del ratingSum y ratingCount
+    public void addRating(int value) {
+        ratingSum += value;
+        ratingCount++;
+    }
+
+    public void updateRating(int oldValue, int newValue) {
+        ratingSum = ratingSum - oldValue + newValue;
+    }
+
+    public void removeRating(int value) {
+        ratingSum -= value;
+        ratingCount--;
+    }
 
     // Constructor por defecto
     public CommentPost() {
         this.commentId = UUID.randomUUID().toString();
         this.commentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.ratings = new ArrayList<>(); // Inicializa la lista de valoraciones
     }
 
     // Constructor con parámetros
@@ -89,13 +108,5 @@ public class CommentPost {
 
     public void setCommentDate(String commentDate) {
         this.commentDate = commentDate;
-    }
-
-    public List<RatingCommentPost> getRatings() {
-        return ratings;
-    }
-
-    public void setRatings(List<RatingCommentPost> ratings) {
-        this.ratings = ratings;
     }
 }

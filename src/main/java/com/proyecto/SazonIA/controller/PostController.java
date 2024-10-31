@@ -27,19 +27,17 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @Operation(summary = "Get all posts with pagination")
+    @Operation(summary = "Get random posts")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Posts retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
+            @ApiResponse(responseCode = "200", description = "Random posts retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @GetMapping("/pagination")
-    public ResponseEntity<List<Post>> getAllPostsPaginated(
-            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
-        List<Post> posts = postService.getAllPosts(page, pageSize);
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+    @GetMapping("/random")
+    public ResponseEntity<List<Post>> getRandomPosts(@RequestParam(value = "count", defaultValue = "20") int count) {
+        List<Post> randomPosts = postService.getRandomPosts(count);
+        return ResponseEntity.ok(randomPosts);
     }
-
+    
     @Operation(summary = "Get posts by user ID with pagination")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Posts retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
@@ -79,8 +77,7 @@ public class PostController {
     })
     @PostMapping
     public ResponseEntity<Post> createPost(@Valid @RequestBody Post post) {
-        Post createdPost = postService.createPost(post.getUserId(), post.getTitle(), post.getContent(),
-                post.getMediaUrls());
+        Post createdPost = postService.createPost(post.getUserId(), post.getTitle(), post.getContent()/*,post.getMediaUrls()*/);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 

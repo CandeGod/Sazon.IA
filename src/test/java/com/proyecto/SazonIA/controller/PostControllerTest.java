@@ -33,7 +33,7 @@ public class PostControllerTest {
         public void createPostTest() throws Exception {
                 // Crea el cuerpo de la solicitud como un String JSON
                 String requestBody = "{\n" +
-                                "  \"userId\": 3,\n" + // Asegúrate de que el userId sea un número sin comillas
+                                "  \"userId\": 2,\n" + // Asegúrate de que el userId sea un número sin comillas
                                 "  \"title\": \"Título de Prueba\",\n" +
                                 "  \"content\": \"Contenido de prueba para la publicación.\"\n" +
                                 "}";
@@ -44,7 +44,7 @@ public class PostControllerTest {
                                 .content(requestBody))
                                 .andDo(print()) // Imprime la solicitud y respuesta en la consola
                                 .andExpect(status().isCreated()) // Verifica que el estado sea 201 Created
-                                .andExpect(jsonPath("$.userId", is(3))) // Verifica el userId
+                                .andExpect(jsonPath("$.userId", is(2))) // Verifica el userId
                                 .andExpect(jsonPath("$.postId").exists()) // Verifica que el postId existe
                                 .andExpect(jsonPath("$.title", is("Título de Prueba"))) // Verifica el título
                                 .andExpect(jsonPath("$.content", is("Contenido de prueba para la publicación."))); // Verifica
@@ -54,17 +54,17 @@ public class PostControllerTest {
 
         @Test
         public void getPostByIdTest() throws Exception {
-                mockMvc.perform(get("/posts/9a3b8339-4eec-40da-bfd1-c6d172449010").accept(MediaType.APPLICATION_JSON))
+                mockMvc.perform(get("/posts/dbe12ba2-7f73-43cc-b7c5-e2343032377a").accept(MediaType.APPLICATION_JSON))
                                 .andDo(print())
                                 .andExpect(status().isOk())
                                 .andExpect(MockMvcResultMatchers.jsonPath("$.postId",
-                                                is("9a3b8339-4eec-40da-bfd1-c6d172449010")));
+                                                is("dbe12ba2-7f73-43cc-b7c5-e2343032377a")));
         }
 
         @Test
         public void updatePostTest() throws Exception {
                 // ID de la publicación a actualizar
-                String postId = "9a3b8339-4eec-40da-bfd1-c6d172449010";
+                String postId = "dbe12ba2-7f73-43cc-b7c5-e2343032377a";
 
                 // Cuerpo de la solicitud JSON con los nuevos valores para la actualización
                 String updateRequestBody = "{\n" +
@@ -89,7 +89,7 @@ public class PostControllerTest {
         @Test
         public void deletePostTest() throws Exception {
                 // ID de la publicación a eliminar
-                String postId = "a4e411b1-2499-4736-8f69-8c86f02ec527";
+                String postId = "bda8b5cb-1a7d-4567-8661-5bf119af9ea7";
 
                 // Realiza la solicitud DELETE para eliminar la publicación
                 mockMvc.perform(delete("/posts/" + postId))
@@ -99,16 +99,16 @@ public class PostControllerTest {
 
         @Test
         public void getRandomPostsTest() throws Exception {
-                mockMvc.perform(get("/posts/random?count=4").accept(MediaType.APPLICATION_JSON))
+                mockMvc.perform(get("/posts/random?count=5").accept(MediaType.APPLICATION_JSON))
                                 .andDo(print())
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$", hasSize(3))); // Verifica que se devuelven 5 publicaciones
+                                .andExpect(jsonPath("$", hasSize(5))); // Verifica que se devuelven 5 publicaciones
                                                                        // aleatorias
         }
 
         @Test
         public void getPostsByUserPaginatedTest() throws Exception {
-                int userId = 1;
+                int userId = 2;
                 int page = 0;
                 int pageSize = 2;
 
