@@ -29,7 +29,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/recipe")
+@RequestMapping("/recipes")
 @CrossOrigin(origins = "*")
 @Tag(name = "Recipes from users", description = "Operations related to recipes in Sazón.IA")
 public class RecipeController {
@@ -50,7 +50,8 @@ public class RecipeController {
 
         @Operation(summary = "Get recipes by pagination")
         @GetMapping(value = "pagination", params = { "page", "pageSize" })
-        public List<Recipe> getAllPagination(@RequestParam(value = "page", defaultValue  = "0", required = false) int page,
+        public List<Recipe> getAllPagination(
+                        @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                         @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
                 return recipeService.getAll(page, pageSize);
         }
@@ -73,12 +74,16 @@ public class RecipeController {
         @ApiResponse(responseCode = "500", description = "Internal server error", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @PostMapping(value = "PostRecipe", params = { "idUser" })
-        public ResponseEntity<?> save(@RequestBody Recipe recipe, @RequestParam(value = "idUser", required = true) Integer idUser) {
+        public ResponseEntity<?> save(@RequestBody Recipe recipe,
+                        @RequestParam(value = "idUser", required = true) Integer idUser) {
                 User user = userService.getById(idUser);
                 recipe.setUser(user);
+                if (user == null) {
+                        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                }
                 recipe.setRecipe_time_stamp(Timestamp.valueOf(LocalDateTime.now()) + "");
                 recipeService.save(recipe);
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>("Recipe saved", HttpStatus.OK);
 
         }
 
@@ -90,13 +95,14 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @PutMapping(value = "UpdateRecipe", params = { "idRecipe" })
-        public ResponseEntity<?> update(@RequestBody Recipe recipe, @RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
+        public ResponseEntity<?> update(@RequestBody Recipe recipe,
+                        @RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
                 Recipe aux = recipeService.getById(idRecipe);
                 User usAux = userService.getById(aux.getUser().getUser_id());
                 recipe.setUser(usAux);
                 recipe.setRecipe_time_stamp(aux.getRecipe_time_stamp());
                 recipeService.save(recipe);
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>("Recipe Updated", HttpStatus.OK);
         }
 
         @Operation(summary = "Delete a recipe by id")
@@ -108,8 +114,12 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @DeleteMapping(value = "DeleteRecipe", params = { "idRecipe" })
         public ResponseEntity<?> delete(@RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
+                Recipe recipe = recipeService.getById(idRecipe);
+                if (recipe == null) {
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
                 recipeService.delete(idRecipe);
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>("Recipe Deleted", HttpStatus.OK);
 
         }
 }

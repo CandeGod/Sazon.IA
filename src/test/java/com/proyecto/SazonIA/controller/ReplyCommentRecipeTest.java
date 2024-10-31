@@ -33,8 +33,8 @@ public class ReplyCommentRecipeTest {
 
     @Test
     public void getCommentRecipeByIdTest() throws Exception {
-        int idReply = 2;
-        mvc.perform(get("/replycomment/GetById?idReply=" + idReply)
+        int idReply = 1;
+        mvc.perform(get("/replyscomments/GetById")
                 .param("idReply", String.valueOf(idReply))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -46,7 +46,7 @@ public class ReplyCommentRecipeTest {
         String newCommentRecipeJson = "{"
                 + "\"content\":\"Test Comment\""
                 + "}";
-        mvc.perform(post("/replycomment/SaveReply")
+        mvc.perform(post("/replyscomments/SaveReply")
                 .param("idComment", "2")
                 .param("idUser", "1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -60,7 +60,7 @@ public class ReplyCommentRecipeTest {
                 + "\"reply_id\":\"2\","
                 + "\"content\":\"Updated Test Comment\""
                 + "}";
-        mvc.perform(put("/replycomment/UpdateReply")
+        mvc.perform(put("/replyscomments/UpdateReply")
                 .param("idReply", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedCommentRecipeJson))
@@ -69,8 +69,8 @@ public class ReplyCommentRecipeTest {
 
     @Test
     public void deleteCommentRecipeTest() throws Exception {
-        int idReplyComment = 3;
-        mvc.perform(delete("/replycomment/DeleteReply")
+        int idReplyComment = 6;
+        mvc.perform(delete("/replyscomments/DeleteReply")
                 .param("idReply", String.valueOf(idReplyComment))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

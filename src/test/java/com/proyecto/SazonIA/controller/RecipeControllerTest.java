@@ -34,16 +34,17 @@ public class RecipeControllerTest {
 
     @Test
     public void getAllRecipesTest() throws Exception {
-        mvc.perform(get("/recipe")
+        mvc.perform(get("/recipes")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
     }
 
+    
     @Test
     public void getRecipeByIdTest() throws Exception {
-        int idRecipe = 2;
-        mvc.perform(get("/recipe/getById")
+        int idRecipe = 1;
+        mvc.perform(get("/recipes/getById")
                 .param("idRecipe", String.valueOf(idRecipe))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -52,7 +53,6 @@ public class RecipeControllerTest {
 
     @Test
     public void saveRecipeTest() throws Exception {
-
         String newRecipeJson = "{"
                 + "\"recipe_name\":\"Test Recipe\","
                 + "\"ingredients\":\"Test Ingredients\","
@@ -61,7 +61,7 @@ public class RecipeControllerTest {
                 + "\"difficulty\":\"Easy\""
                 + "}";
         int idUser = 1;
-        mvc.perform(post("/recipe/PostRecipe")
+        mvc.perform(post("/recipes/PostRecipe")
                 .param("idUser", String.valueOf(idUser))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newRecipeJson))
@@ -79,7 +79,7 @@ public class RecipeControllerTest {
                 + "\"preparation_time\":\"60 minutes\","
                 + "\"difficulty\":\"high\""
                 + "}";
-        mvc.perform(put("/recipe/UpdateRecipe")
+        mvc.perform(put("/recipes/UpdateRecipe")
                 .param("idRecipe", String.valueOf(idRecipe))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedRecipeJson))
@@ -89,8 +89,8 @@ public class RecipeControllerTest {
     @Test
     public void deleteRecipeTest() throws Exception {
         int idRecipe = 5;
-        mvc.perform(delete("/recipe/DeleteRecipe?idRecipe=" + idRecipe)
-                .param(idRecipe + "", String.valueOf(idRecipe))
+        mvc.perform(delete("/recipes/DeleteRecipe")
+                .param("idRecipe", String.valueOf(idRecipe))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
