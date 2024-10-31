@@ -28,7 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping("followers")
-@Tag(name = "Followers", description = "Operations related to the user's followers")
+@Tag(name = "Followers", description = "Operations for managing user followers")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
         RequestMethod.PUT })
 public class FollowerController {
@@ -38,8 +38,10 @@ public class FollowerController {
     // Seguir a un usuario
     @Operation(summary = "Follow a user")
     @ApiResponse(responseCode = "201", description = "User followed", content = @Content(mediaType = "application/json"))
-    @PostMapping("/follow/{userId}/{followedId}")
-    public ResponseEntity<String> followUser(@PathVariable int userId, @PathVariable int followedId) {
+    @PostMapping("/follow")
+    public ResponseEntity<String> followUser(
+            @RequestParam("userId") int userId,
+            @RequestParam("followedId") int followedId) {
         User follower = service.findUserById(userId);
         User followed = service.findUserById(followedId);
 
@@ -55,7 +57,7 @@ public class FollowerController {
         }
 
         service.followUser(follower, followed);
-        return new ResponseEntity<>("User followed successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Successfully followed the user", HttpStatus.CREATED);
     }
 
     // Dejar de seguir a un usuario
@@ -73,14 +75,14 @@ public class FollowerController {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
         if (follower.getUser_id() == followed.getUser_id()) {
-            return new ResponseEntity<>("You cannot unfollow yourself", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("You cannot unfollow your own account", HttpStatus.BAD_REQUEST);
         }
         if (!service.isFollowing(follower, followed)) {
-            return new ResponseEntity<>("You are not following this user", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("You are currently not following this user", HttpStatus.CONFLICT);
         }
 
         service.unfollowUser(follower, followed);
-        return new ResponseEntity<>("User unfollowed successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Successfully unfollowed the user", HttpStatus.OK);
     }
 
     // Obtener los seguidores de un usuario
@@ -99,7 +101,7 @@ public class FollowerController {
         return new ResponseEntity<>(followers, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get followers of a user with pagination")
+    @Operation(summary = "Retrieve a user's followers with pagination")
     @GetMapping(value = "paginationFollowers", params = { "page", "size" })
 
     public List<Follower> getFollowersPaginated(
@@ -125,7 +127,7 @@ public class FollowerController {
         return new ResponseEntity<>(following, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get following of a user with pagination")
+    @Operation(summary = "Retrieve the list of users followed by a specified user with pagination")
     @GetMapping(value = "paginationFollowing", params = { "page", "size" })
     public List<Follower> getFollowingPaginated(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,

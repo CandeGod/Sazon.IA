@@ -38,15 +38,21 @@ public class FollowerControllerTest {
 
     @Test
     public void followUserTest() throws Exception {
-        mvc.perform(post("/followers/follow/1/2").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(post("/followers/follow")
+                .param("userId", "1")
+                .param("followedId", "2")
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(content().string(containsString("User followed successfully")));
+                .andExpect(content().string(containsString("Successfully followed the user")));
     }
 
     @Test
     public void followUserNotFoundTest() throws Exception {
-        mvc.perform(post("/followers/follow/1/0").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(post("/followers/follow")
+                .param("userId", "1")
+                .param("followedId", "0")
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("User not found")));
@@ -54,7 +60,10 @@ public class FollowerControllerTest {
 
     @Test
     public void followUserSelfFollowTest() throws Exception {
-        mvc.perform(post("/followers/follow/1/1").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(post("/followers/follow")
+                .param("userId", "1")
+                .param("followedId", "1")
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("You cannot follow yourself")));
@@ -62,7 +71,10 @@ public class FollowerControllerTest {
 
     @Test
     public void followUserAlreadyFollowingTest() throws Exception {
-        mvc.perform(post("/followers/follow/1/2").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(post("/followers/follow")
+                .param("userId", "1")
+                .param("followedId", "2")
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(content().string(containsString("You are already following this user")));
@@ -77,7 +89,7 @@ public class FollowerControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("User unfollowed successfully")));
+                .andExpect(content().string(containsString("Successfully unfollowed the user")));
     }
 
     @Test
@@ -99,7 +111,7 @@ public class FollowerControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("You cannot unfollow yourself")));
+                .andExpect(content().string(containsString("You cannot unfollow your own account")));
     }
 
     @Test
@@ -110,7 +122,7 @@ public class FollowerControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andExpect(content().string(containsString("You are not following this user")));
+                .andExpect(content().string(containsString("You are currently not following this user")));
     }
 
     // Pruebas para getFollowers

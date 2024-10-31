@@ -61,26 +61,28 @@ public class CommentPostController {
     })
     @PutMapping("user/{userId}")
     public ResponseEntity<CommentPost> updateComment(
-            @PathVariable Integer userId,        
+            @PathVariable Integer userId,
             @RequestParam String postId,
             @RequestParam String commentId,
             @RequestBody CommentPost updatedComment) {
-    
+
         // Llamada al servicio de actualización con userId desde el PathVariable
         CommentPost editedComment = commentService.editComment(postId, commentId, userId, updatedComment);
         return ResponseEntity.ok(editedComment);
     }
-    
 
-    @Operation(summary = "Delete a comment by User ID")
+    @Operation(summary = "Delete a comment by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Comment deleted successfully", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Comment not found", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Comment not found or user not authorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable String commentId) {
-        boolean isDeleted = commentService.deleteComment(commentId);
+    @DeleteMapping("/user/{userId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Integer userId,
+            @RequestParam String commentId) {
+
+        boolean isDeleted = commentService.deleteComment(commentId, userId);
         if (isDeleted) {
             return ResponseEntity.noContent().build();
         } else {

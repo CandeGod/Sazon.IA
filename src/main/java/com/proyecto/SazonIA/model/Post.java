@@ -2,8 +2,6 @@ package com.proyecto.SazonIA.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -36,24 +34,41 @@ public class Post {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String postDate;
 
-    private List<String> mediaUrls;
+    //private List<String> mediaUrls;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<CommentPost> comments;
 
+    private int ratingSum = 0;  // Suma total de las calificaciones
+    private int ratingCount = 0; // Contador de calificaciones
+
+    // Método para obtener el promedio
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<RatingPost> ratings;
+    public double getRatingAverage() {
+        return ratingCount > 0 ? (double) ratingSum / ratingCount : 0.0;
+    }
+
+    // Métodos de modificación del ratingSum y ratingCount
+    public void addRating(int value) {
+        ratingSum += value;
+        ratingCount++;
+    }
+
+    public void updateRating(int oldValue, int newValue) {
+        ratingSum = ratingSum - oldValue + newValue;
+    }
+
+    public void removeRating(int value) {
+        ratingSum -= value;
+        ratingCount--;
+    }
 
     // Constructor por defecto
     public Post() {
-        this.mediaUrls = new ArrayList<>();
-        this.comments = new ArrayList<>();
-        this.ratings = new ArrayList<>();
+        //this.mediaUrls = new ArrayList<>();
         this.postDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     // Constructor con parámetros
-    public Post(Integer userId, String title, String content) {
+    public Post(Integer userId, String title, String content) { // Cambiado a Long para userId
         this(); 
         this.userId = userId; // Establecer el id del User (referencia a MySQL)
         this.title = title;
@@ -94,14 +109,6 @@ public class Post {
         this.content = content;
     }
 
-    public List<RatingPost> getRatings() {
-        return ratings;
-    }
-
-    public void setRatings(List<RatingPost> ratings) {
-        this.ratings = ratings;
-    }
-
     public String getPostDate() {
         return postDate;
     }
@@ -110,20 +117,12 @@ public class Post {
         this.postDate = postDate;
     }
 
-    public List<String> getMediaUrls() {
+    /*public List<String> getMediaUrls() {
         return mediaUrls;
     }
 
     public void setMediaUrls(List<String> mediaUrls) {
         this.mediaUrls = mediaUrls;
-    }
-
-    public List<CommentPost> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<CommentPost> comments) {
-        this.comments = comments;
-    }
+    }*/
 
 }
