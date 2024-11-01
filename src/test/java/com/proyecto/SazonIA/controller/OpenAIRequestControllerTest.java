@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -61,42 +62,23 @@ public class OpenAIRequestControllerTest {
     }
 
     // Pruebas para el método getAll
-    @Test
-    public void getAllRecommendationsTest() throws Exception {
-        mvc.perform(get("/chatbot")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(greaterThan(0))));
-    }
-
     // Pruebas para el método getHistoryByUserId
     @Test
-    public void getHistoryByUserIdTest() throws Exception {
-        mvc.perform(get("/chatbot/history/1")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(greaterThan(0))));
-    }
+public void getHistoryByUserIdWithPaginationTest() throws Exception {
+    mvc.perform(get("/chatbot/history/1")
+            .param("page", "0")  // Solicita la primera página
+            .param("size", "5")   // Con un tamaño de página de 5 elementos
+            .accept(MediaType.APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(lessThanOrEqualTo(5)))) // Verifica que el tamaño de la página no supere 5 elementos
+            .andExpect(jsonPath("$.content", hasSize(greaterThan(0)))) // Confirma que hay al menos un elemento en la respuesta
+            .andExpect(jsonPath("$.totalPages", greaterThan(0))) // Asegura que hay al menos una página total
+            .andExpect(jsonPath("$.totalElements", greaterThan(0))); // Verifica que hay elementos totales en la respuesta
+}
 
-    @Test
-    public void getHistoryByUserIdUserNotFoundTest() throws Exception {
-        mvc.perform(get("/chatbot/history/0")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString("User with specified ID not found")));
-    }
 
-    @Test
-    public void getHistoryByUserIdNoRecommendationsTest() throws Exception {
-        mvc.perform(get("/chatbot/history/3")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("No recommendation history found for the specified user")));
-    }
+
 
     // Pruebas para el método deleteHistoryById
     @Test

@@ -20,7 +20,7 @@ import com.proyecto.SazonIA.model.User;
 import com.proyecto.SazonIA.repository.OpenAIRequestRepository;
 import com.proyecto.SazonIA.repository.UserRepository;
 
-import java.util.List;
+
 import java.time.LocalDate;
 
 import jakarta.transaction.Transactional;
