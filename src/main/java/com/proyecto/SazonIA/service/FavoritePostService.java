@@ -1,17 +1,17 @@
 package com.proyecto.SazonIA.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.proyecto.SazonIA.exception.PostNotFoundException;
 import com.proyecto.SazonIA.model.FavoritePost;
 import com.proyecto.SazonIA.model.FavoritePostId;
 import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.repository.FavoritePostRepository;
 import com.proyecto.SazonIA.repository.PostRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 @Service
 public class FavoritePostService {

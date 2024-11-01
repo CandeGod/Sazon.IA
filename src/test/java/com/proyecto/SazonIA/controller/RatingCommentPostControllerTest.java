@@ -7,6 +7,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -29,8 +32,8 @@ public class RatingCommentPostControllerTest {
     @Test
     public void createRatingCommentTest() throws Exception {
         String requestBody = "{\n" +
-                "  \"commentId\": \"2fd7e458-421f-4422-8ec3-5bf822dd53e1\",\n" +
-                "  \"userId\": 2,\n" +
+                "  \"commentId\": \"46f832d4-70d0-4d75-b2ef-8c0f06e8d58a\",\n" +
+                "  \"userId\": 4,\n" +
                 "  \"value\": 4\n" +
                 "}";
 
@@ -39,9 +42,9 @@ public class RatingCommentPostControllerTest {
                 .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.commentId", is("2fd7e458-421f-4422-8ec3-5bf822dd53e1")))
+                .andExpect(jsonPath("$.commentId", is("46f832d4-70d0-4d75-b2ef-8c0f06e8d58a")))
                 .andExpect(jsonPath("$.ratingId").exists())
-                .andExpect(jsonPath("$.userId", is(2)))
+                .andExpect(jsonPath("$.userId", is(4    )))
                 .andExpect(jsonPath("$.value", is(4)));
     }
 
@@ -63,7 +66,7 @@ public class RatingCommentPostControllerTest {
 
     @Test
     public void deleteRatingCommentTest() throws Exception {
-        String ratingId = "33b3a09b-f223-45e6-900f-7f29e554f2ae";
+        String ratingId = "fdaabae5-3a5e-48c9-b276-b7d95ddfe528";
 
         mockMvc.perform(delete("/ratings/comments/" + ratingId))
                 .andDo(print())

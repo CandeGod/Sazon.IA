@@ -1,7 +1,5 @@
 package com.proyecto.SazonIA.controller;
 
-import com.proyecto.SazonIA.model.Post;
-import com.proyecto.SazonIA.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +16,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.proyecto.SazonIA.model.Post;
+import com.proyecto.SazonIA.service.PostService;
 
 @RestController
 @RequestMapping("/posts")

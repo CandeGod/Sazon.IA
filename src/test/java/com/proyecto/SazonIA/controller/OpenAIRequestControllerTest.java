@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
@@ -89,7 +91,7 @@ public class OpenAIRequestControllerTest {
 
     @Test
     public void getHistoryByUserIdNoRecommendationsTest() throws Exception {
-        mvc.perform(get("/chatbot/history/2")
+        mvc.perform(get("/chatbot/history/3")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

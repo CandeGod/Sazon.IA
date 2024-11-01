@@ -1,5 +1,8 @@
 package com.proyecto.SazonIA.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.proyecto.SazonIA.exception.UserNotFoundException;
 import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.model.RatingPost;
@@ -7,9 +10,6 @@ import com.proyecto.SazonIA.model.User;
 import com.proyecto.SazonIA.repository.PostRepository;
 import com.proyecto.SazonIA.repository.RatingPostRepository;
 import com.proyecto.SazonIA.repository.UserRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;

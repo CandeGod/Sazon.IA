@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -29,10 +31,10 @@ public class FavoritePostControllerTest {
 
     @Test
     public void createFavoritePostTest() throws Exception {
-        Integer userId = 2;
+        Integer userId = 4;
         String requestBody = "{\n" +
                 "  \"id\": {\n" +
-                "    \"postId\": \"bda8b5cb-1a7d-4567-8661-5bf119af9ea7\"\n" +
+                "    \"postId\": \"dbe12ba2-7f73-43cc-b7c5-e2343032377a\"\n" +
                 "  }\n" +
                 "}";
 
@@ -42,14 +44,14 @@ public class FavoritePostControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id.userId", is(userId)))
-                .andExpect(jsonPath("$.id.postId", is("bda8b5cb-1a7d-4567-8661-5bf119af9ea7")))
+                .andExpect(jsonPath("$.id.postId", is("dbe12ba2-7f73-43cc-b7c5-e2343032377a")))
                 .andExpect(jsonPath("$.createdAt").exists());
     }
 
     @Test
     public void deleteFavoritePostTest() throws Exception {
-        Integer userId = 2;
-        String postId = "bda8b5cb-1a7d-4567-8661-5bf119af9ea7";
+        Integer userId = 4;
+        String postId = "dbe12ba2-7f73-43cc-b7c5-e2343032377a";
 
         mockMvc.perform(delete("/favoritePosts/" + userId)
                 .param("postId", postId)) // Eliminar el paréntesis extra aquí
@@ -59,7 +61,7 @@ public class FavoritePostControllerTest {
 
     @Test
     public void getFavoritePostsByUserIdTest() throws Exception {
-        Integer userId = 4;
+        Integer userId = 3;
         int page = 0;
         int size = 1;
 

@@ -7,6 +7,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.hamcrest.Matchers.is;
@@ -70,7 +73,7 @@ public class CommentPostControllerTest {
     @Test
     public void deleteCommentPostTest() throws Exception {
         Integer userId = 1;
-        String commentId = "e0615030-180f-4a12-9ca1-d8992457c62b";
+        String commentId = "cbd8c073-22df-4145-baa0-3b60b1f10941";
 
         mockMvc.perform(delete("/commentsPost/user/" + userId)
                 .param("commentId", commentId))

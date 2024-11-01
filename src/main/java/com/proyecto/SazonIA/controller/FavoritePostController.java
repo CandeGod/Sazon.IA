@@ -1,15 +1,15 @@
 package com.proyecto.SazonIA.controller;
 
-import com.proyecto.SazonIA.model.FavoritePost;
-import com.proyecto.SazonIA.model.Post;
-import com.proyecto.SazonIA.service.FavoritePostService;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.proyecto.SazonIA.model.FavoritePost;
+import com.proyecto.SazonIA.model.Post;
+import com.proyecto.SazonIA.service.FavoritePostService;
 
 import org.springframework.data.domain.Page;
 
