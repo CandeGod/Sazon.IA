@@ -58,44 +58,37 @@ public class CommentPostService {
         return comments.getContent();
     }
 
-
-    public CommentPost editComment(String postId, String commentId, Integer userId, CommentPost updatedComment) {
+    public CommentPost editComment(String postId, String commentId, CommentPost updatedComment) {
         // Verificar si el comentario existe
         CommentPost existingComment = commentRepository.findById(commentId).orElse(null);
         if (existingComment == null) {
             throw new NoSuchElementException("Comment not found");
         }
-    
+
         // Verificar si el comentario pertenece al post correcto
         if (!existingComment.getPostId().equals(postId)) {
             throw new IllegalArgumentException("Comment does not belong to the specified post");
         }
-    
-        // Verificar si el usuario es el propietario del comentario
-        if (!existingComment.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("User is not the owner of the comment");
-        }
-    
+
         // Actualizar el contenido del comentario
         existingComment.setContent(updatedComment.getContent());
         CommentPost savedComment = commentRepository.save(existingComment);
         return savedComment;
     }
-    
-    
 
-    public boolean deleteComment(String commentId, Integer userId) {
+    public boolean deleteComment(String postId, String commentId) {
         // Buscar el comentario por su ID
         CommentPost comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NoSuchElementException("Comment not found"));
-        
-        // Verificar si el comentario pertenece al usuario proporcionado
-        if (!comment.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("User is not the owner of the comment");
+
+        // Verificar si el comentario pertenece al post proporcionado
+        if (!comment.getPostId().equals(postId)) {
+            throw new IllegalArgumentException("Comment does not belong to the specified post");
         }
-        
+
         // Eliminar el comentario
         commentRepository.deleteById(commentId);
         return true; // Eliminación exitosa
     }
+
 }

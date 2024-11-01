@@ -60,15 +60,13 @@ public class CommentPostController {
             @ApiResponse(responseCode = "404", description = "Comment or Post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PutMapping("user/{userId}")
+    @PutMapping("post/{postId}")
     public ResponseEntity<CommentPost> updateComment(
-            @PathVariable Integer userId,
-            @RequestParam String postId,
+            @PathVariable String postId,
             @RequestParam String commentId,
             @RequestBody CommentPost updatedComment) {
 
-        // Llamada al servicio de actualización con userId desde el PathVariable
-        CommentPost editedComment = commentService.editComment(postId, commentId, userId, updatedComment);
+        CommentPost editedComment = commentService.editComment(postId, commentId, updatedComment);
         return ResponseEntity.ok(editedComment);
     }
 
@@ -78,16 +76,17 @@ public class CommentPostController {
             @ApiResponse(responseCode = "404", description = "Comment not found or user not authorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @DeleteMapping("/user/{userId}")
+    @DeleteMapping("/post/{postId}")
     public ResponseEntity<Void> deleteComment(
-            @PathVariable Integer userId,
+            @PathVariable String postId,
             @RequestParam String commentId) {
 
-        boolean isDeleted = commentService.deleteComment(commentId, userId);
+        boolean isDeleted = commentService.deleteComment(postId, commentId);
         if (isDeleted) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.status(404).build();
         }
     }
+
 }
