@@ -1,6 +1,8 @@
 package com.proyecto.SazonIA.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,9 +36,9 @@ public class ReplyCommentRecipeTest {
     }
 
     @Test
-    public void getCommentRecipeByIdTest() throws Exception {
+    public void getRepliesIdTest() throws Exception {
         int idReply = 1;
-        mvc.perform(get("/replyscomments/GetById")
+        mvc.perform(get("/repliescomments")
                 .param("idReply", String.valueOf(idReply))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -44,11 +46,21 @@ public class ReplyCommentRecipeTest {
     }
 
     @Test
+    public void getRepliesByComment() throws Exception {
+        int idComment = 1;
+        mvc.perform(get("/repliescomments/FromComment")
+                .param("idComment", String.valueOf(idComment))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
+    }
+
+    @Test
     public void saveCommentRecipeTest() throws Exception {
         String newCommentRecipeJson = "{"
                 + "\"content\":\"Test Comment\""
                 + "}";
-        mvc.perform(post("/replyscomments/SaveReply")
+        mvc.perform(post("/repliescomments")
                 .param("idComment", "2")
                 .param("idUser", "1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -62,7 +74,7 @@ public class ReplyCommentRecipeTest {
                 + "\"reply_id\":\"2\","
                 + "\"content\":\"Updated Test Comment\""
                 + "}";
-        mvc.perform(put("/replyscomments/UpdateReply")
+        mvc.perform(put("/repliescomments")
                 .param("idReply", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedCommentRecipeJson))
@@ -72,7 +84,7 @@ public class ReplyCommentRecipeTest {
     @Test
     public void deleteCommentRecipeTest() throws Exception {
         int idReplyComment = 6;
-        mvc.perform(delete("/replyscomments/DeleteReply")
+        mvc.perform(delete("/repliescomments")
                 .param("idReply", String.valueOf(idReplyComment))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
