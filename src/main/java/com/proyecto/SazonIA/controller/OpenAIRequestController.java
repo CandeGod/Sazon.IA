@@ -1,6 +1,6 @@
 package com.proyecto.SazonIA.controller;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,30 +49,16 @@ public class OpenAIRequestController {
         return new ResponseEntity<>(recommendations, HttpStatus.OK);
     }
 
-    @Operation(summary = "Retrieve all recommendations")
-    @ApiResponse(responseCode = "200", description = "All recommendations retrieved successfully", content = {
-            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OpenAIRequest.class))) })
-    @GetMapping
-    public List<OpenAIRequest> getAll() {
-        return openAIRequestService.getAll();
-    }
-
-    @Operation(summary = "Retrieve a user's recommendation history")
+    @Operation(summary = "Retrieve a user's recommendation history with pagination")
     @ApiResponse(responseCode = "200", description = "User's recommendation history retrieved successfully", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OpenAIRequest.class))) })
-    @GetMapping("/history/{user_id}")
-    public ResponseEntity<?> getHistoryByUserId(@PathVariable Integer user_id) {
-        // Verify if the user exists
-        if (!openAIRequestService.userExists(user_id)) {
-            return new ResponseEntity<>("User with specified ID not found", HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/history/{userId}")
+    public ResponseEntity<Page<OpenAIRequest>> getHistoryById(
+            @PathVariable Integer userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        List<OpenAIRequest> history = openAIRequestService.getHistoryById(user_id);
-
-        if (history.isEmpty()) {
-            return new ResponseEntity<>("No recommendation history found for the specified user", HttpStatus.OK);
-        }
-
+        Page<OpenAIRequest> history = openAIRequestService.getHistoryById(userId, page, size);
         return new ResponseEntity<>(history, HttpStatus.OK);
     }
 
@@ -81,7 +67,7 @@ public class OpenAIRequestController {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OpenAIRequest.class))) })
     @DeleteMapping("/history/{user_id}")
     public ResponseEntity<String> deleteHistoryById(@PathVariable Integer user_id) {
-        
+
         if (!openAIRequestService.userExists(user_id)) {
             return new ResponseEntity<>("User with specified ID not found", HttpStatus.NOT_FOUND);
         }

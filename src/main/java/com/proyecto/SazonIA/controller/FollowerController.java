@@ -28,7 +28,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("follows")
 @Tag(name = "Followers", description = "Operations for managing user following relationships")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
         RequestMethod.PUT })
@@ -90,7 +90,7 @@ public class FollowerController {
     @Operation(summary = "Get followers of a user with pagination")
     @ApiResponse(responseCode = "200", description = "Followers retrieved", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Follower.class))) })
-    @GetMapping("/{userId}/followers")
+    @GetMapping("/followers/{userId}")
     public ResponseEntity<Page<Follower>> getFollowers(
             @PathVariable int userId,
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -109,7 +109,7 @@ public class FollowerController {
     @Operation(summary = "Get followings of a user with pagination")
     @ApiResponse(responseCode = "200", description = "Following users retrieved", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Follower.class))) })
-    @GetMapping("{userId}/followings")
+    @GetMapping("/followings/{userId}")
     public ResponseEntity<Page<Follower>> getFollowing(
             @PathVariable int userId,
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
