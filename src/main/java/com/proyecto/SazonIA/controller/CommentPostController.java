@@ -31,7 +31,7 @@ public class CommentPostController {
             @ApiResponse(responseCode = "404", description = "Post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PostMapping("/post/{postId}")
+    @PostMapping("/{postId}")
     public ResponseEntity<CommentPost> addComment(@PathVariable String postId, @RequestBody CommentPost comment) {
         comment.setPostId(postId); // Establecer el postId desde la URL
         CommentPost createdComment = commentService.addComment(comment);
@@ -44,7 +44,7 @@ public class CommentPostController {
             @ApiResponse(responseCode = "404", description = "Post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @GetMapping("/post/{postId}")
+    @GetMapping("/{postId}")
     public ResponseEntity<List<CommentPost>> getCommentsByPostId(
             @PathVariable String postId,
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -60,7 +60,7 @@ public class CommentPostController {
             @ApiResponse(responseCode = "404", description = "Comment or Post not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PutMapping("post/{postId}")
+    @PutMapping("/{postId}")
     public ResponseEntity<CommentPost> updateComment(
             @PathVariable String postId,
             @RequestParam String commentId,
@@ -76,7 +76,7 @@ public class CommentPostController {
             @ApiResponse(responseCode = "404", description = "Comment not found or user not authorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @DeleteMapping("/post/{postId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable String postId,
             @RequestParam String commentId) {
