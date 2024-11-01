@@ -29,7 +29,7 @@ public class ApiRecipeController {
             @ApiResponse(responseCode = "200", description = "Random recipe found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiRecipe.class))),
             @ApiResponse(responseCode = "404", description = "No recipe found", content = @Content)
     })
-    @GetMapping("/randomRecipe")
+    @GetMapping("/randomRecipes")
     public ResponseEntity<ApiRecipe> getRandomRecipe() {
         ApiRecipe randomRecipe = apiRecipeService.getRandomRecipe();
         if (randomRecipe != null) {

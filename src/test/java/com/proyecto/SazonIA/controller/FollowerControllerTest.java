@@ -8,8 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
@@ -19,7 +17,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @SpringBootTest
@@ -32,15 +29,16 @@ public class FollowerControllerTest {
     @Autowired
     private FollowerController controller;
 
-    // Pruebas para followUser
+    // Prueba de carga de contexto
     @Test
     void contextLoads() throws Exception {
         assertThat(controller).isNotNull();
     }
 
+    // Pruebas para followUser
     @Test
     public void followUserTest() throws Exception {
-        mvc.perform(post("/followers/follow")
+        mvc.perform(post("/users/follow")
                 .param("userId", "1")
                 .param("followedId", "2")
                 .accept(MediaType.APPLICATION_JSON))
@@ -51,7 +49,7 @@ public class FollowerControllerTest {
 
     @Test
     public void followUserNotFoundTest() throws Exception {
-        mvc.perform(post("/followers/follow")
+        mvc.perform(post("/users/follow")
                 .param("userId", "1")
                 .param("followedId", "0")
                 .accept(MediaType.APPLICATION_JSON))
@@ -62,7 +60,7 @@ public class FollowerControllerTest {
 
     @Test
     public void followUserSelfFollowTest() throws Exception {
-        mvc.perform(post("/followers/follow")
+        mvc.perform(post("/users/follow")
                 .param("userId", "1")
                 .param("followedId", "1")
                 .accept(MediaType.APPLICATION_JSON))
@@ -73,7 +71,7 @@ public class FollowerControllerTest {
 
     @Test
     public void followUserAlreadyFollowingTest() throws Exception {
-        mvc.perform(post("/followers/follow")
+        mvc.perform(post("/users/follow")
                 .param("userId", "1")
                 .param("followedId", "2")
                 .accept(MediaType.APPLICATION_JSON))
@@ -85,7 +83,7 @@ public class FollowerControllerTest {
     // Pruebas para unfollowUser
     @Test
     public void unfollowUserTest() throws Exception {
-        mvc.perform(delete("/followers/unfollow")
+        mvc.perform(delete("/users/unfollow")
                 .param("userId", "1")
                 .param("followedId", "2")
                 .accept(MediaType.APPLICATION_JSON))
@@ -96,7 +94,7 @@ public class FollowerControllerTest {
 
     @Test
     public void unfollowUserNotFoundTest() throws Exception {
-        mvc.perform(delete("/followers/unfollow")
+        mvc.perform(delete("/users/unfollow")
                 .param("userId", "1")
                 .param("followedId", "0")
                 .accept(MediaType.APPLICATION_JSON))
@@ -107,7 +105,7 @@ public class FollowerControllerTest {
 
     @Test
     public void unfollowUserSelfUnfollowTest() throws Exception {
-        mvc.perform(delete("/followers/unfollow")
+        mvc.perform(delete("/users/unfollow")
                 .param("userId", "1")
                 .param("followedId", "1")
                 .accept(MediaType.APPLICATION_JSON))
@@ -118,7 +116,7 @@ public class FollowerControllerTest {
 
     @Test
     public void unfollowUserNotFollowingTest() throws Exception {
-        mvc.perform(delete("/followers/unfollow")
+        mvc.perform(delete("/users/unfollow")
                 .param("userId", "3")
                 .param("followedId", "1")
                 .accept(MediaType.APPLICATION_JSON))
@@ -128,35 +126,33 @@ public class FollowerControllerTest {
     }
 
     // Pruebas para getFollowers
-
     @Test
     public void getFollowersTest() throws Exception {
-        mvc.perform(get("/followers/followers/4").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/users/4/followers").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content", hasSize(greaterThan(0))));
     }
 
     @Test
     public void getFollowersNotFoundTest() throws Exception {
-        mvc.perform(get("/followers/followers/0").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/users/0/followers").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
 
-    // pruebas para getFollowing
-
+    // Pruebas para getFollowing
     @Test
     public void getFollowingTest() throws Exception {
-        mvc.perform(get("/followers/following/1").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/users/1/followings").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content", hasSize(greaterThan(0))));
     }
 
     @Test
     public void getFollowingNotFoundTest() throws Exception {
-        mvc.perform(get("/followers/following/0").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/users/0/followings").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
