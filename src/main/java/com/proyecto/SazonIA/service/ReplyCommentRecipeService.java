@@ -30,4 +30,8 @@ public class ReplyCommentRecipeService {
         replyCommentRepository.deleteById(replyCommentId);
     }
 
+    public List<ReplyCommentRecipe> getRepliesByComment(Integer commentId) {
+        return replyCommentRepository.getRepliesByComment(commentId);
+    }
+
 }
