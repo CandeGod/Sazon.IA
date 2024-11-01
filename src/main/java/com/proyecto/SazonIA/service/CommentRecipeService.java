@@ -27,4 +27,8 @@ public class CommentRecipeService {
         commentRepository.deleteById(commentId);
     }
 
+    public List<CommentRecipe> getCommentsByRecipe(Integer recipeId) {
+        return commentRepository.getCommentsByRecipe(recipeId);
+    }
+
 }

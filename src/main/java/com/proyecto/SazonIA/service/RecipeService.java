@@ -36,5 +36,9 @@ public class RecipeService {
     public void delete(Integer recipeId) {
         recipeRepository.deleteById(recipeId);
     }
+
+    public List<Recipe> getRecipesByUser(Integer userId) {
+        return recipeRepository.getRecipesByUser(userId);
+    }
     
 }

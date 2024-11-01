@@ -33,8 +33,20 @@ public class RecipeControllerTest {
     }
 
     @Test
-    public void getAllRecipesTest() throws Exception {
-        mvc.perform(get("/recipes")
+    public void getRecipesByPagination() throws Exception {
+        mvc.perform(get("/recipes/pagination")
+                .param("page", "0")
+                .param("pageSize", "10")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
+    }
+
+    @Test
+    public void getRecipesFromUser() throws Exception {
+        int idUser = 1;
+        mvc.perform(get("/recipes/FromUser")
+                .param("idUser", String.valueOf(idUser))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
@@ -44,7 +56,7 @@ public class RecipeControllerTest {
     @Test
     public void getRecipeByIdTest() throws Exception {
         int idRecipe = 1;
-        mvc.perform(get("/recipes/getById")
+        mvc.perform(get("/recipes")
                 .param("idRecipe", String.valueOf(idRecipe))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -61,7 +73,7 @@ public class RecipeControllerTest {
                 + "\"difficulty\":\"Easy\""
                 + "}";
         int idUser = 1;
-        mvc.perform(post("/recipes/PostRecipe")
+        mvc.perform(post("/recipes")
                 .param("idUser", String.valueOf(idUser))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newRecipeJson))
@@ -79,7 +91,7 @@ public class RecipeControllerTest {
                 + "\"preparation_time\":\"60 minutes\","
                 + "\"difficulty\":\"high\""
                 + "}";
-        mvc.perform(put("/recipes/UpdateRecipe")
+        mvc.perform(put("/recipes")
                 .param("idRecipe", String.valueOf(idRecipe))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedRecipeJson))
@@ -89,7 +101,7 @@ public class RecipeControllerTest {
     @Test
     public void deleteRecipeTest() throws Exception {
         int idRecipe = 5;
-        mvc.perform(delete("/recipes/DeleteRecipe")
+        mvc.perform(delete("/recipes")
                 .param("idRecipe", String.valueOf(idRecipe))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

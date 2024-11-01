@@ -50,7 +50,7 @@ public class CommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "No comments registered", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @GetMapping(value = "GetById", params = { "idComment" })
+        @GetMapping(params = { "idComment" })
         public ResponseEntity<CommentRecipe> getById(
                         @RequestParam(value = "idComment", required = true) Integer idComment) {
                 return new ResponseEntity<>(commentService.getById(idComment), HttpStatus.OK);
@@ -61,7 +61,7 @@ public class CommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "500", description = "Internal server error", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @PostMapping(value = "SaveComment", params = { "idRecipe", "idUser" })
+        @PostMapping(params = { "idRecipe", "idUser" })
         public ResponseEntity<?> save(@RequestBody CommentRecipe comment,
                         @RequestParam(value = "idRecipe", required = true) Integer idRecipe,
                         @RequestParam(value = "idUser", required = true) Integer idUser) {
@@ -87,7 +87,7 @@ public class CommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "The comment was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @PutMapping(value = "UpdateComment", params = { "idComment" })
+        @PutMapping(params = { "idComment" })
         public ResponseEntity<?> update(@RequestParam(value = "idComment", required = true) Integer idComment,
                         @RequestBody CommentRecipe comment) {
                 CommentRecipe aux = commentService.getById(idComment);
@@ -109,13 +109,29 @@ public class CommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "The comment was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @DeleteMapping(value = "DeleteComment", params = { "idComment" })
+        @DeleteMapping(params = { "idComment" })
         public ResponseEntity<?> delete(@RequestParam(value = "idComment", required = true) Integer idComment) {
                 if (commentService.getById(idComment) == null) {
                         return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
                 }
                 commentService.delete(idComment);
                 return new ResponseEntity<>("Comment Deleted", HttpStatus.OK);
+        }
+
+        @Operation(summary = "Get all coments from a recipe")
+        @ApiResponse(responseCode = "200", description = "Comments from a recipe has been found", content = {
+                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
+        @ApiResponse(responseCode = "500", description = "Internal server error", content = {
+                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
+        @ApiResponse(responseCode = "404", description = "No comments found", content = {
+                        @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
+        @GetMapping(value = "FromRecipe", params = { "idRecipe" })
+        public ResponseEntity<?> getCommentsByRecipe(
+                        @RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
+                if (userService.getById(idRecipe) == null) {
+                        return new ResponseEntity<>("Recipe not found", HttpStatus.NOT_FOUND);
+                }
+                return new ResponseEntity<>(commentService.getCommentsByRecipe(idRecipe), HttpStatus.OK);
         }
 
 }
