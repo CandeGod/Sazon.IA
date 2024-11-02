@@ -8,8 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.hamcrest.Matchers.is;
@@ -37,30 +35,28 @@ public class CommentPostControllerTest {
                 "  \"content\": \"Este es un comentario de prueba.\"\n" +
                 "}";
 
-        mockMvc.perform(post("/commentsPost/post/dbe12ba2-7f73-43cc-b7c5-e2343032377a")
+        mockMvc.perform(post("/commentsPost/91063c6d-e438-4fb0-8c4e-456ebd0cce99")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.commentId").exists())
-                .andExpect(jsonPath("$.postId", is("dbe12ba2-7f73-43cc-b7c5-e2343032377a")))
+                .andExpect(jsonPath("$.postId", is("91063c6d-e438-4fb0-8c4e-456ebd0cce99")))
                 .andExpect(jsonPath("$.userId", is(1)))
                 .andExpect(jsonPath("$.content", is("Este es un comentario de prueba.")));
     }
 
     @Test
     public void updateCommentPostTest() throws Exception {
-        Integer userId = 1;
-        String postId = "dbe12ba2-7f73-43cc-b7c5-e2343032377a";
-        String commentId = "46f832d4-70d0-4d75-b2ef-8c0f06e8d58a";
+        String postId = "91063c6d-e438-4fb0-8c4e-456ebd0cce99";
+        String commentId = "d46304cf-6c69-495a-9348-5a6d06ca5aec";
 
         // Cuerpo de la solicitud con los datos actualizados del comentario
         String updateRequestBody = "{\n" +
                 "  \"content\": \"Contenido actualizado del comentario.\"\n" +
                 "}";
 
-        mockMvc.perform(put("/commentsPost/user/" + userId)
-                .param("postId", postId)
+        mockMvc.perform(put("/commentsPost/" + postId)
                 .param("commentId", commentId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateRequestBody))
@@ -72,10 +68,10 @@ public class CommentPostControllerTest {
 
     @Test
     public void deleteCommentPostTest() throws Exception {
-        Integer userId = 1;
-        String commentId = "cbd8c073-22df-4145-baa0-3b60b1f10941";
+        String postId = "91063c6d-e438-4fb0-8c4e-456ebd0cce99";
+        String commentId = "a3418d53-4739-4e16-bd15-ce96fe171f38";
 
-        mockMvc.perform(delete("/commentsPost/user/" + userId)
+        mockMvc.perform(delete("/commentsPost/" + postId)
                 .param("commentId", commentId))
                 .andDo(print())
                 .andExpect(status().isNoContent());
@@ -83,11 +79,11 @@ public class CommentPostControllerTest {
 
     @Test
     public void getCommentsByPostIdPaginatedTest() throws Exception {
-        String postId = "dbe12ba2-7f73-43cc-b7c5-e2343032377a";
+        String postId = "91063c6d-e438-4fb0-8c4e-456ebd0cce99";
         int page = 0;
         int pageSize = 1;
 
-        mockMvc.perform(get("/commentsPost/post/" + postId)
+        mockMvc.perform(get("/commentsPost/" + postId)
                 .param("page", String.valueOf(page))
                 .param("pageSize", String.valueOf(pageSize))
                 .accept(MediaType.APPLICATION_JSON))

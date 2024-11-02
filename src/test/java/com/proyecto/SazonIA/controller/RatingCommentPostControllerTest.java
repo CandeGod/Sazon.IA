@@ -32,7 +32,7 @@ public class RatingCommentPostControllerTest {
     @Test
     public void createRatingCommentTest() throws Exception {
         String requestBody = "{\n" +
-                "  \"commentId\": \"46f832d4-70d0-4d75-b2ef-8c0f06e8d58a\",\n" +
+                "  \"commentId\": \"fcecfffd-b1a5-4b09-93b7-9c693008c2e4\",\n" +
                 "  \"userId\": 4,\n" +
                 "  \"value\": 4\n" +
                 "}";
@@ -42,7 +42,7 @@ public class RatingCommentPostControllerTest {
                 .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.commentId", is("46f832d4-70d0-4d75-b2ef-8c0f06e8d58a")))
+                .andExpect(jsonPath("$.commentId", is("fcecfffd-b1a5-4b09-93b7-9c693008c2e4")))
                 .andExpect(jsonPath("$.ratingId").exists())
                 .andExpect(jsonPath("$.userId", is(4    )))
                 .andExpect(jsonPath("$.value", is(4)));
@@ -50,7 +50,7 @@ public class RatingCommentPostControllerTest {
 
     @Test
     public void updateRatingCommentTest() throws Exception {
-        String ratingId = "33b3a09b-f223-45e6-900f-7f29e554f2ae";
+        String ratingId = "0cc74526-b2bf-4012-8bf4-abcde71b2f65";
         String updateRequestBody = "{\n" +
                 "  \"value\": 5\n" +
                 "}";
@@ -66,7 +66,7 @@ public class RatingCommentPostControllerTest {
 
     @Test
     public void deleteRatingCommentTest() throws Exception {
-        String ratingId = "fdaabae5-3a5e-48c9-b276-b7d95ddfe528";
+        String ratingId = "7b4dbef2-c0b6-43eb-930e-9724f0ab9997";
 
         mockMvc.perform(delete("/ratings/comments/" + ratingId))
                 .andDo(print())

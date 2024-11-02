@@ -34,7 +34,7 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/random")
-    public ResponseEntity<List<Post>> getRandomPosts(@RequestParam(value = "count", defaultValue = "20") int count) {
+    public ResponseEntity<List<Post>> getRandomPosts(@RequestParam(value = "count", defaultValue = "5") int count) {
         List<Post> randomPosts = postService.getRandomPosts(count);
         return ResponseEntity.ok(randomPosts);
     }

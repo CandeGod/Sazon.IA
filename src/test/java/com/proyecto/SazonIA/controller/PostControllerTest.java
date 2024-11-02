@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.hamcrest.Matchers.hasSize;
@@ -36,7 +35,7 @@ public class PostControllerTest {
         public void createPostTest() throws Exception {
                 // Crea el cuerpo de la solicitud como un String JSON
                 String requestBody = "{\n" +
-                                "  \"userId\": 2,\n" + // Asegúrate de que el userId sea un número sin comillas
+                                "  \"userId\": 1,\n" + // Asegúrate de que el userId sea un número sin comillas
                                 "  \"title\": \"Título de Prueba\",\n" +
                                 "  \"content\": \"Contenido de prueba para la publicación.\"\n" +
                                 "}";
@@ -47,7 +46,7 @@ public class PostControllerTest {
                                 .content(requestBody))
                                 .andDo(print()) // Imprime la solicitud y respuesta en la consola
                                 .andExpect(status().isCreated()) // Verifica que el estado sea 201 Created
-                                .andExpect(jsonPath("$.userId", is(2))) // Verifica el userId
+                                .andExpect(jsonPath("$.userId", is(1))) // Verifica el userId
                                 .andExpect(jsonPath("$.postId").exists()) // Verifica que el postId existe
                                 .andExpect(jsonPath("$.title", is("Título de Prueba"))) // Verifica el título
                                 .andExpect(jsonPath("$.content", is("Contenido de prueba para la publicación."))); // Verifica
@@ -72,7 +71,7 @@ public class PostControllerTest {
                 // Cuerpo de la solicitud JSON con los nuevos valores para la actualización
                 String updateRequestBody = "{\n" +
                                 "  \"title\": \"Título Actualizado\",\n" +
-                                "  \"content\": \"Contenido actualizado de la publicación.\"\n" +
+                                "  \"content\": \"Contenido actualizado de la publicación 2.\"\n" +
                                 "}";
 
                 // Realiza la solicitud PUT para actualizar la publicación
@@ -83,7 +82,7 @@ public class PostControllerTest {
                                 .andExpect(status().isOk()) // Verifica que el estado sea 200 OK
                                 .andExpect(jsonPath("$.postId", is(postId))) // Verifica que el postId sea el mismo
                                 .andExpect(jsonPath("$.title", is("Título Actualizado"))) // Verifica el nuevo título
-                                .andExpect(jsonPath("$.content", is("Contenido actualizado de la publicación."))); // Verifica
+                                .andExpect(jsonPath("$.content", is("Contenido actualizado de la publicación 2."))); // Verifica
                                                                                                                    // el
                                                                                                                    // nuevo
                                                                                                                    // contenido
@@ -92,7 +91,7 @@ public class PostControllerTest {
         @Test
         public void deletePostTest() throws Exception {
                 // ID de la publicación a eliminar
-                String postId = "68d22916-a1d5-4352-aae2-5f83d80891e6";
+                String postId = "80223b41-2f91-4a25-a6cb-47fceed82950";
 
                 // Realiza la solicitud DELETE para eliminar la publicación
                 mockMvc.perform(delete("/posts/" + postId))
