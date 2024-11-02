@@ -36,7 +36,7 @@ public class ReplyCommentRecipeTest {
     @Test
     public void getRepliesIdTest() throws Exception {
         int idReply = 1;
-        mvc.perform(get("/repliescomments")
+        mvc.perform(get("/repliesComments")
                 .param("idReply", String.valueOf(idReply))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -46,7 +46,7 @@ public class ReplyCommentRecipeTest {
     @Test
     public void getRepliesByComment() throws Exception {
         int idComment = 1;
-        mvc.perform(get("/repliescomments/FromComment")
+        mvc.perform(get("/repliesComments/FromComment")
                 .param("idComment", String.valueOf(idComment))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -58,7 +58,7 @@ public class ReplyCommentRecipeTest {
         String newCommentRecipeJson = "{"
                 + "\"content\":\"Test Comment\""
                 + "}";
-        mvc.perform(post("/repliescomments")
+        mvc.perform(post("/repliesComments")
                 .param("idComment", "2")
                 .param("idUser", "1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +72,7 @@ public class ReplyCommentRecipeTest {
                 + "\"reply_id\":\"2\","
                 + "\"content\":\"Updated Test Comment\""
                 + "}";
-        mvc.perform(put("/repliescomments")
+        mvc.perform(put("/repliesComments")
                 .param("idReply", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedCommentRecipeJson))
@@ -82,7 +82,7 @@ public class ReplyCommentRecipeTest {
     @Test
     public void deleteCommentRecipeTest() throws Exception {
         int idReplyComment = 6;
-        mvc.perform(delete("/repliescomments")
+        mvc.perform(delete("/repliesComments")
                 .param("idReply", String.valueOf(idReplyComment))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
