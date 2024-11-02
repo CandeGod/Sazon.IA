@@ -1,10 +1,13 @@
 package com.proyecto.SazonIA.repository;
 
-import java.util.List;
+
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.proyecto.SazonIA.model.OpenAIRequest;
 
@@ -17,5 +20,5 @@ public interface OpenAIRequestRepository extends JpaRepository<OpenAIRequest,Int
     void deleteByUserId(Integer userId);
     
     @Query("SELECT o FROM OpenAIRequest o WHERE o.user.user_id = ?1")
-    List<OpenAIRequest> findByUserId(Integer userId);
+    Page<OpenAIRequest> findByUserId(Integer userId, Pageable pageable);
 }

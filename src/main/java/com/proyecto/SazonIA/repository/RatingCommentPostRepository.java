@@ -1,8 +1,9 @@
 package com.proyecto.SazonIA.repository;
 
-import com.proyecto.SazonIA.model.RatingCommentPost;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
+
+import com.proyecto.SazonIA.model.RatingCommentPost;
 
 import java.util.List;
 

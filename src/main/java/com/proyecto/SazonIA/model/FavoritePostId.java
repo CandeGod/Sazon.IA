@@ -5,9 +5,13 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 @Embeddable
 public class FavoritePostId implements Serializable {
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "user_id")
     private Integer userId;
 

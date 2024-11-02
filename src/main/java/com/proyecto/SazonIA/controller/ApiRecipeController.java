@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.proyecto.SazonIA.spoonacularApi.ApiRecipe;
 import com.proyecto.SazonIA.service.ApiRecipeService;
+import com.proyecto.SazonIA.spoonacularApi.ApiRecipe;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,7 +29,7 @@ public class ApiRecipeController {
             @ApiResponse(responseCode = "200", description = "Random recipe found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiRecipe.class))),
             @ApiResponse(responseCode = "404", description = "No recipe found", content = @Content)
     })
-    @GetMapping("/random-recipe")
+    @GetMapping("/randomRecipes")
     public ResponseEntity<ApiRecipe> getRandomRecipe() {
         ApiRecipe randomRecipe = apiRecipeService.getRandomRecipe();
         if (randomRecipe != null) {

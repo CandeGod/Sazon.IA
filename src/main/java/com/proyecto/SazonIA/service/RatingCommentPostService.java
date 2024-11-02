@@ -1,5 +1,8 @@
 package com.proyecto.SazonIA.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.proyecto.SazonIA.exception.UserNotFoundException;
 import com.proyecto.SazonIA.model.CommentPost;
 import com.proyecto.SazonIA.model.RatingCommentPost;
@@ -8,12 +11,8 @@ import com.proyecto.SazonIA.repository.CommentPostRepository;
 import com.proyecto.SazonIA.repository.RatingCommentPostRepository;
 import com.proyecto.SazonIA.repository.UserRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 
 @Service
 public class RatingCommentPostService {
@@ -50,24 +49,16 @@ public class RatingCommentPostService {
         RatingCommentPost savedRating = ratingCommentRepository.save(ratingComment);
 
         // Obtener el comentario asociado
-        CommentPost comment = commentPostRepository.findById(commentId).orElse(null);
-        if (comment != null) {
-            // Asegurarse de que la lista de valoraciones no sea nula
-            if (comment.getRatings() == null) {
-                comment.setRatings(new ArrayList<>());
-            }
-            // Agregar la nueva valoración a la lista de valoraciones del comentario
-            comment.getRatings().add(savedRating);
-            // Guardar el comentario actualizado
-            commentPostRepository.save(comment);
-        }
+        CommentPost comment = commentPostRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+
+        // Agregar la nueva valoración al comentario
+        comment.addRating(value); // Asegúrate de que el método addRating exista en la clase CommentPost
+
+        // Guardar el comentario actualizado
+        commentPostRepository.save(comment);
 
         return savedRating; // Retornar la valoración guardada
-    }
-
-    // Método para obtener todas las valoraciones de un comentario específico
-    public List<RatingCommentPost> getRatingsByCommentId(String commentId) {
-        return ratingCommentRepository.findByCommentId(commentId);
     }
 
     // Método para actualizar una valoración existente
@@ -77,29 +68,20 @@ public class RatingCommentPostService {
             RatingCommentPost rating = optionalRating.get();
             String commentId = rating.getCommentId(); // Obtener el commentId de la valoración
 
-            // Actualiza el valor de la valoración
-            rating.setValue(value);
+            // Guardar el valor antiguo para actualizar el comentario más tarde
+            int oldValue = rating.getValue();
 
-            // Guarda la valoración actualizada
+            // Actualizar el valor de la valoración
+            rating.setValue(value);
             RatingCommentPost updatedRating = ratingCommentRepository.save(rating);
 
             // Obtener el comentario asociado
-            CommentPost comment = commentPostRepository.findById(commentId).orElse(null);
-            if (comment != null) {
-                // Asegurarse de que la lista de valoraciones no sea nula
-                if (comment.getRatings() == null) {
-                    comment.setRatings(new ArrayList<>());
-                }
-                // Actualizar la valoración en la lista de valoraciones del comentario
-                for (int i = 0; i < comment.getRatings().size(); i++) {
-                    if (comment.getRatings().get(i).getRatingId().equals(ratingId)) {
-                        comment.getRatings().set(i, updatedRating); // Actualizar la valoración en la lista
-                        break;
-                    }
-                }
-                // Guardar el comentario actualizado
-                commentPostRepository.save(comment);
-            }
+            CommentPost comment = commentPostRepository.findById(commentId)
+                    .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+
+            // Actualizar la valoración en la lista de valoraciones del comentario
+            comment.updateRating(oldValue, value); // Asegúrate de que este método existe
+            commentPostRepository.save(comment);
 
             return updatedRating; // Retornar la valoración actualizada
         } else {
@@ -108,13 +90,26 @@ public class RatingCommentPostService {
     }
 
     // Método para eliminar una valoración por su ID
-    public boolean deleteRatingComment(String ratingId) {
-        if (ratingCommentRepository.existsById(ratingId)) {
-            ratingCommentRepository.deleteById(ratingId);
-            return true; // Devuelve true si la eliminación fue exitosa
-        }
-        return false; // Devuelve false si la valoración no se encontró
-    }
+public boolean deleteRatingComment(String ratingId) {
+    RatingCommentPost rating = ratingCommentRepository.findById(ratingId)
+        .orElseThrow(() -> new IllegalArgumentException("Rating not found"));
+
+    String commentId = rating.getCommentId(); // Obtener el commentId de la valoración
+    int value = rating.getValue(); // Obtener el valor de la valoración
+
+    // Eliminar la valoración
+    ratingCommentRepository.deleteById(ratingId);
+
+    // Actualizar el comentario asociado
+    CommentPost comment = commentPostRepository.findById(commentId)
+        .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+
+    comment.removeRating(value); // Resta el valor del rating eliminado
+    commentPostRepository.save(comment);
+
+    return true; // Retornar true si la eliminación fue exitosa
+}
+
 
     // Método para obtener una valoración por su ID
     public Optional<RatingCommentPost> getRatingById(String ratingId) {

@@ -1,6 +1,7 @@
 package com.proyecto.SazonIA.controller;
 
-import java.util.List;
+
+import org.springframework.data.domain.Page;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,8 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
-@RequestMapping("followers")
-@Tag(name = "Followers", description = "Operations related to the user's followers")
+@RequestMapping("follows")
+@Tag(name = "Followers", description = "Operations for managing user following relationships")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
         RequestMethod.PUT })
 public class FollowerController {
@@ -38,8 +39,10 @@ public class FollowerController {
     // Seguir a un usuario
     @Operation(summary = "Follow a user")
     @ApiResponse(responseCode = "201", description = "User followed", content = @Content(mediaType = "application/json"))
-    @PostMapping("/follow/{userId}/{followedId}")
-    public ResponseEntity<String> followUser(@PathVariable int userId, @PathVariable int followedId) {
+    @PostMapping("/follow")
+    public ResponseEntity<String> followUser(
+            @RequestParam("userId") int userId,
+            @RequestParam("followedId") int followedId) {
         User follower = service.findUserById(userId);
         User followed = service.findUserById(followedId);
 
@@ -55,7 +58,7 @@ public class FollowerController {
         }
 
         service.followUser(follower, followed);
-        return new ResponseEntity<>("User followed successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Successfully followed the user", HttpStatus.CREATED);
     }
 
     // Dejar de seguir a un usuario
@@ -73,64 +76,52 @@ public class FollowerController {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
         if (follower.getUser_id() == followed.getUser_id()) {
-            return new ResponseEntity<>("You cannot unfollow yourself", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("You cannot unfollow your own account", HttpStatus.BAD_REQUEST);
         }
         if (!service.isFollowing(follower, followed)) {
-            return new ResponseEntity<>("You are not following this user", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("You are currently not following this user", HttpStatus.CONFLICT);
         }
 
         service.unfollowUser(follower, followed);
-        return new ResponseEntity<>("User unfollowed successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Successfully unfollowed the user", HttpStatus.OK);
     }
 
-    // Obtener los seguidores de un usuario
-    @Operation(summary = "Get followers of a user")
+    // Obtener los seguidores de un usuario con paginación
+    @Operation(summary = "Get followers of a user with pagination")
     @ApiResponse(responseCode = "200", description = "Followers retrieved", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Follower.class))) })
-    @GetMapping("/followers/{followedId}")
-    public ResponseEntity<List<Follower>> getFollowers(@PathVariable int followedId) {
-        User followed = service.findUserById(followedId);
+    @GetMapping("/followers/{userId}")
+    public ResponseEntity<Page<Follower>> getFollowers(
+            @PathVariable int userId,
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "10", required = false) int pageSize) { 
+        User followed = service.findUserById(userId);
 
         if (followed == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<Follower> followers = service.getFollowers(followed);
+        Page<Follower> followers = service.getFollowers(followed, page, pageSize);
         return new ResponseEntity<>(followers, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get followers of a user with pagination")
-    @GetMapping(value = "paginationFollowers", params = { "page", "size" })
-
-    public List<Follower> getFollowersPaginated(
-            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(value = "size", defaultValue = "2", required = false) int pageSize) {
-        List<Follower> followers = service.getFollowers(page, pageSize);
-        return followers;
-    }
-
-    // Obtener a quién sigue un usuario
-    @Operation(summary = "Get following of a user")
+    // Obtener los seguidos de un usuario con paginación
+    @Operation(summary = "Get followings of a user with pagination")
     @ApiResponse(responseCode = "200", description = "Following users retrieved", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Follower.class))) })
-    @GetMapping("/following/{followerId}")
-    public ResponseEntity<List<Follower>> getFollowing(@PathVariable int followerId) {
-        User follower = service.findUserById(followerId);
+    @GetMapping("/followings/{userId}")
+    public ResponseEntity<Page<Follower>> getFollowing(
+            @PathVariable int userId,
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "10", required = false) int pageSize) {
+        User follower = service.findUserById(userId);
 
         if (follower == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<Follower> following = service.getFollowing(follower);
+        Page<Follower> following = service.getFollowing(follower, page, pageSize);
         return new ResponseEntity<>(following, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get following of a user with pagination")
-    @GetMapping(value = "paginationFollowing", params = { "page", "size" })
-    public List<Follower> getFollowingPaginated(
-            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(value = "size", defaultValue = "2", required = false) int pageSize) {
-        List<Follower> followers = service.getFollowing(page, pageSize);
-        return followers;
-    }
 }

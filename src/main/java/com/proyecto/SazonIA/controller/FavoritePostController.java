@@ -1,14 +1,18 @@
 package com.proyecto.SazonIA.controller;
 
-import com.proyecto.SazonIA.model.FavoritePost;
-import com.proyecto.SazonIA.model.Post;
-import com.proyecto.SazonIA.service.FavoritePostService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.proyecto.SazonIA.model.FavoritePost;
+import com.proyecto.SazonIA.model.Post;
+import com.proyecto.SazonIA.service.FavoritePostService;
+
+import org.springframework.data.domain.Page;
+
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,20 +29,33 @@ public class FavoritePostController {
     @Autowired
     private FavoritePostService favoritePostService;
 
-    /*@Operation(summary = "Get content of favorite posts by user ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Favorite posts retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("/posts/{userId}")
-    public ResponseEntity<List<Post>> getContentFavoritePostsByUser(@PathVariable Integer userId) {
-        // Llamar al servicio para obtener las publicaciones favoritas del usuario
-        List<Post> favoritePosts = favoritePostService.getContentFavoritePostsByUserId(userId);
-
-        // Devolver la lista de publicaciones como respuesta
-        return ResponseEntity.ok(favoritePosts);
-    }*/
+    /*
+     * @Operation(summary = "Get content of favorite posts by user ID")
+     * 
+     * @ApiResponses(value = {
+     * 
+     * @ApiResponse(responseCode = "200", description =
+     * "Favorite posts retrieved successfully", content = @Content(mediaType =
+     * "application/json", schema = @Schema(implementation = Post.class))),
+     * 
+     * @ApiResponse(responseCode = "404", description = "User not found", content
+     * = @Content),
+     * 
+     * @ApiResponse(responseCode = "500", description = "Internal server error",
+     * content = @Content)
+     * })
+     * 
+     * @GetMapping("/posts/{userId}")
+     * public ResponseEntity<List<Post>> getContentFavoritePostsByUser(@PathVariable
+     * Integer userId) {
+     * // Llamar al servicio para obtener las publicaciones favoritas del usuario
+     * List<Post> favoritePosts =
+     * favoritePostService.getContentFavoritePostsByUserId(userId);
+     * 
+     * // Devolver la lista de publicaciones como respuesta
+     * return ResponseEntity.ok(favoritePosts);
+     * }
+     */
 
     @Operation(summary = "Save a post as favorite")
     @ApiResponses(value = {
@@ -64,9 +81,14 @@ public class FavoritePostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/{userId}")
-    public ResponseEntity<List<FavoritePost>> getFavoritePostsByUserId(@PathVariable Integer userId) {
-        List<FavoritePost> favoritePosts = favoritePostService.getFavoritePostsByUserId(userId);
-        return ResponseEntity.ok(favoritePosts);
+    public ResponseEntity<List<FavoritePost>> getFavoritePostsByUserId(@PathVariable Integer userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        // Obtener las publicaciones favoritas con paginación
+        Page<FavoritePost> favoritePostsPage = favoritePostService.getFavoritePostsByUserId(userId, page, size);
+
+        // Devolver solo el contenido de la página
+        return ResponseEntity.ok(favoritePostsPage.getContent());
     }
 
     @Operation(summary = "Remove a favorite post")
@@ -88,8 +110,10 @@ public class FavoritePostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("post/{userId}")
-    public ResponseEntity<Post> getContentFavoritePostByUserAndPostId(@PathVariable Integer userId, @RequestParam String postId) {
-        // Llamar al servicio para obtener la publicación favorita específica del usuario
+    public ResponseEntity<Post> getContentFavoritePostByUserAndPostId(@PathVariable Integer userId,
+            @RequestParam String postId) {
+        // Llamar al servicio para obtener la publicación favorita específica del
+        // usuario
         Post favoritePost = favoritePostService.getContentFavoritePostByUserIdAndPostId(userId, postId);
 
         // Devolver el contenido de la publicación como respuesta

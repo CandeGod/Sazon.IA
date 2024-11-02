@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import com.proyecto.SazonIA.model.Follower;
 import com.proyecto.SazonIA.model.FollowerPK;
 import com.proyecto.SazonIA.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface FollowerRepository extends JpaRepository<Follower, FollowerPK> {
@@ -21,6 +23,9 @@ public interface FollowerRepository extends JpaRepository<Follower, FollowerPK> 
 
     // Encontrar una relación de seguimiento específica
     Optional<Follower> findByUserAndFollowed(User user, User followed);
+
+    Page<Follower> findByFollowed(User followed, Pageable pageable);
+    Page<Follower> findByUser(User follower, Pageable pageable);
 
     
 }

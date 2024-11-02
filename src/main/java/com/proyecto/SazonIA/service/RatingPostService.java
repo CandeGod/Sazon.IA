@@ -1,5 +1,8 @@
 package com.proyecto.SazonIA.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.proyecto.SazonIA.exception.UserNotFoundException;
 import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.model.RatingPost;
@@ -8,12 +11,8 @@ import com.proyecto.SazonIA.repository.PostRepository;
 import com.proyecto.SazonIA.repository.RatingPostRepository;
 import com.proyecto.SazonIA.repository.UserRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 
 @Service
 public class RatingPostService {
@@ -50,68 +49,55 @@ public class RatingPostService {
         // Obtener el post asociado
         Post post = postRepository.findById(postId).orElse(null);
         if (post != null) {
-            // Asegurarse de que la lista de valoraciones no sea nula
-            if (post.getRatings() == null) {
-                post.setRatings(new ArrayList<>());
-            }
-            // Agregar la nueva valoración a la lista de valoraciones del post
-            post.getRatings().add(savedRating);
             // Guardar el post actualizado
+            post.addRating(value);
             postRepository.save(post);
         }
-
         return savedRating; // Retornar la valoración guardada
     }
 
-    // Método para obtener todas las valoraciones de un post específico
-    public List<RatingPost> getRatingsByPostId(String postId) {
-        return ratingPostRepository.findByPostId(postId);
-    }
-
-    // Método para actualizar una valoración existente
     public RatingPost updateRating(String ratingId, Integer value) {
         Optional<RatingPost> optionalRating = ratingPostRepository.findById(ratingId);
         if (optionalRating.isPresent()) {
             RatingPost rating = optionalRating.get();
-            String postId = rating.getPostId(); // Obtener el postId de la valoración
+            String postId = rating.getPostId();
+            int oldValue = rating.getValue();
 
-            // Actualiza el valor de la valoración
             rating.setValue(value);
-
-            // Guarda la valoración actualizada
             RatingPost updatedRating = ratingPostRepository.save(rating);
 
-            // Obtener el post asociado
             Post post = postRepository.findById(postId).orElse(null);
             if (post != null) {
-                // Asegurarse de que la lista de valoraciones no sea nula
-                if (post.getRatings() == null) {
-                    post.setRatings(new ArrayList<>());
-                }
-                // Actualizar la valoración en la lista de valoraciones del post
-                for (int i = 0; i < post.getRatings().size(); i++) {
-                    if (post.getRatings().get(i).getRatingId().equals(ratingId)) {
-                        post.getRatings().set(i, updatedRating); // Actualizar la valoración en la lista
-                        break;
-                    }
-                }
-                // Guardar el post actualizado
+                post.updateRating(oldValue, value); // Ajusta el total y la suma acumulada
                 postRepository.save(post);
             }
 
-            return updatedRating; // Retornar la valoración actualizada
+            return updatedRating;
         } else {
-            return null; // O lanza una excepción si la valoración no se encuentra
+            return null;
         }
     }
 
     // Método para eliminar una valoración por su ID
     public boolean deleteRating(String ratingId) {
-        if (ratingPostRepository.existsById(ratingId)) {
+        Optional<RatingPost> optionalRating = ratingPostRepository.findById(ratingId);
+        if (optionalRating.isPresent()) {
+            RatingPost rating = optionalRating.get();
+            String postId = rating.getPostId();
+            int value = rating.getValue();
+
             ratingPostRepository.deleteById(ratingId);
-            return true; // Devuelve true si la eliminación fue exitosa
+
+            Post post = postRepository.findById(postId).orElse(null);
+            if (post != null) {
+                post.removeRating(value); // Resta el valor del rating eliminado
+                postRepository.save(post);
+            }
+
+            return true;
         }
-        return false; // Devuelve false si la valoración no se encontró
+
+        return false;
     }
 
     // Método para obtener una valoración por su ID
