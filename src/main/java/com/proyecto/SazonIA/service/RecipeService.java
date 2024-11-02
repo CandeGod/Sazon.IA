@@ -37,8 +37,8 @@ public class RecipeService {
         recipeRepository.deleteById(recipeId);
     }
 
-    public List<Recipe> getRecipesByUser(Integer userId) {
-        return recipeRepository.getRecipesByUser(userId);
+    public List<Recipe> getRecipesByUser(Integer userId, Integer page, Integer pageSize) {
+        return recipeRepository.getRecipesByUser(userId, page, pageSize);
     }
     
 }

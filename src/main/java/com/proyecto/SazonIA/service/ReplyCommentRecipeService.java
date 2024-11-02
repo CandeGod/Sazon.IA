@@ -30,8 +30,8 @@ public class ReplyCommentRecipeService {
         replyCommentRepository.deleteById(replyCommentId);
     }
 
-    public List<ReplyCommentRecipe> getRepliesByComment(Integer commentId) {
-        return replyCommentRepository.getRepliesByComment(commentId);
+    public List<ReplyCommentRecipe> getRepliesByComment(Integer commentId, Integer page, Integer pageSize) {
+        return replyCommentRepository.getRepliesByComment(commentId, page, pageSize);
     }
 
 }

@@ -30,7 +30,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/commentsRecipes")
 @CrossOrigin(origins = "*")
 @Tag(name = "Comments from recipes", description = "Operations related to Comments in a recipe in Sazón.IA")
 public class CommentRecipeController {
@@ -118,7 +118,7 @@ public class CommentRecipeController {
                 return new ResponseEntity<>("Comment Deleted", HttpStatus.OK);
         }
 
-        @Operation(summary = "Get all coments from a recipe")
+        @Operation(summary = "Get all coments from a recipe paginated")
         @ApiResponse(responseCode = "200", description = "Comments from a recipe has been found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "500", description = "Internal server error", content = {
@@ -127,11 +127,14 @@ public class CommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @GetMapping(value = "FromRecipe", params = { "idRecipe" })
         public ResponseEntity<?> getCommentsByRecipe(
-                        @RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
+                        @RequestParam(value = "idRecipe", required = true) Integer idRecipe,
+                        @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
                 if (userService.getById(idRecipe) == null) {
                         return new ResponseEntity<>("Recipe not found", HttpStatus.NOT_FOUND);
                 }
-                return new ResponseEntity<>(commentService.getCommentsByRecipe(idRecipe), HttpStatus.OK);
+                page = page * pageSize;
+                return new ResponseEntity<>(commentService.getCommentsByRecipe(idRecipe, pageSize, page), HttpStatus.OK);
         }
 
 }

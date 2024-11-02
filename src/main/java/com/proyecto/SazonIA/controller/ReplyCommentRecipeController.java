@@ -32,7 +32,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/repliescomments")
+@RequestMapping("/repliesComments")
 @CrossOrigin(origins = "*")
 @Tag(name = "Replies from comments", description = "Operations related to Replies in a recipe in Sazón.IA")
 public class ReplyCommentRecipeController {
@@ -122,7 +122,7 @@ public class ReplyCommentRecipeController {
                 return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        @Operation(summary = "Get all replies from a comment")
+        @Operation(summary = "Get all replies from a comment paginated")
         @ApiResponse(responseCode = "200", description = "The replies have been found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "500", description = "Internal server error", content = {
@@ -131,11 +131,14 @@ public class ReplyCommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @GetMapping(value = "FromComment", params = { "idComment" })
         public ResponseEntity<?> getrepliesByComment(
-                        @RequestParam(value = "idComment", required = true) Integer idComment) {
+                        @RequestParam(value = "idComment", required = true) Integer idComment,
+                        @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
                 if (commentService.getById(idComment) == null) {
                         return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
                 }
-                return new ResponseEntity<>(replyCommentService.getRepliesByComment(idComment), HttpStatus.OK);
+                page = page * pageSize;
+                return new ResponseEntity<>(replyCommentService.getRepliesByComment(idComment, pageSize, page), HttpStatus.OK);
         }
 
 }

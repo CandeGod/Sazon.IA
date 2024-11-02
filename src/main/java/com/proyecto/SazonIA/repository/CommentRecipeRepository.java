@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CommentRecipeRepository extends JpaRepository<CommentRecipe, Integer> {
 
-    @Query(value = "SELECT * FROM CommentRecipe WHERE recipe_id = :recipe_id", nativeQuery = true)
-    List<CommentRecipe> getCommentsByRecipe(@Param("recipe_id") Integer recipe_id);
+    @Query(value = "SELECT * FROM CommentRecipe WHERE recipe_id = :recipe_id LIMIT :page OFFSET :pageSize", nativeQuery = true)
+    List<CommentRecipe> getCommentsByRecipe(@Param("recipe_id") Integer recipe_id, @Param("page") Integer page, @Param("pageSize") Integer pageSize);
 
 }

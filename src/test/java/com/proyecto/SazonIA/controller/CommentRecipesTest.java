@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CommentRecipeTest {
+public class CommentRecipesTest {
 
     @Autowired
     private MockMvc mvc;
@@ -37,9 +37,9 @@ public class CommentRecipeTest {
     }
 
     @Test
-    public void getCommentRecipeByIdTest() throws Exception {
+    public void getCommentRecipesByIdTest() throws Exception {
         int idComment = 1;
-        mvc.perform(get("/comments")
+        mvc.perform(get("/commentsRecipes")
                 .param("idComment", String.valueOf(idComment))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -47,47 +47,47 @@ public class CommentRecipeTest {
     }
 
     @Test
-    public void getCommentsByRecipe() throws Exception {
-        int idRecipe = 1;
-        mvc.perform(get("/comments/FromRecipe")
-                .param("idRecipe", String.valueOf(idRecipe))
+    public void getCommentsByRecipes() throws Exception {
+        int idRecipes = 1;
+        mvc.perform(get("/commentsRecipes/FromRecipe")
+                .param("idRecipe", String.valueOf(idRecipes))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
     }
 
     @Test
-    public void saveCommentRecipeTest() throws Exception {
-        int idRecipe = 2;
+    public void saveCommentRecipesTest() throws Exception {
+        int idRecipes = 2;
         int idUser = 1;
-        String newCommentRecipeJson = "{"
+        String newCommentRecipesJson = "{"
                 + "\"content\":\"Test Comment\""
                 + "}";
-        mvc.perform(post("/comments")
-                .param("idRecipe", String.valueOf(idRecipe))
+        mvc.perform(post("/commentsRecipes")
+                .param("idRecipe", String.valueOf(idRecipes))
                 .param("idUser", String.valueOf(idUser))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(newCommentRecipeJson))
+                .content(newCommentRecipesJson))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void updateCommentRecipeTest() throws Exception {
-        String updatedCommentRecipeJson = "{"
+    public void updateCommentRecipesTest() throws Exception {
+        String updatedCommentRecipesJson = "{"
                 + "\"comment_id\":\"3\","
                 + "\"content\":\"Updated Test Comment\""
                 + "}";
-        mvc.perform(put("/comments")
+        mvc.perform(put("/commentsRecipes")
                 .param("idComment", "3")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(updatedCommentRecipeJson))
+                .content(updatedCommentRecipesJson))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void deleteCommentRecipeTest() throws Exception {
+    public void deleteCommentRecipesTest() throws Exception {
         int idComment = 6;
-        mvc.perform(delete("/comments")
+        mvc.perform(delete("/commentsRecipes")
                 .param( "idComment", String.valueOf(idComment))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
