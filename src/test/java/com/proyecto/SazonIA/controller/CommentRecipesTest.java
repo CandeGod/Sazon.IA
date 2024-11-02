@@ -39,8 +39,7 @@ public class CommentRecipesTest {
     @Test
     public void getCommentRecipesByIdTest() throws Exception {
         int idComment = 1;
-        mvc.perform(get("/commentsRecipes")
-                .param("idComment", String.valueOf(idComment))
+        mvc.perform(get("/commentsRecipes/" + idComment)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comment_id", is(idComment)));
@@ -49,8 +48,7 @@ public class CommentRecipesTest {
     @Test
     public void getCommentsByRecipes() throws Exception {
         int idRecipes = 1;
-        mvc.perform(get("/commentsRecipes/FromRecipe")
-                .param("idRecipe", String.valueOf(idRecipes))
+        mvc.perform(get("/commentsRecipes/FromRecipe/" + idRecipes)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
@@ -73,12 +71,12 @@ public class CommentRecipesTest {
 
     @Test
     public void updateCommentRecipesTest() throws Exception {
+        int idComment = 3;
         String updatedCommentRecipesJson = "{"
                 + "\"comment_id\":\"3\","
                 + "\"content\":\"Updated Test Comment\""
                 + "}";
-        mvc.perform(put("/commentsRecipes")
-                .param("idComment", "3")
+        mvc.perform(put("/commentsRecipes/" + idComment)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedCommentRecipesJson))
                 .andExpect(status().isOk());
@@ -87,8 +85,7 @@ public class CommentRecipesTest {
     @Test
     public void deleteCommentRecipesTest() throws Exception {
         int idComment = 6;
-        mvc.perform(delete("/commentsRecipes")
-                .param( "idComment", String.valueOf(idComment))
+        mvc.perform(delete("/commentsRecipes/" + idComment)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

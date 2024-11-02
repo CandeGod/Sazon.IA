@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,9 +51,9 @@ public class CommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "No comments registered", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @GetMapping(params = { "idComment" })
+        @GetMapping("/{idComment}")
         public ResponseEntity<CommentRecipe> getById(
-                        @RequestParam(value = "idComment", required = true) Integer idComment) {
+                        @PathVariable Integer idComment) {
                 return new ResponseEntity<>(commentService.getById(idComment), HttpStatus.OK);
         }
 
@@ -87,8 +88,8 @@ public class CommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "The comment was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @PutMapping(params = { "idComment" })
-        public ResponseEntity<?> update(@RequestParam(value = "idComment", required = true) Integer idComment,
+        @PutMapping("/{idComment}")
+        public ResponseEntity<?> update(@PathVariable Integer idComment,
                         @RequestBody CommentRecipe comment) {
                 CommentRecipe aux = commentService.getById(idComment);
                 comment.setUser(aux.getUser());
@@ -109,8 +110,8 @@ public class CommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "The comment was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @DeleteMapping(params = { "idComment" })
-        public ResponseEntity<?> delete(@RequestParam(value = "idComment", required = true) Integer idComment) {
+        @DeleteMapping("/{idComment}")
+        public ResponseEntity<?> delete(@PathVariable Integer idComment) {
                 if (commentService.getById(idComment) == null) {
                         return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
                 }
@@ -125,9 +126,9 @@ public class CommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "No comments found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @GetMapping(value = "FromRecipe", params = { "idRecipe" })
+        @GetMapping("/FromRecipe/{idRecipe}")
         public ResponseEntity<?> getCommentsByRecipe(
-                        @RequestParam(value = "idRecipe", required = true) Integer idRecipe,
+                        @PathVariable Integer idRecipe,
                         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
                 if (userService.getById(idRecipe) == null) {
