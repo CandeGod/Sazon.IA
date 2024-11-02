@@ -18,8 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ReplyCommentRecipeTest {
@@ -38,8 +36,7 @@ public class ReplyCommentRecipeTest {
     @Test
     public void getRepliesIdTest() throws Exception {
         int idReply = 1;
-        mvc.perform(get("/repliesComments")
-                .param("idReply", String.valueOf(idReply))
+        mvc.perform(get("/repliesComments/" + idReply)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.reply_id", is(idReply)));
@@ -48,8 +45,7 @@ public class ReplyCommentRecipeTest {
     @Test
     public void getRepliesByComment() throws Exception {
         int idComment = 1;
-        mvc.perform(get("/repliesComments/FromComment")
-                .param("idComment", String.valueOf(idComment))
+        mvc.perform(get("/repliesComments/FromComment/" + idComment)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
@@ -70,12 +66,12 @@ public class ReplyCommentRecipeTest {
 
     @Test
     public void updateCommentRecipeTest() throws Exception {
+        int idReply = 2;
         String updatedCommentRecipeJson = "{"
                 + "\"reply_id\":\"2\","
                 + "\"content\":\"Updated Test Comment\""
                 + "}";
-        mvc.perform(put("/repliesComments")
-                .param("idReply", "2")
+        mvc.perform(put("/repliesComments/" + idReply)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedCommentRecipeJson))
                 .andExpect(status().isOk());
@@ -84,8 +80,7 @@ public class ReplyCommentRecipeTest {
     @Test
     public void deleteCommentRecipeTest() throws Exception {
         int idReplyComment = 6;
-        mvc.perform(delete("/repliesComments")
-                .param("idReply", String.valueOf(idReplyComment))
+        mvc.perform(delete("/repliesComments/" + idReplyComment)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

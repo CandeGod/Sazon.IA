@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,8 +57,8 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @GetMapping(params = { "idRecipe" })
-        public ResponseEntity<Recipe> getById(@RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
+        @GetMapping("/{idRecipe}")
+        public ResponseEntity<Recipe> getById(@PathVariable Integer idRecipe) {
                 return new ResponseEntity<>(recipeService.getById(idRecipe), HttpStatus.OK);
         }
 
@@ -87,9 +88,9 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @PutMapping(params = { "idRecipe" })
+        @PutMapping("/{idRecipe}")
         public ResponseEntity<?> update(@RequestBody Recipe recipe,
-                        @RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
+                        @PathVariable Integer idRecipe) {
                 Recipe aux = recipeService.getById(idRecipe);
                 User usAux = userService.getById(aux.getUser().getUser_id());
                 recipe.setUser(usAux);
@@ -105,8 +106,8 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @DeleteMapping(params = { "idRecipe" })
-        public ResponseEntity<?> delete(@RequestParam(value = "idRecipe", required = true) Integer idRecipe) {
+        @DeleteMapping("/{idRecipe}")
+        public ResponseEntity<?> delete(@PathVariable Integer idRecipe) {
                 Recipe recipe = recipeService.getById(idRecipe);
                 if (recipe == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -123,8 +124,8 @@ public class RecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @ApiResponse(responseCode = "404", description = "No recipes found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
-        @GetMapping( value = "FromUser",params = { "idUser" })
-        public ResponseEntity<?> getRecipesByUser(@RequestParam(value = "idUser", required = true) Integer idUser,
+        @GetMapping("/FromUser/{idUser}")
+        public ResponseEntity<?> getRecipesByUser(@PathVariable Integer idUser,
                         @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
                         @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
                 User user = userService.getById(idUser);

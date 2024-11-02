@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,9 +53,9 @@ public class ReplyCommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "No comments registered", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @GetMapping(params = { "idReply" })
+        @GetMapping("/{idReply}")
         public ResponseEntity<ReplyCommentRecipe> getById(
-                        @RequestParam(value = "idReply", required = true) Integer idReply) {
+                        @PathVariable Integer idReply) {
                 if (replyCommentService.getById(idReply) == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -92,8 +93,8 @@ public class ReplyCommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "The reply was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @PutMapping(params = { "idReply" })
-        public ResponseEntity<?> update(@RequestParam(value = "idReply", required = true) Integer idReply,
+        @PutMapping("/{idReply}")
+        public ResponseEntity<?> update(@PathVariable Integer idReply,
                         @RequestBody ReplyCommentRecipe reply) {
                 ReplyCommentRecipe aux = replyCommentService.getById(idReply);
                 if (replyCommentService.getById(idReply) == null) {
@@ -113,8 +114,8 @@ public class ReplyCommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "The reply was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @DeleteMapping(params = { "idReply" })
-        public ResponseEntity<?> delete(@RequestParam(value = "idReply", required = true) Integer idReply) {
+        @DeleteMapping("/{idReply}")
+        public ResponseEntity<?> delete(@PathVariable Integer idReply) {
                 if (replyCommentService.getById(idReply) == null) {
                         return new ResponseEntity<>("Reply not found", HttpStatus.NOT_FOUND);
                 }
@@ -129,9 +130,9 @@ public class ReplyCommentRecipeController {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @ApiResponse(responseCode = "404", description = "No replies found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
-        @GetMapping(value = "FromComment", params = { "idComment" })
+        @GetMapping("FromComment/{idComment}")
         public ResponseEntity<?> getrepliesByComment(
-                        @RequestParam(value = "idComment", required = true) Integer idComment,
+                        @PathVariable Integer idComment,
                         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
                 if (commentService.getById(idComment) == null) {
