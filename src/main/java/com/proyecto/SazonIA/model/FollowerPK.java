@@ -3,14 +3,22 @@ package com.proyecto.SazonIA.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class FollowerPK implements Serializable{
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
+public class FollowerPK implements Serializable {
+
+    @NotNull(message = "User ID must not be null")
+    @Min(value = 1, message = "User ID must be greater than or equal to 1")
     private User user;
+
+    @NotNull(message = "Followed ID must not be null")
+    @Min(value = 1, message = "Followed ID must be greater than or equal to 1")
     private User followed;
 
-    
-    public FollowerPK() {}
+    public FollowerPK() {
+    }
 
-    
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -25,7 +33,6 @@ public class FollowerPK implements Serializable{
         return Objects.hash(user, followed);
     }
 
-   
     public User getUser() {
         return user;
     }
