@@ -1,15 +1,24 @@
 package com.proyecto.SazonIA.exception;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.google.gson.Gson;
+
+import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class ExceptionHandlerAdvice {
@@ -57,6 +66,35 @@ public class ExceptionHandlerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handlePostNotFoundException(PostNotFoundException e) {
         return new ResponseEntity<>("The requested post is not registered", HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleException(NoSuchElementException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new Gson().toJson("The requested item is not registered"));
+    }
+
+   @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> handleException(ConstraintViolationException e) {
+        e.printStackTrace();
+        //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validation failed for classes");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Gson().toJson("Validation failed for classes"));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({ MethodArgumentNotValidException.class })
+    public ModelAndView handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("exception", ex);
+        mav.addObject("errors", errors);
+        mav.setViewName("methodArgumentNotValid");
+        return mav;
     }
 
 }
