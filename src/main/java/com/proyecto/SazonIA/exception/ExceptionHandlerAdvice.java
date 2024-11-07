@@ -56,7 +56,7 @@ public class ExceptionHandlerAdvice {
         return new ResponseEntity<>("Error: not found" + e.getReason(), e.getStatusCode());
     }
 
-    @ExceptionHandler(UserNotFoundException.class) // New handler
+    @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
         return new ResponseEntity<>("The requested user is not registered: " + e.getMessage(), HttpStatus.NOT_FOUND);
@@ -68,16 +68,9 @@ public class ExceptionHandlerAdvice {
         return new ResponseEntity<>("The requested post is not registered", HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> handleException(NoSuchElementException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new Gson().toJson("The requested item is not registered"));
-    }
-
-   @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleException(ConstraintViolationException e) {
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
         e.printStackTrace();
-        //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validation failed for classes");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Gson().toJson("Validation failed for classes"));
     }
 
