@@ -20,8 +20,8 @@ public class OpenAIRequest {
     private User user;
 
     @NotBlank(message = "Prompt must not be blank")
-    @Size(max = 100, message = "Prompt must not exceed 100 characters")
-    @Column(nullable = false, length = 100)
+    @Size(min = 1, max = 500, message = "Prompt must not exceed 500 characters")
+    @Column(nullable = false, length = 500)
     private String prompt;
 
     @Size(max = 1000, message = "Recommendations must not exceed 1000 characters")
