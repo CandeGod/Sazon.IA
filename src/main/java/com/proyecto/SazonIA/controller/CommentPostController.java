@@ -64,9 +64,9 @@ public class CommentPostController {
     public ResponseEntity<CommentPost> updateComment(
             @PathVariable String postId,
             @RequestParam String commentId,
-            @RequestBody CommentPost updatedComment) {
+            @RequestParam String content) {
 
-        CommentPost editedComment = commentService.editComment(postId, commentId, updatedComment);
+        CommentPost editedComment = commentService.editComment(postId, commentId, content);
         return ResponseEntity.ok(editedComment);
     }
 

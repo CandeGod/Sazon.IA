@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 
+import com.proyecto.SazonIA.exception.PostNotFoundException;
 import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.model.User;
 import com.proyecto.SazonIA.repository.CommentPostRepository;
@@ -55,28 +56,27 @@ public class PostService {
     }
 
     // Crear una nueva publicación
-    public Post createPost(Integer userId, String title, String content/*, List<String> mediaUrls*/) {
+    public Post createPost(Integer userId, String title, String content/* , List<String> mediaUrls */) {
         // Verificar si el usuario existe en MySQL
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         // Crea y guarda el Post en MongoDB con el userId de MySQL
         Post post = new Post(user.getUser_id(), title, content);
-        //post.setMediaUrls(mediaUrls); // Establecer mediaUrls
+        // post.setMediaUrls(mediaUrls); // Establecer mediaUrls
         post.setPostId(UUID.randomUUID().toString()); // Generar el ID antes de guardar
         return postRepository.save(post);
     }
 
     // Actualizar una publicación existente
-    public Post updatePost(String postId, Post postDetails) {
+    public Post updatePost(String postId, String title, String content) {
         Optional<Post> existingPost = postRepository.findById(postId);
         if (existingPost.isPresent()) {
             Post post = existingPost.get();
-            post.setTitle(postDetails.getTitle());
-            post.setContent(postDetails.getContent());
-            //post.setMediaUrls(postDetails.getMediaUrls());
+            post.setTitle(title);
+            post.setContent(content);
             return postRepository.save(post);
         }
-        return null; // Maneja el caso donde el post no existe
+        throw new PostNotFoundException(postId); // Lanza la excepción si el post no existe
     }
 
     // Eliminar una publicación

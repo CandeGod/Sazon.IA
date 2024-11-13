@@ -68,7 +68,7 @@ public class RatingPostService {
 
             Post post = postRepository.findById(postId).orElse(null);
             if (post != null) {
-                post.updateRating(oldValue, value); // Ajusta el total y la suma acumulada
+                post.updateRating(oldValue, value); // Ajusta el total y la suma acumulada 
                 postRepository.save(post);
             }
 

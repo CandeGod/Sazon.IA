@@ -38,7 +38,7 @@ public class PostController {
         List<Post> randomPosts = postService.getRandomPosts(count);
         return ResponseEntity.ok(randomPosts);
     }
-    
+
     @Operation(summary = "Get posts by user ID with pagination")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Posts retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
@@ -78,7 +78,10 @@ public class PostController {
     })
     @PostMapping
     public ResponseEntity<Post> createPost(@Valid @RequestBody Post post) {
-        Post createdPost = postService.createPost(post.getUserId(), post.getTitle(), post.getContent()/*,post.getMediaUrls()*/);
+        Post createdPost = postService.createPost(post.getUserId(), post.getTitle(), post.getContent()/*
+                                                                                                       * ,post.
+                                                                                                       * getMediaUrls()
+                                                                                                       */);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
@@ -89,8 +92,11 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable String postId, @Valid @RequestBody Post postDetails) {
-        Post updatedPost = postService.updatePost(postId, postDetails);
+    public ResponseEntity<Post> updatePost(
+            @PathVariable String postId,
+            @RequestParam String title,
+            @RequestParam String content) {
+        Post updatedPost = postService.updatePost(postId, title, content);
         if (updatedPost != null) {
             return ResponseEntity.ok(updatedPost);
         } else {

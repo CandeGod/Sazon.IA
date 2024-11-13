@@ -88,4 +88,4 @@ public class RatingPostController {
         return rating.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
-}
+} 
