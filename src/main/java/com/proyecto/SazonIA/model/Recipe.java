@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Recipe")
-@JsonIgnoreProperties({"user", "comments", "recipe_time_stamp"})
+@JsonIgnoreProperties({ "user", "comments", "recipe_time_stamp" })
 public class Recipe {
 
     @Id
@@ -27,36 +28,42 @@ public class Recipe {
     @JsonProperty("recipe_id")
     private Integer recipe_id;
 
+    @NotNull(message = "Recipe name must not be null")
     @NotBlank(message = "Recipe name is mandatory or at least must contain one character")
     @Size(min = 1, max = 100, message = "The content must be between 1 and 100 characters")
     @Column(name = "recipe_name", nullable = false)
     @JsonProperty("recipe_name")
     private String recipe_name;
 
+    @NotNull(message = "Ingredients must not be null")
     @NotBlank(message = "Ingredients are mandatory or at least must contain one character")
     @Size(min = 1, max = 250, message = "The content must be between 1 and 250 characters")
     @Column(name = "ingredients", nullable = false)
     @JsonProperty("ingredients")
     private String ingredients;
 
+    @NotNull(message = "Instructions must not be null")
     @NotBlank(message = "Instructions are mandatory or at least must contain one character")
     @Size(min = 1, max = 500, message = "The content must be between 1 and 500 characters")
     @Column(name = "instructions", nullable = false)
     @JsonProperty("instructions")
     private String instructions;
 
+    @NotNull(message = "Preparation time must not be null")
     @NotBlank(message = "Preparation time is mandatory or at least must contain one character")
     @Size(min = 1, max = 20, message = "The content must be between 1 and 20 characters")
     @Column(name = "preparation_time", nullable = false)
     @JsonProperty("preparation_time")
     private String preparation_time;
 
+    @NotNull(message = "Difficulty must not be null")
     @NotBlank(message = "Difficulty is mandatory or at least must contain one character")
     @Size(min = 1, max = 10, message = "The content must be between 1 and 10 characters")
     @Column(name = "difficulty", nullable = false)
     @JsonProperty("difficulty")
     private String difficulty;
 
+    @NotNull(message = "Recipe time stamp must not be null")
     @Column(name = "recipe_time_stamp", nullable = false)
     @JsonProperty("recipe_time_stamp")
     private String recipe_time_stamp;
