@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 @Document(collection = "Posts")
@@ -21,14 +23,17 @@ public class Post {
     private String postId;
 
     @NotNull(message = "User ID must not be null")
+    @Positive(message = "User ID must be a positive number")
     private Integer userId; 
 
     @NotBlank(message = "Title must not be blank")
-    @Size(max = 100, message = "Title cannot exceed 100 characters")
+    @Size(min = 1, max = 100, message = "Title cannot exceed 100 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "Title can only contain alphanumeric characters and spaces")
     private String title;
 
     @NotBlank(message = "Content must not be blank")
     @Size(min = 10, max = 1000, message = "Content cannot exceed 1000 characters")
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Z}]+$", message = "Content contains invalid characters")
     private String content;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

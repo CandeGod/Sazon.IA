@@ -22,7 +22,7 @@ public class FavoritePostService {
     @Autowired
     private PostRepository postRepository; // El repositorio de MongoDB para las publicaciones
     /*
-     * // Método para obtener las publicaciones guardadas como favoritas por un
+     * // Método para obtener las publicaciones guardadas como favoritas por un 
      * usuario
      * public List<Post> getContentFavoritePostsByUserId(Integer userId) {
      * // Buscar todas las relaciones de favoritos para el usuario

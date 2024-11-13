@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.util.UUID;
 
@@ -23,7 +24,8 @@ public class RatingPost {
     private String postId; // ID del post asociado al rating
 
     @NotNull(message = "User ID must not be null")
-    private Integer userId; // ID del usuario que realiza la valoración
+    @Positive(message = "User ID must be a positive number")
+    private Integer userId;  // ID del usuario que realiza la valoración
 
     @Min(value = 0, message = "Rating must be at least 0")
     @Max(value = 5, message = "Rating must be at most 5")

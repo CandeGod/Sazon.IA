@@ -58,23 +58,22 @@ public class CommentPostService {
         return comments.getContent();
     }
 
-    public CommentPost editComment(String postId, String commentId, CommentPost updatedComment) {
+    public CommentPost editComment(String postId, String commentId, String content) {
         // Verificar si el comentario existe
-        CommentPost existingComment = commentRepository.findById(commentId).orElse(null);
-        if (existingComment == null) {
-            throw new NoSuchElementException("Comment not found");
-        }
-
+        CommentPost existingComment = commentRepository.findById(commentId).orElseThrow(
+            () -> new NoSuchElementException("Comment not found")
+        );
+    
         // Verificar si el comentario pertenece al post correcto
         if (!existingComment.getPostId().equals(postId)) {
             throw new IllegalArgumentException("Comment does not belong to the specified post");
         }
-
-        // Actualizar el contenido del comentario
-        existingComment.setContent(updatedComment.getContent());
-        CommentPost savedComment = commentRepository.save(existingComment);
-        return savedComment;
+    
+        // Actualizar solo el contenido del comentario
+        existingComment.setContent(content);
+        return commentRepository.save(existingComment);
     }
+    
 
     public boolean deleteComment(String postId, String commentId) {
         // Buscar el comentario por su ID

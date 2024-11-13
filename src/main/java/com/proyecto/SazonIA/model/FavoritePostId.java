@@ -2,6 +2,9 @@ package com.proyecto.SazonIA.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -12,10 +15,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class FavoritePostId implements Serializable {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Column(name = "user_id")
+    @NotNull(message = "User ID must not be null")
+    @Positive(message = "User ID must be a positive number")
+    @Column(name = "user_id", nullable = false)
     private Integer userId;
 
-    @Column(name = "post_id")
+    @NotNull(message = "Post ID must not be null")
+    @Column(name = "post_id", nullable = false)
     private String postId; // Refiriéndose al UUID de MongoDB
 
     public FavoritePostId() {

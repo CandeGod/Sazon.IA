@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 @Document(collection = "CommentOnPost")
@@ -24,12 +26,13 @@ public class CommentPost {
     @NotBlank(message = "Post ID must not be blank")
     private String postId;
 
-    @JsonProperty(access = JsonProperty.Access.AUTO)
     @NotNull(message = "User ID must not be null")
+    @Positive(message = "User ID must be a positive number")
     private Integer userId;
 
     @NotBlank(message = "Content must not be blank")
     @Size(min = 10, max = 500, message = "Content cannot exceed 500 characters")
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Z}]+$", message = "Content contains invalid characters")
     private String content;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
