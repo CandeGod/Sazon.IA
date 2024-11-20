@@ -1,16 +1,22 @@
 package com.proyecto.SazonIA.controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.google.gson.Gson;
 import com.proyecto.SazonIA.model.FavoritePost;
 import com.proyecto.SazonIA.model.FavoritePostId;
 import com.proyecto.SazonIA.model.Post;
+import com.proyecto.SazonIA.model.User;
 import com.proyecto.SazonIA.service.FavoritePostService;
+import com.proyecto.SazonIA.service.PostService;
+import com.proyecto.SazonIA.service.UserService;
 
 import org.springframework.data.domain.Page;
 
@@ -24,30 +30,58 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
 @RequestMapping("/favoritePosts")
 @Tag(name = "Favorite Posts", description = "Operations related to favorite posts in Sazón.IA")
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
+                RequestMethod.PUT })
 public class FavoritePostController {
 
         @Autowired
         private FavoritePostService favoritePostService;
+
+        @Autowired
+        private UserService userService;
+
+        @Autowired
+        private PostService postService;
+
+        private final Gson gson = new Gson();
+
         @Operation(summary = "Save a post as favorite")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "201", description = "Favorite post saved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FavoritePost.class))),
+                        @ApiResponse(responseCode = "201", description = "Favorite post saved successfully", content = @Content(mediaType = "application/json")),
                         @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
                         @ApiResponse(responseCode = "404", description = "User or post not found", content = @Content),
                         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
         })
         @PostMapping("/{userId}")
-        public ResponseEntity<FavoritePost> saveFavoritePost(@PathVariable Integer userId,
+        public ResponseEntity<String> saveFavoritePost(
+                        @PathVariable Integer userId,
                         @RequestParam String postId) {
-                // Crear un nuevo objeto FavoritePostId
-                FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
 
-                // Crear un nuevo objeto FavoritePost con el ID generado
+                User user = userService.getById(userId);
+                if (user == null) {
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")),
+                                        HttpStatus.NOT_FOUND);
+                }
+
+                Optional<Post> optionalPost = postService.getPostById(postId);
+                if (optionalPost.isEmpty()) {
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Post not found")),
+                                        HttpStatus.NOT_FOUND);
+                }
+
+                if (favoritePostService.isFavorite(userId, postId)) {
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Post already marked as favorite")),
+                                        HttpStatus.CONFLICT);
+                }
+
+                FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
                 FavoritePost favoritePost = new FavoritePost();
                 favoritePost.setId(favoritePostId);
 
-                // Guardar el objeto FavoritePost
-                FavoritePost savedFavoritePost = favoritePostService.saveFavoritePost(favoritePost);
-                return ResponseEntity.status(HttpStatus.CREATED).body(savedFavoritePost);
+                favoritePostService.saveFavoritePost(favoritePost);
+
+                return new ResponseEntity<>(gson.toJson(Map.of("info", "Post successfully marked as favorite")),
+                                HttpStatus.CREATED);
         }
 
         @Operation(summary = "Get all favorite posts by user ID")
@@ -69,31 +103,42 @@ public class FavoritePostController {
 
         @Operation(summary = "Remove a favorite post")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "204", description = "Favorite post removed successfully", content = @Content),
+                        @ApiResponse(responseCode = "200", description = "Favorite post removed successfully", content = @Content),
                         @ApiResponse(responseCode = "404", description = "Favorite post not found", content = @Content),
                         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
         })
         @DeleteMapping("/{userId}")
-        public ResponseEntity<Void> removeFavoritePost(@PathVariable Integer userId, @RequestParam String postId) {
+        public ResponseEntity<String> removeFavoritePost(
+                        @PathVariable Integer userId,
+                        @RequestParam String postId) {
+
+                // Verificar si la relación de favorito existe
+                if (!favoritePostService.isFavorite(userId, postId)) {
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Favorite post not found")),
+                                        HttpStatus.NOT_FOUND);
+                }
+
+                // Si la relación de favorito existe, eliminamos la publicación favorita
                 favoritePostService.removeFavoritePost(userId, postId);
-                return ResponseEntity.noContent().build();
+
+                // Retornar una respuesta exitosa
+                return ResponseEntity.ok(gson.toJson(Map.of("info", "Favorite post removed successfully")));
         }
 
         @Operation(summary = "Get content of a specific favorite post by user ID and post ID")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Favorite post retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
+                        @ApiResponse(responseCode = "200", description = "Favorite post retrieved successfully", content = @Content(mediaType = "application/json")),
                         @ApiResponse(responseCode = "404", description = "Post not found", content = @Content),
                         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
         })
         @GetMapping("post/{userId}")
-        public ResponseEntity<Post> getContentFavoritePostByUserAndPostId(@PathVariable Integer userId,
+        public ResponseEntity<String> getContentFavoritePostByUserAndPostId(
+                        @PathVariable Integer userId,
                         @RequestParam String postId) {
-                // Llamar al servicio para obtener la publicación favorita específica del
-                // usuario
-                Post favoritePost = favoritePostService.getContentFavoritePostByUserIdAndPostId(userId, postId);
 
-                // Devolver el contenido de la publicación como respuesta
-                return ResponseEntity.ok(favoritePost);
+                Optional<Post> post = Optional.ofNullable(
+                                favoritePostService.getContentFavoritePostByUserIdAndPostId(userId, postId));
+                
+                return ResponseEntity.ok(gson.toJson(post.get()));
         }
-
 }

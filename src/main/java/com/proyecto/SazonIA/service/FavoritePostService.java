@@ -22,7 +22,7 @@ public class FavoritePostService {
     @Autowired
     private PostRepository postRepository; // El repositorio de MongoDB para las publicaciones
     /*
-     * // Método para obtener las publicaciones guardadas como favoritas por un 
+     * // Método para obtener las publicaciones guardadas como favoritas por un
      * usuario
      * public List<Post> getContentFavoritePostsByUserId(Integer userId) {
      * // Buscar todas las relaciones de favoritos para el usuario
@@ -79,6 +79,12 @@ public class FavoritePostService {
     public void removeFavoritePost(Integer userId, String postId) {
         FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
         favoritePostRepository.deleteById(favoritePostId);
+    }
+
+    // Verificar si una publicación ya está marcada como favorita por un usuario
+    public boolean isFavorite(Integer userId, String postId) {
+        FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
+        return favoritePostRepository.existsById(favoritePostId);
     }
 
 }
