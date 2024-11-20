@@ -1,11 +1,12 @@
 package com.proyecto.SazonIA.controller;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,7 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+//import org.springframework.web.server.ResponseStatusException;
 
 import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.service.PostService;
@@ -24,11 +25,13 @@ import com.proyecto.SazonIA.service.PostService;
 @RequestMapping("/posts")
 @Tag(name = "Posts", description = "Operations related to posts in Sazón.IA")
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
-    RequestMethod.PUT })
+        RequestMethod.PUT })
 public class PostController {
 
     @Autowired
     private PostService postService;
+
+    private final Gson gson = new Gson();
 
     @Operation(summary = "Get random posts")
     @ApiResponses(value = {
@@ -36,9 +39,12 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/random")
-    public ResponseEntity<List<Post>> getRandomPosts(@RequestParam(value = "count", defaultValue = "5") int count) {
+    public ResponseEntity<String> getRandomPosts(@RequestParam(value = "count", defaultValue = "5") int count) {
         List<Post> randomPosts = postService.getRandomPosts(count);
-        return ResponseEntity.ok(randomPosts);
+        // Respuesta compleja con Gson
+        Map<String, Object> response = Map.of("status", "success", "data", randomPosts);
+        String jsonResponse = gson.toJson(response);
+        return ResponseEntity.ok(jsonResponse);
     }
 
     @Operation(summary = "Get posts by user ID with pagination")
@@ -48,12 +54,21 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Post>> getPostsByUserPaginated(
+    public ResponseEntity<String> getPostsByUserPaginated(
             @PathVariable Integer userId,
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+
         List<Post> posts = postService.getPostsByUser(userId, page, pageSize);
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+        // Respuesta compleja con Gson
+        if (posts.isEmpty()) {
+            Map<String, String> errorResponse = Map.of("status", "error", "message", "No posts found for the user");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gson.toJson(errorResponse));
+        }
+
+        Map<String, Object> response = Map.of("status", "success", "data", posts);
+        String jsonResponse = gson.toJson(response);
+        return ResponseEntity.ok(jsonResponse);
     }
 
     @Operation(summary = "Get a post by ID")
@@ -63,12 +78,16 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/{postId}")
-    public ResponseEntity<Post> getPostById(@PathVariable String postId) {
+    public ResponseEntity<String> getPostById(@PathVariable String postId) {
         Optional<Post> post = postService.getPostById(postId);
         if (post.isPresent()) {
-            return ResponseEntity.ok(post.get());
+            // Respuesta compleja con Gson
+            Map<String, Object> response = Map.of("status", "success", "data", post.get());
+            return ResponseEntity.ok(gson.toJson(response));
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+            // Respuesta de error
+            Map<String, String> errorResponse = Map.of("status", "error", "message", "Post not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gson.toJson(errorResponse));
         }
     }
 
@@ -79,12 +98,11 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<Post> createPost(@Valid @RequestBody Post post) {
-        Post createdPost = postService.createPost(post.getUserId(), post.getTitle(), post.getContent()/*
-                                                                                                       * ,post.
-                                                                                                       * getMediaUrls()
-                                                                                                       */);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
+    public ResponseEntity<String> createPost(@Valid @RequestBody Post post) {
+        Post createdPost = postService.createPost(post.getUserId(), post.getTitle(), post.getContent());
+        // Respuesta compleja con Gson
+        Map<String, Object> response = Map.of("status", "success", "data", createdPost);
+        return ResponseEntity.status(HttpStatus.CREATED).body(gson.toJson(response));
     }
 
     @Operation(summary = "Update an existing post")
@@ -94,15 +112,17 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(
+    public ResponseEntity<String> updatePost(
             @PathVariable String postId,
             @RequestParam String title,
             @RequestParam String content) {
         Post updatedPost = postService.updatePost(postId, title, content);
         if (updatedPost != null) {
-            return ResponseEntity.ok(updatedPost);
+            Map<String, Object> response = Map.of("status", "success", "data", updatedPost);
+            return ResponseEntity.ok(gson.toJson(response));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            Map<String, String> errorResponse = Map.of("status", "error", "message", "Post not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gson.toJson(errorResponse));
         }
     }
 
@@ -113,12 +133,16 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable String postId) {
+    public ResponseEntity<String> deletePost(@PathVariable String postId) {
         boolean isDeleted = postService.deletePost(postId);
         if (isDeleted) {
-            return ResponseEntity.noContent().build();
+            Map<String, String> response = Map.of("status", "success", "message", "Post deleted successfully");
+            // Cambiar noContent() por ok() para enviar una respuesta con un cuerpo
+            return ResponseEntity.ok(gson.toJson(response));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            Map<String, String> errorResponse = Map.of("status", "error", "message", "Post not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gson.toJson(errorResponse));
         }
     }
+
 }
