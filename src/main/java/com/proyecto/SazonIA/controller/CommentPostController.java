@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/commentsPost")
 @Tag(name = "Comments on Posts", description = "Operations related to comments on posts in Sazón.IA")
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
+    RequestMethod.PUT })
 public class CommentPostController {
 
     @Autowired

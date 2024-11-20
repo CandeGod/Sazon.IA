@@ -24,6 +24,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
 @RequestMapping("/favoritePosts")
 @Tag(name = "Favorite Posts", description = "Operations related to favorite posts in Sazón.IA")
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
+        RequestMethod.PUT })
 public class FavoritePostController {
 
         @Autowired
