@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+//import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -32,13 +32,13 @@ public class CommentPost {
 
     @NotBlank(message = "Content must not be blank")
     @Size(min = 10, max = 500, message = "Content cannot exceed 500 characters")
-    @Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Z}]+$", message = "Content contains invalid characters")
+    //@Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Z}\\n¡¿\"']+$", message = "Content contains invalid characters")
     private String content;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String commentDate;
 
-    private int ratingSum = 0;  // Suma total de las calificaciones
+    private int ratingSum = 0; // Suma total de las calificaciones
     private int ratingCount = 0; // Contador de calificaciones
 
     // Método para obtener el promedio
