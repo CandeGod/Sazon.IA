@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,7 @@ public class OpenAIRequestController {
         this.openAIRequestService = openAIRequestService;
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Generate recommendations using the OpenAI API")
     @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
     @ApiResponse(responseCode = "400", description = "Invalid input parameters", content = @Content)
@@ -55,6 +57,7 @@ public class OpenAIRequestController {
         return new ResponseEntity<>(gson.toJson(Map.of("recommendations", recommendations)), HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Retrieve a user's recommendation history with pagination")
     @ApiResponse(responseCode = "200", description = "User's recommendation history retrieved successfully", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OpenAIRequest.class))) })
@@ -62,7 +65,7 @@ public class OpenAIRequestController {
     public ResponseEntity<Page<OpenAIRequest>> getHistoryById(
             @PathVariable @Min(1) Integer userId,
             @RequestParam(value = "page", defaultValue = "0") @Min(0) int page,
-            @RequestParam(value = "size", defaultValue = "10") @Min(2) @Max(20) int size) {
+            @RequestParam(value = "size", defaultValue = "5") @Min(2) @Max(20) int size) {
 
         Page<OpenAIRequest> history = openAIRequestService.getHistoryById(userId, page, size);
         return new ResponseEntity<>(history, HttpStatus.OK);
