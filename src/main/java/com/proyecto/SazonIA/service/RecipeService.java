@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.proyecto.SazonIA.DTO.RecipeDTO;
 import com.proyecto.SazonIA.model.Recipe;
 import com.proyecto.SazonIA.repository.RecipeRepository;
 
@@ -37,7 +38,7 @@ public class RecipeService {
         recipeRepository.deleteById(recipeId);
     }
 
-    public List<Recipe> getRecipesByUser(Integer userId, Integer page, Integer pageSize) {
+    public List<RecipeDTO> getRecipesByUser(Integer userId, Integer page, Integer pageSize) {
         return recipeRepository.getRecipesByUser(userId, page, pageSize);
     }
     

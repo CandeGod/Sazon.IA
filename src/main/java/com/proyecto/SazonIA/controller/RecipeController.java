@@ -8,6 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +22,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.proyecto.SazonIA.DTO.RecipeDTO;
 import com.proyecto.SazonIA.model.Recipe;
 import com.proyecto.SazonIA.model.User;
 import com.proyecto.SazonIA.service.RecipeService;
@@ -32,7 +37,8 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/recipes")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+                RequestMethod.DELETE })
 @Tag(name = "Recipes from users", description = "Operations related to recipes in Sazón.IA")
 public class RecipeController {
 
@@ -42,12 +48,18 @@ public class RecipeController {
         @Autowired
         private UserService userService;
 
+        @Autowired
+        private ModelMapper modelMapper;
+
         @Operation(summary = "Get recipes by pagination")
         @GetMapping(value = "pagination", params = { "page", "pageSize" })
-        public List<Recipe> getAllPagination(
+        public List<RecipeDTO> getAllPagination(
                         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                         @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
-                return recipeService.getAll(page, pageSize);
+                List<Recipe> recipes = recipeService.getAll(page, pageSize);
+                return recipes.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
         }
 
         @Operation(summary = "Get a recipe by Id")
@@ -58,8 +70,8 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "The recipe was not found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Recipe.class))) })
         @GetMapping("/{idRecipe}")
-        public ResponseEntity<Recipe> getById(@PathVariable Integer idRecipe) {
-                return new ResponseEntity<>(recipeService.getById(idRecipe), HttpStatus.OK);
+        public ResponseEntity<RecipeDTO> getById(@PathVariable Integer idRecipe) {
+                return new ResponseEntity<>(convertToDTO(recipeService.getById(idRecipe)), HttpStatus.OK);
         }
 
         @Operation(summary = "Save a new recipe")
@@ -134,5 +146,9 @@ public class RecipeController {
                 }
                 page = page * pageSize;
                 return new ResponseEntity<>(recipeService.getRecipesByUser(idUser, pageSize, page), HttpStatus.OK);
+        }
+
+        private RecipeDTO convertToDTO(Recipe recipe) {
+                return modelMapper.map(recipe, RecipeDTO.class);
         }
 }
