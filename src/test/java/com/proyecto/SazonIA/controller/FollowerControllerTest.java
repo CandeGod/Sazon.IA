@@ -51,7 +51,7 @@ public class FollowerControllerTest {
     public void followUserNotFoundTest() throws Exception {
         mvc.perform(post("/follows/follow")
                 .param("userId", "1")
-                .param("followedId", "0")
+                .param("followedId", "10")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -89,14 +89,14 @@ public class FollowerControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Successfully unfollowed the user")));
+                .andExpect(content().string(containsString("You are currently not following this user")));
     }
 
     @Test
     public void unfollowUserNotFoundTest() throws Exception {
         mvc.perform(delete("/follows/unfollow")
                 .param("userId", "1")
-                .param("followedId", "0")
+                .param("followedId", "10")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -136,7 +136,7 @@ public class FollowerControllerTest {
 
     @Test
     public void getFollowersNotFoundTest() throws Exception {
-        mvc.perform(get("/follows/followers/0").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/follows/followers/10").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
@@ -152,7 +152,7 @@ public class FollowerControllerTest {
 
     @Test
     public void getFollowingNotFoundTest() throws Exception {
-        mvc.perform(get("/follows/followings/0").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/follows/followings/10").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }

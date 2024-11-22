@@ -38,7 +38,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/public/**").permitAll()
+            .requestMatchers("/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .httpBasic(); // Cambia según tu método de autenticación preferido (form, JWT, etc.)

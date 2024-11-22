@@ -82,6 +82,6 @@ public class OpenAIRequestController {
         }
 
         openAIRequestService.delete(user_id);
-        return new ResponseEntity<>(gson.toJson(Map.of("message", "User's history deleted successfully")), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(Map.of("message", "Users history deleted successfully")), HttpStatus.OK);
     }
 }

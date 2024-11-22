@@ -53,7 +53,7 @@ public class OpenAIRequestControllerTest {
     @Test
     public void getRecommendationsUserNotFoundTest() throws Exception {
         mvc.perform(post("/chatbot/recommendations")
-                .param("user_id", "0")
+                .param("user_id", "10")
                 .param("prompt", "What is the best recipe?")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -87,12 +87,12 @@ public void getHistoryByUserIdWithPaginationTest() throws Exception {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("User's history deleted successfully")));
+                .andExpect(content().string(containsString("Users history deleted successfully")));
     }
 
     @Test
     public void deleteHistoryByIdUserNotFoundTest() throws Exception {
-        mvc.perform(delete("/chatbot/history/0")
+        mvc.perform(delete("/chatbot/history/10")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
