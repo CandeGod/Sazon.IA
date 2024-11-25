@@ -16,8 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -49,12 +47,13 @@ public class RecipeControllerTest {
     public void getRecipesFromUser() throws Exception {
         int idUser = 1;
         mvc.perform(get("/recipes/FromUser/" + idUser)
+                .param("page", "0")
+                .param("pageSize", "10")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(greaterThan(0))));
     }
 
-    
     @Test
     public void getRecipeByIdTest() throws Exception {
         int idRecipe = 1;

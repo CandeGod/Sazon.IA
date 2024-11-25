@@ -1,5 +1,7 @@
 package com.proyecto.SazonIA.controller;
 
+import org.modelmapper.ModelMapper;
+
 // import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.proyecto.SazonIA.DTO.ReplyCommentRecipeDTO;
 import com.proyecto.SazonIA.model.CommentRecipe;
 import com.proyecto.SazonIA.model.ReplyCommentRecipe;
 import com.proyecto.SazonIA.service.CommentRecipeService;
@@ -31,6 +34,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/repliesComments")
@@ -46,6 +51,9 @@ public class ReplyCommentRecipeController {
         @Autowired
         private UserService userService;
 
+        @Autowired
+        private ModelMapper modelMapper;
+
         @Operation(summary = "Get a reply by Id")
         @ApiResponse(responseCode = "200", description = "The reply has been found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
@@ -54,13 +62,13 @@ public class ReplyCommentRecipeController {
         @ApiResponse(responseCode = "404", description = "No comments registered", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @GetMapping("/{idReply}")
-        public ResponseEntity<ReplyCommentRecipe> getById(
+        public ResponseEntity<ReplyCommentRecipeDTO> getById(
                         @PathVariable Integer idReply) {
                 if (replyCommentService.getById(idReply) == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
                 }
-                return new ResponseEntity<>(replyCommentService.getById(idReply), HttpStatus.OK);
+                return new ResponseEntity<>(convertToDto(replyCommentService.getById(idReply)), HttpStatus.OK);
         }
 
         @Operation(summary = "Save a new reply")
@@ -139,7 +147,12 @@ public class ReplyCommentRecipeController {
                         return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
                 }
                 page = page * pageSize;
-                return new ResponseEntity<>(replyCommentService.getRepliesByComment(idComment, pageSize, page), HttpStatus.OK);
+                List<ReplyCommentRecipe> replies = replyCommentService.getRepliesByComment(idComment, pageSize, page);
+                return new ResponseEntity<>(replies.stream().map(this::convertToDto).collect(Collectors.toList()), HttpStatus.OK);
+        }
+
+        private ReplyCommentRecipeDTO convertToDto(ReplyCommentRecipe reply) {
+                return modelMapper.map(reply, ReplyCommentRecipeDTO.class);
         }
 
 }
