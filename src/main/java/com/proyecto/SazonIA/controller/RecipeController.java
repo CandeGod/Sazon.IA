@@ -37,7 +37,8 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/recipes")
-@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST,
+                RequestMethod.PUT,
                 RequestMethod.DELETE })
 @Tag(name = "Recipes from users", description = "Operations related to recipes in Sazón.IA")
 public class RecipeController {
@@ -58,8 +59,8 @@ public class RecipeController {
                         @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
                 List<Recipe> recipes = recipeService.getAll(page, pageSize);
                 return recipes.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                                .map(this::convertToDTO)
+                                .collect(Collectors.toList());
         }
 
         @Operation(summary = "Get a recipe by Id")
@@ -145,7 +146,10 @@ public class RecipeController {
                         return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
                 }
                 page = page * pageSize;
-                return new ResponseEntity<>(recipeService.getRecipesByUser(idUser, pageSize, page), HttpStatus.OK);
+                List<Recipe> recipes = recipeService.getRecipesByUser(idUser, pageSize, page);
+                return new ResponseEntity<>(recipes.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList()), HttpStatus.OK);
         }
 
         private RecipeDTO convertToDTO(Recipe recipe) {

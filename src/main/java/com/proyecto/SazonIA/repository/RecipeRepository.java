@@ -6,12 +6,11 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-import com.proyecto.SazonIA.DTO.RecipeDTO;
 import com.proyecto.SazonIA.model.Recipe;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
 
     @Query(value = "SELECT * FROM Recipe WHERE user_id = :user_id LIMIT :page OFFSET :pageSize", nativeQuery = true)
-    List<RecipeDTO> getRecipesByUser(@Param("user_id") Integer user_id, @Param("page") Integer page, @Param("pageSize") Integer pageSize);
+    List<Recipe> getRecipesByUser(@Param("user_id") Integer user_id, @Param("page") Integer page, @Param("pageSize") Integer pageSize);
 
 }
