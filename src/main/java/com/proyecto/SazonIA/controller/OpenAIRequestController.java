@@ -71,6 +71,7 @@ public class OpenAIRequestController {
         return new ResponseEntity<>(history, HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Delete the specified user's recommendation history")
     @ApiResponse(responseCode = "200", description = "User's history deleted successfully", content = {
             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OpenAIRequest.class))) })
