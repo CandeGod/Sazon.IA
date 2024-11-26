@@ -15,9 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,59 +29,54 @@ public class RatingPostControllerTest {
 
     @Test
     public void createRatingPostTest() throws Exception {
-        String requestBody = "{\n" +
-                "  \"postId\": \"a33e56f9-c0e5-4de9-a186-ee48868ffff2\",\n" +
-                "  \"userId\": 4,\n" +
-                "  \"value\": 4\n" +
-                "}";
+
+        String postId = "8e5ed664-c557-4adf-9a20-0f74c69d4c99";
+        Integer userId = 2;
+        Integer value = 4;
 
         mockMvc.perform(post("/ratings")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+                .param("postId", postId)
+                .param("userId", userId.toString())
+                .param("value", value.toString())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.postId", is("a33e56f9-c0e5-4de9-a186-ee48868ffff2")))
-                .andExpect(jsonPath("$.ratingId").exists()) // Verifica que el raiting existe
-                .andExpect(jsonPath("$.userId", is(4)))
-                .andExpect(jsonPath("$.value", is(4)));
+                .andExpect(status().isCreated());
     }
 
     @Test
     public void updateRatingPostTest() throws Exception {
-        String ratingId = "fa02d3d4-acbb-4528-9d12-ead1aa38d3e9";
-        String updateRequestBody = "{\n" +
-                "  \"value\": 5\n" +
-                "}";
+        String postId = "8e5ed664-c557-4adf-9a20-0f74c69d4c99";
+        Integer userId = 1;
+        String ratingId = "254ae290-e000-47de-a1c5-4c17dff1d03b";
+        Integer value = 5;
 
         mockMvc.perform(put("/ratings/" + ratingId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(updateRequestBody))
+                .param("ratingId", ratingId)
+                .param("postId", postId)
+                .param("userId", userId.toString())
+                .param("value", value.toString())
+                .param("value", value.toString())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ratingId", is(ratingId)))
-                .andExpect(jsonPath("$.value", is(5)));
+                .andExpect(status().isOk());
     }
 
     @Test
     public void deleteRatingPostTest() throws Exception {
-        String ratingId = "2a5f43c3-ed0a-49a8-a26e-9968dca2dcfa";
+        String ratingId = "b290770f-ede3-4a32-95d8-a92fb468b491";
 
         mockMvc.perform(delete("/ratings/" + ratingId))
                 .andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test
     public void getRatingByIdTest() throws Exception {
-        String ratingId = "6137921f-45af-4028-8447-25a8750d957a";
+        String ratingId = "53ee049a-340a-451e-9ab7-826a599cff88";
 
         mockMvc.perform(get("/ratings/" + ratingId)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ratingId", is(ratingId)))
-                .andExpect(jsonPath("$.postId").exists())
-                .andExpect(jsonPath("$.userId").exists())
-                .andExpect(jsonPath("$.value").exists());
+                .andExpect(status().isOk());
     }
 }

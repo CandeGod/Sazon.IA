@@ -32,7 +32,7 @@ public class Post {
     private String title;
     
     @NotBlank(message = "Content must not be blank")
-    @Size(min = 10, max = 1000, message = "Content cannot exceed 1000 characters")
+    @Size(min = 1, max = 1000, message = "Content cannot exceed 1000 characters or be empty")
     //@Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Z}\\n&&[^<>]]+$", message = "Content contains invalid characters")
     private String content;    
     

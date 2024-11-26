@@ -31,7 +31,7 @@ public class CommentPost {
     private Integer userId;
 
     @NotBlank(message = "Content must not be blank")
-    @Size(min = 10, max = 500, message = "Content cannot exceed 500 characters")
+    @Size(min = 1, max = 500, message = "Content cannot exceed 500 characters")
     //@Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Z}\\n¡¿\"']+$", message = "Content contains invalid characters")
     private String content;
 
@@ -64,7 +64,7 @@ public class CommentPost {
 
     // Constructor por defecto
     public CommentPost() {
-        this.commentId = UUID.randomUUID().toString();
+        
         this.commentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
@@ -74,11 +74,17 @@ public class CommentPost {
         this.postId = postId;
         this.userId = userId;
         this.content = content;
+        this.commentId = UUID.randomUUID().toString();
     }
 
     // Getters y Setters
+    // Getters y Setters
     public String getCommentId() {
         return commentId;
+    }
+
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
     }
 
     public String getPostId() {

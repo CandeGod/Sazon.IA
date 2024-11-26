@@ -8,13 +8,15 @@ import org.springframework.stereotype.Service;
 import com.proyecto.SazonIA.exception.PostNotFoundException;
 import com.proyecto.SazonIA.exception.UserNotFoundException;
 import com.proyecto.SazonIA.model.CommentPost;
+import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.model.User;
 import com.proyecto.SazonIA.repository.CommentPostRepository;
 import com.proyecto.SazonIA.repository.PostRepository;
 import com.proyecto.SazonIA.repository.UserRepository;
 
 import java.util.NoSuchElementException;
-
+import java.util.Optional;
+import java.util.UUID;
 import java.util.List;
 
 @Service
@@ -29,26 +31,33 @@ public class CommentPostService {
     @Autowired
     private UserRepository userRepository; // Inyección del repositorio de usuarios
 
-    public CommentPost addComment(CommentPost comment) {
-        // Verificar si el usuario está registrado
-        User user = userRepository.findById(comment.getUserId()).orElse(null);
-        if (user == null) {
-            throw new UserNotFoundException("User not found");
-        }
+    public CommentPost addComment(String postId, Integer userId, String content) {
+    // Verificar si el usuario está registrado
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        // Verificar si el post al que se va a añadir el comentario existe
-        boolean postExists = postRepository.existsById(comment.getPostId());
-        if (!postExists) {
-            throw new PostNotFoundException("Post not found");
-        }
+    // Verificar si el post al que se añadirá el comentario existe
+    Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new PostNotFoundException("Post not found"));
 
-        // commentId y commentDate, se manejan automáticamente
-        CommentPost savedComment = commentRepository.save(comment);
-        return savedComment;
-    }
+    // Crear una nueva instancia de CommentPost con el usuario y el contenido proporcionado
+    CommentPost comment = new CommentPost(post.getPostId(), user.getUser_id(), content);
+
+    // Generar un ID único para el comentario (opcional, ya lo hace el constructor)
+    comment.setCommentId(UUID.randomUUID().toString());
+
+    // Guardar el comentario en el repositorio de comentarios
+    return commentRepository.save(comment);
+}
+
 
     public List<CommentPost> getCommentsByPostId(String postId) {
         return commentRepository.findByPostId(postId);
+    }
+
+    // Obtener un comentario por ID
+    public Optional<CommentPost> getCommentById(String postId) {
+        return commentRepository.findById(postId);
     }
 
     // Obtener comentarios paginados por postId
@@ -61,19 +70,17 @@ public class CommentPostService {
     public CommentPost editComment(String postId, String commentId, String content) {
         // Verificar si el comentario existe
         CommentPost existingComment = commentRepository.findById(commentId).orElseThrow(
-            () -> new NoSuchElementException("Comment not found")
-        );
-    
+                () -> new NoSuchElementException("Comment not found"));
+
         // Verificar si el comentario pertenece al post correcto
         if (!existingComment.getPostId().equals(postId)) {
             throw new IllegalArgumentException("Comment does not belong to the specified post");
         }
-    
+
         // Actualizar solo el contenido del comentario
         existingComment.setContent(content);
         return commentRepository.save(existingComment);
     }
-    
 
     public boolean deleteComment(String postId, String commentId) {
         // Buscar el comentario por su ID

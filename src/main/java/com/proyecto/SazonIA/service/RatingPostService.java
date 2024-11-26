@@ -31,21 +31,18 @@ public class RatingPostService {
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }
-
-        // Verificar si ya existe una valoración para el mismo postId y userId
-        List<RatingPost> existingRatings = ratingPostRepository.findByPostId(postId);
-        for (RatingPost rating : existingRatings) {
-            if (rating.getUserId().equals(userId)) {
-                throw new IllegalArgumentException("User has already rated this post");
-            }
+    
+        // Validación: Verificar si ya existe una valoración para el mismo postId y userId
+        if (validateExistingRating(postId, userId)) {
+            throw new IllegalArgumentException("User has already rated this post");
         }
-
+    
         // Crear el objeto RatingPost
         RatingPost ratingPost = new RatingPost(postId, userId, value);
-
+    
         // Guardar la valoración en la base de datos
         RatingPost savedRating = ratingPostRepository.save(ratingPost);
-
+    
         // Obtener el post asociado
         Post post = postRepository.findById(postId).orElse(null);
         if (post != null) {
@@ -55,7 +52,7 @@ public class RatingPostService {
         }
         return savedRating; // Retornar la valoración guardada
     }
-
+    
     public RatingPost updateRating(String ratingId, Integer value) {
         Optional<RatingPost> optionalRating = ratingPostRepository.findById(ratingId);
         if (optionalRating.isPresent()) {
@@ -68,7 +65,7 @@ public class RatingPostService {
 
             Post post = postRepository.findById(postId).orElse(null);
             if (post != null) {
-                post.updateRating(oldValue, value); // Ajusta el total y la suma acumulada 
+                post.updateRating(oldValue, value); // Ajusta el total y la suma acumulada
                 postRepository.save(post);
             }
 
@@ -104,4 +101,15 @@ public class RatingPostService {
     public Optional<RatingPost> getRatingById(String ratingId) {
         return ratingPostRepository.findById(ratingId);
     }
+
+    public boolean validateExistingRating(String postId, Integer userId) {
+        List<RatingPost> existingRatings = ratingPostRepository.findByPostId(postId);
+        for (RatingPost rating : existingRatings) {
+            if (rating.getUserId().equals(userId)) {
+                return true; // Si la valoración ya existe, retornamos true
+            }
+        }
+        return false; // Si no existe, retornamos false
+    }
+    
 }

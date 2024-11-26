@@ -1,5 +1,7 @@
 package com.proyecto.SazonIA.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +35,9 @@ public class UserService {
         return userRepository.findById(user_id).get();
     }
 
-    
+    public Optional<User> getByIdOptional(Integer user_id) {
+        return userRepository.findById(user_id);
+    }    
 
     public void delete(Integer user_id) {
         userRepository.deleteById(user_id);

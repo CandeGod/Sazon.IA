@@ -5,10 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.model.RatingPost;
+import com.proyecto.SazonIA.model.User;
+import com.proyecto.SazonIA.service.PostService;
 import com.proyecto.SazonIA.service.RatingPostService;
+import com.proyecto.SazonIA.service.UserService;
 
-import jakarta.validation.Valid;
+//import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
+
 import org.springframework.http.HttpStatus;
 
 import java.util.Map;
@@ -31,6 +38,12 @@ public class RatingPostController {
     @Autowired
     private RatingPostService ratingService;
 
+    @Autowired
+    private PostService postService;
+
+    @Autowired
+    private UserService userService;
+
     private final Gson gson = new Gson();
 
     @Operation(summary = "Create a new rating")
@@ -40,11 +53,34 @@ public class RatingPostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<String> createRating(@Valid @RequestBody RatingPost rating) {
-        RatingPost createdRating = ratingService.createRatingPost(rating.getPostId(), rating.getUserId(),
-                rating.getValue());
+    public ResponseEntity<String> createRating(
+            @RequestParam String postId,
+            @RequestParam(value = "userId", defaultValue = "1") @Min(1) Integer userId,
+            @RequestParam(value = "value", defaultValue = "5") @Min(1) @Max(5) Integer value) {
+
+        Optional<User> user = userService.getByIdOptional(userId);
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")), HttpStatus.NOT_FOUND);
+        }
+
+        Optional<Post> existingPost = postService.getPostById(postId);
+        if (!existingPost.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(gson.toJson(Map.of("error", "Post not found")));
+        }
+
+        if (ratingService.validateExistingRating(postId, userId)) {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "User has already rated this post")),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        // Lógica para crear la calificación
+        RatingPost createdRating = ratingService.createRatingPost(postId, userId, value);
+
+        // Respuesta de éxito
         Map<String, Object> response = Map.of("status", "success", "data", createdRating);
         String jsonResponse = gson.toJson(response);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(jsonResponse);
     }
 
@@ -55,18 +91,36 @@ public class RatingPostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PutMapping("/{ratingId}")
-    public ResponseEntity<String> updateRating(@PathVariable String ratingId,
-            @Valid @RequestBody RatingPost rating) {
-        RatingPost updatedRating = ratingService.updateRating(ratingId, rating.getValue());
-        if (updatedRating != null) {
-            Map<String, Object> response = Map.of("status", "success", "data", updatedRating);
-            String jsonResponse = gson.toJson(response);
-            return ResponseEntity.ok(jsonResponse);
-        } else {
-            Map<String, String> errorResponse = Map.of("status", "error", "message", "Rating not found");
-            String jsonResponse = gson.toJson(errorResponse);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(jsonResponse);
+    public ResponseEntity<String> updateRating(
+            @PathVariable String ratingId,
+            @RequestParam String postId,
+            @RequestParam(value = "userId", defaultValue = "1") @Min(1) Integer userId,
+            @RequestParam(value = "value", defaultValue = "5") @Min(1) @Max(5) Integer value) {
+        
+        Optional<RatingPost> rating = ratingService.getRatingById(ratingId);
+        if (!rating.isPresent()) {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "Rating not found")), HttpStatus.NOT_FOUND);
         }
+
+        // Verificar si el usuario está registrado
+        Optional<User> user = userService.getByIdOptional(userId);
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")), HttpStatus.NOT_FOUND);
+        }
+
+        // Verificar si el post existe
+        Optional<Post> existingPost = postService.getPostById(postId);
+        if (!existingPost.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(gson.toJson(Map.of("error", "Post not found")));
+        }
+
+        // Actualizar la valoración
+        RatingPost updatedRating = ratingService.updateRating(ratingId, value);
+            // Respuesta de éxito
+        Map<String, Object> response = Map.of("status", "success", "data", updatedRating);
+        String jsonResponse = gson.toJson(response);
+        return ResponseEntity.ok(jsonResponse);
     }
 
     @Operation(summary = "Delete a rating by ID")
@@ -77,15 +131,18 @@ public class RatingPostController {
     })
     @DeleteMapping("/{ratingId}")
     public ResponseEntity<String> deleteRating(@PathVariable String ratingId) {
-        boolean deleted = ratingService.deleteRating(ratingId);
-        if (deleted) {
-            Map<String, String> response = Map.of("status", "success", "message", "Rating deleted successfully");
-            String jsonResponse = gson.toJson(response);
-            return ResponseEntity.ok(jsonResponse);
+
+        Optional<RatingPost> rating = ratingService.getRatingById(ratingId);
+        if (!rating.isPresent()) {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "Rating not found")), HttpStatus.NOT_FOUND);
+        }
+
+        boolean isDeleted = ratingService.deleteRating(ratingId);
+
+        if (isDeleted) {
+            return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating deleted successfully")), HttpStatus.OK);
         } else {
-            Map<String, String> errorResponse = Map.of("status", "error", "message", "Rating not found");
-            String jsonResponse = gson.toJson(errorResponse);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(jsonResponse);
+            return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating could not be deleted")), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -103,9 +160,7 @@ public class RatingPostController {
             String jsonResponse = gson.toJson(response);
             return ResponseEntity.ok(jsonResponse);
         } else {
-            Map<String, String> errorResponse = Map.of("status", "error", "message", "Rating not found");
-            String jsonResponse = gson.toJson(errorResponse);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(jsonResponse);
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "Rating not found")), HttpStatus.NOT_FOUND);
         }
     }
 }

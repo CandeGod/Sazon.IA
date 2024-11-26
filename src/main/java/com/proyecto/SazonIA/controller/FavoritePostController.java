@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -54,11 +55,11 @@ public class FavoritePostController {
         })
         @PostMapping("/{userId}")
         public ResponseEntity<String> saveFavoritePost(
-                        @PathVariable Integer userId,
+                        @PathVariable(value = "userId") @Min(1) Integer userId,
                         @RequestParam String postId) {
 
-                User user = userService.getById(userId);
-                if (user == null) {
+                Optional<User> user = userService.getByIdOptional(userId);
+                if (!user.isPresent()) {
                         return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")),
                                         HttpStatus.NOT_FOUND);
                 }
@@ -69,10 +70,17 @@ public class FavoritePostController {
                                         HttpStatus.NOT_FOUND);
                 }
 
+                Optional<Post> existingPost = postService.getPostById(postId);
+                if (!existingPost.isPresent()) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(gson.toJson(Map.of("error", "Post not found")));
+                }
+
+                /*
                 if (favoritePostService.isFavorite(userId, postId)) {
                         return new ResponseEntity<>(gson.toJson(Map.of("error", "Post already marked as favorite")),
                                         HttpStatus.CONFLICT);
-                }
+                }*/
 
                 FavoritePostId favoritePostId = new FavoritePostId(userId, postId);
                 FavoritePost favoritePost = new FavoritePost();
@@ -91,9 +99,10 @@ public class FavoritePostController {
                         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
         })
         @GetMapping("/{userId}")
-        public ResponseEntity<List<FavoritePost>> getFavoritePostsByUserId(@PathVariable Integer userId,
-                        @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "10") int size) {
+        public ResponseEntity<List<FavoritePost>> getFavoritePostsByUserId(
+                        @PathVariable(value = "userId", required = true) @Min(1) Integer userId,
+                        @RequestParam(defaultValue = "0", required = true) @Min(0) int page,
+                        @RequestParam(defaultValue = "10", required = true) @Min(1) int size) {
                 // Obtener las publicaciones favoritas con paginación
                 Page<FavoritePost> favoritePostsPage = favoritePostService.getFavoritePostsByUserId(userId, page, size);
 
@@ -109,8 +118,14 @@ public class FavoritePostController {
         })
         @DeleteMapping("/{userId}")
         public ResponseEntity<String> removeFavoritePost(
-                        @PathVariable Integer userId,
+                        @PathVariable(value = "userId", required = true) @Min(1) Integer userId,
                         @RequestParam String postId) {
+
+                Optional<User> user = userService.getByIdOptional(userId);
+                if (!user.isPresent()) {
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")),
+                                        HttpStatus.NOT_FOUND);
+                }
 
                 // Verificar si la relación de favorito existe
                 if (!favoritePostService.isFavorite(userId, postId)) {
@@ -133,12 +148,18 @@ public class FavoritePostController {
         })
         @GetMapping("post/{userId}")
         public ResponseEntity<String> getContentFavoritePostByUserAndPostId(
-                        @PathVariable Integer userId,
+                        @PathVariable(value = "userId", required = true) @Min(1) Integer userId,
                         @RequestParam String postId) {
+
+                Optional<User> user = userService.getByIdOptional(userId);
+                if (!user.isPresent()) {
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")),
+                                        HttpStatus.NOT_FOUND);
+                }
 
                 Optional<Post> post = Optional.ofNullable(
                                 favoritePostService.getContentFavoritePostByUserIdAndPostId(userId, postId));
-                
+
                 return ResponseEntity.ok(gson.toJson(post.get()));
         }
 }

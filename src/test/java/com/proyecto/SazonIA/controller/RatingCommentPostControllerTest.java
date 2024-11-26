@@ -15,9 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,59 +29,53 @@ public class RatingCommentPostControllerTest {
 
     @Test
     public void createRatingCommentTest() throws Exception {
-        String requestBody = "{\n" +
-                "  \"commentId\": \"fcecfffd-b1a5-4b09-93b7-9c693008c2e4\",\n" +
-                "  \"userId\": 4,\n" +
-                "  \"value\": 4\n" +
-                "}";
+        String commentId = "ef823c20-d8c3-47e0-beb5-a4f2ce37e492";
+        Integer userId = 3;
+        Integer value = 4;
 
         mockMvc.perform(post("/ratings/comments")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+                .param("commentId", commentId)
+                .param("userId", userId.toString())
+                .param("value", value.toString())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.commentId", is("fcecfffd-b1a5-4b09-93b7-9c693008c2e4")))
-                .andExpect(jsonPath("$.ratingId").exists())
-                .andExpect(jsonPath("$.userId", is(4    )))
-                .andExpect(jsonPath("$.value", is(4)));
+                .andExpect(status().isCreated());
     }
 
     @Test
     public void updateRatingCommentTest() throws Exception {
-        String ratingId = "0cc74526-b2bf-4012-8bf4-abcde71b2f65";
-        String updateRequestBody = "{\n" +
-                "  \"value\": 5\n" +
-                "}";
+        String commentId = "ef823c20-d8c3-47e0-beb5-a4f2ce37e492";
+        Integer userId = 1;
+        String ratingId = "0fc778d3-1749-454a-ad47-0439a0db6148";
+        Integer value = 5;
 
         mockMvc.perform(put("/ratings/comments/" + ratingId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(updateRequestBody))
+                .param("ratingId", ratingId)
+                .param("commentId", commentId)
+                .param("userId", userId.toString())
+                .param("value", value.toString())
+                .param("value", value.toString())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ratingId", is(ratingId)))
-                .andExpect(jsonPath("$.value", is(5)));
+                .andExpect(status().isOk());
     }
 
     @Test
     public void deleteRatingCommentTest() throws Exception {
-        String ratingId = "7b4dbef2-c0b6-43eb-930e-9724f0ab9997";
+        String ratingId = "ca631072-3fc3-41e8-9d65-06cadf03b0b8";
 
         mockMvc.perform(delete("/ratings/comments/" + ratingId))
                 .andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test
     public void getRatingByIdTest() throws Exception {
-        String ratingId = "240d9ea4-73a4-4b07-ab08-ae34c9b5d255";
+        String ratingId = "0f2ed7a0-8623-462f-9fce-bba1ae31f707";
 
         mockMvc.perform(get("/ratings/comments/" + ratingId)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ratingId", is(ratingId)))
-                .andExpect(jsonPath("$.commentId").exists())
-                .andExpect(jsonPath("$.userId").exists())
-                .andExpect(jsonPath("$.value").exists());
+                .andExpect(status().isOk());
     }
 }

@@ -35,11 +35,8 @@ public class RatingCommentPostService {
         }
 
         // Verificar si ya existe una valoración para el mismo commentId y userId
-        List<RatingCommentPost> existingRatings = ratingCommentRepository.findByCommentId(commentId);
-        for (RatingCommentPost rating : existingRatings) {
-            if (rating.getUserId().equals(userId)) {
-                throw new IllegalArgumentException("User has already rated this comment");
-            }
+        if (validateExistingRating(commentId, userId)) {
+            throw new IllegalArgumentException("User has already rated this post");
         }
 
         // Crear el objeto RatingComment
@@ -114,5 +111,15 @@ public boolean deleteRatingComment(String ratingId) {
     // Método para obtener una valoración por su ID
     public Optional<RatingCommentPost> getRatingById(String ratingId) {
         return ratingCommentRepository.findById(ratingId);
+    }
+
+    public boolean validateExistingRating(String commentId, Integer userId) {
+        List<RatingCommentPost> existingRatings = ratingCommentRepository.findByCommentId(commentId);
+        for (RatingCommentPost rating : existingRatings) {
+            if (rating.getUserId().equals(userId)) {
+                return true; // Si la valoración ya existe, retornamos true
+            }
+        }
+        return false; // Si no existe, retornamos false
     }
 }

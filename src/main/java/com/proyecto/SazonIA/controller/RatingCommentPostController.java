@@ -5,10 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.proyecto.SazonIA.model.CommentPost;
+//import com.proyecto.SazonIA.model.Post;
 import com.proyecto.SazonIA.model.RatingCommentPost;
+import com.proyecto.SazonIA.model.User;
+import com.proyecto.SazonIA.service.CommentPostService;
 import com.proyecto.SazonIA.service.RatingCommentPostService;
+import com.proyecto.SazonIA.service.UserService;
 
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+
 import org.springframework.http.HttpStatus;
 
 import java.util.Map;
@@ -24,11 +31,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
 @RequestMapping("/ratings/comments")
 @Tag(name = "Rating Comments", description = "Operations related to ratings of comments in Sazón.IA")
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT })
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,
+        RequestMethod.PUT })
 public class RatingCommentPostController {
 
     @Autowired
     private RatingCommentPostService ratingCommentService;
+
+    @Autowired
+    private CommentPostService commentService;
+
+    @Autowired
+    private UserService userService;
 
     private final Gson gson = new Gson();
 
@@ -40,31 +54,70 @@ public class RatingCommentPostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<String> createRatingComment(@Valid @RequestBody RatingCommentPost ratingComment) {
-        RatingCommentPost createdRating = ratingCommentService.createRatingComment(ratingComment.getCommentId(), ratingComment.getUserId(), ratingComment.getValue());
+    public ResponseEntity<String> createRatingComment(
+            @RequestParam String commentId,
+            @RequestParam(value = "userId", defaultValue = "1") @Min(1) Integer userId,
+            @RequestParam(value = "value", defaultValue = "5") @Min(1) @Max(5) Integer value) {
+
+        Optional<User> user = userService.getByIdOptional(userId);
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")), HttpStatus.NOT_FOUND);
+        }
+
+        Optional<CommentPost> existingComment = commentService.getCommentById(commentId);
+        if (!existingComment.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gson.toJson(Map.of("error", "Comment not found")));
+        }
+
+        if (ratingCommentService.validateExistingRating(commentId, userId)) {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "User has already rated this post")),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        RatingCommentPost createdRating = ratingCommentService.createRatingComment(commentId, userId, value);
+
         Map<String, Object> response = Map.of("status", "success", "data", createdRating);
         String jsonResponse = gson.toJson(response);
         return ResponseEntity.status(HttpStatus.CREATED).body(jsonResponse);
     }
 
-    @Operation(summary = "Update an existing rating")
+    @Operation(summary = "Update an existing rating for a comment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Rating updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = RatingCommentPost.class))),
             @ApiResponse(responseCode = "404", description = "Rating not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PutMapping("/{ratingId}")
-    public ResponseEntity<String> updateRatingComment(@PathVariable String ratingId, @Valid @RequestBody RatingCommentPost ratingComment) {
-        RatingCommentPost updatedRating = ratingCommentService.updateRatingComment(ratingId, ratingComment.getValue());
-        if (updatedRating != null) {
-            Map<String, Object> response = Map.of("status", "success", "data", updatedRating);
-            String jsonResponse = gson.toJson(response);
-            return ResponseEntity.ok(jsonResponse);
-        } else {
-            Map<String, String> errorResponse = Map.of("status", "error", "message", "Rating not found");
-            String jsonResponse = gson.toJson(errorResponse);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(jsonResponse);
+    public ResponseEntity<String> updateRatingComment(
+            @PathVariable String ratingId,
+            @RequestParam String commentId,
+            @RequestParam(value = "userId", defaultValue = "1") @Min(1) Integer userId,
+            @RequestParam(value = "value", defaultValue = "5") @Min(1) @Max(5) Integer value) {
+
+        // Verificar si el usuario existe
+        Optional<User> user = userService.getByIdOptional(userId);
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")), HttpStatus.NOT_FOUND);
         }
+
+        // Verificar si el comentario existe
+        Optional<CommentPost> existingComment = commentService.getCommentById(commentId);
+        if (!existingComment.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gson.toJson(Map.of("error", "Comment not found")));
+        }
+
+        // Verificar si la calificación existe para el ratingId
+        Optional<RatingCommentPost> existingRating = ratingCommentService.getRatingById(ratingId);
+        if (!existingRating.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gson.toJson(Map.of("error", "Rating not found")));
+        }
+
+        // Actualizar la calificación
+        RatingCommentPost updatedRating = ratingCommentService.updateRatingComment(ratingId, value);
+        Map<String, Object> response = Map.of("status", "success", "data", updatedRating);
+        String jsonResponse = gson.toJson(response);
+
+        return ResponseEntity.ok(jsonResponse);
     }
 
     @Operation(summary = "Delete a rating by ID")
@@ -75,15 +128,17 @@ public class RatingCommentPostController {
     })
     @DeleteMapping("/{ratingId}")
     public ResponseEntity<String> deleteRatingComment(@PathVariable String ratingId) {
-        boolean deleted = ratingCommentService.deleteRatingComment(ratingId);
-        if (deleted) {
-            Map<String, String> response = Map.of("status", "success", "message", "Rating deleted successfully");
-            String jsonResponse = gson.toJson(response);
-            return ResponseEntity.ok(jsonResponse);
+
+        Optional<RatingCommentPost> rating = ratingCommentService.getRatingById(ratingId);
+        if (!rating.isPresent()) {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "Rating not found")), HttpStatus.NOT_FOUND);
+        }
+
+        boolean isDeleted = ratingCommentService.deleteRatingComment(ratingId);
+        if (isDeleted) {
+            return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating deleted successfully")), HttpStatus.OK);
         } else {
-            Map<String, String> errorResponse = Map.of("status", "error", "message", "Rating not found");
-            String jsonResponse = gson.toJson(errorResponse);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(jsonResponse);
+            return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating could not be deleted")), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -101,9 +156,7 @@ public class RatingCommentPostController {
             String jsonResponse = gson.toJson(response);
             return ResponseEntity.ok(jsonResponse);
         } else {
-            Map<String, String> errorResponse = Map.of("status", "error", "message", "Rating not found");
-            String jsonResponse = gson.toJson(errorResponse);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(jsonResponse);
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "Rating not found")), HttpStatus.NOT_FOUND);
         }
     }
 }
