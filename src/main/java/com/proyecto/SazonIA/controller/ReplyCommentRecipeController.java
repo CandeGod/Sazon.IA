@@ -3,6 +3,7 @@ package com.proyecto.SazonIA.controller;
 import org.modelmapper.ModelMapper;
 
 // import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.proyecto.SazonIA.DTO.ReplyCommentRecipeDTO;
 import com.proyecto.SazonIA.model.CommentRecipe;
 import com.proyecto.SazonIA.model.ReplyCommentRecipe;
@@ -54,6 +56,8 @@ public class ReplyCommentRecipeController {
         @Autowired
         private ModelMapper modelMapper;
 
+        private final Gson gson = new Gson();
+
         @Operation(summary = "Get a reply by Id")
         @ApiResponse(responseCode = "200", description = "The reply has been found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
@@ -62,10 +66,10 @@ public class ReplyCommentRecipeController {
         @ApiResponse(responseCode = "404", description = "No comments registered", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
         @GetMapping("/{idReply}")
-        public ResponseEntity<ReplyCommentRecipeDTO> getById(
+        public ResponseEntity<?> getById(
                         @PathVariable Integer idReply) {
                 if (replyCommentService.getById(idReply) == null) {
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Reply not found")), HttpStatus.NOT_FOUND);
 
                 }
                 return new ResponseEntity<>(convertToDto(replyCommentService.getById(idReply)), HttpStatus.OK);
