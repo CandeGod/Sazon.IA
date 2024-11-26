@@ -54,7 +54,7 @@ public class CommentPostController {
     })
     @PostMapping("/{postId}")
     public ResponseEntity<?> addComment(@PathVariable String postId,
-            @RequestParam Integer userId,
+            @RequestParam(value = "userId", required = true) @Min(1) Integer userId,
             @RequestParam String content) {
 
         Optional<User> user = userService.getByIdOptional(userId);
