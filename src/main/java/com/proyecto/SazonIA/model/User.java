@@ -82,6 +82,10 @@ public class User {
         return maternalLastName;
     }
 
+    public String getFullName() {
+        return name + " " + paternalLastName + " " + maternalLastName;
+    }
+    
     public void setMaternalLastName(String maternalLastName) {
         this.maternalLastName = maternalLastName;
     }

@@ -32,11 +32,15 @@ public class CommentPost {
 
     @NotBlank(message = "Content must not be blank")
     @Size(min = 1, max = 500, message = "Content cannot exceed 500 characters")
-    //@Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Z}\\n¡¿\"']+$", message = "Content contains invalid characters")
+    // @Pattern(regexp = "^[\\p{L}\\p{N}\\p{P}\\p{Z}\\n¡¿\"']+$", message = "Content
+    // contains invalid characters")
     private String content;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String commentDate;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String userFullName;
 
     private int ratingSum = 0; // Suma total de las calificaciones
     private int ratingCount = 0; // Contador de calificaciones
@@ -64,7 +68,7 @@ public class CommentPost {
 
     // Constructor por defecto
     public CommentPost() {
-        
+
         this.commentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
@@ -117,5 +121,13 @@ public class CommentPost {
 
     public void setCommentDate(String commentDate) {
         this.commentDate = commentDate;
+    }
+
+    public String getUserFullName() {
+        return userFullName;
+    }
+    
+    public void setUserFullName(String userFullName) {
+        this.userFullName = userFullName;
     }
 }

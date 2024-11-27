@@ -34,25 +34,48 @@ public class PostService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    // Método para obtener publicaciones aleatorias
+    // Método para obtener publicaciones aleatorias con el nombre completo del autor
     public List<Post> getRandomPosts(int count) {
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.sample(count));
 
+        // Obtener publicaciones aleatorias
         AggregationResults<Post> results = mongoTemplate.aggregate(aggregation, "Posts", Post.class);
-        return results.getMappedResults();
+        List<Post> randomPosts = results.getMappedResults();
+
+        // Rellenar el nombre completo del usuario para cada publicación
+        randomPosts.forEach(post -> {
+            Optional<User> user = userRepository.findById(post.getUserId()); // Obtener el usuario
+            user.ifPresent(u -> post.setUserFullName(u.getFullName())); // Asignar el nombre completo
+        });
+
+        return randomPosts;
     }
 
     // Obtener publicaciones de un usuario con paginación
     public List<Post> getPostsByUser(Integer userId, int page, int pageSize) {
         PageRequest pageReq = PageRequest.of(page, pageSize);
         Page<Post> postsPage = postRepository.findByUserId(userId, pageReq);
-        return postsPage.getContent();
+        List<Post> posts = postsPage.getContent();
+
+        // Rellenar el nombre del usuario
+        Optional<User> user = userRepository.findById(userId);
+        user.ifPresent(u -> posts.forEach(post -> post.setUserFullName(u.getFullName())));
+
+        return posts;
     }
 
     // Obtener una publicación por ID
     public Optional<Post> getPostById(String postId) {
-        return postRepository.findById(postId);
+        Optional<Post> postOptional = postRepository.findById(postId);
+
+        // Rellenar el nombre del usuario
+        postOptional.ifPresent(post -> {
+            Optional<User> user = userRepository.findById(post.getUserId());
+            user.ifPresent(u -> post.setUserFullName(u.getFullName()));
+        });
+
+        return postOptional;
     }
 
     // Crear una nueva publicación

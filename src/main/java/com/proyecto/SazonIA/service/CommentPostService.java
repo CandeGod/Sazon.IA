@@ -32,24 +32,24 @@ public class CommentPostService {
     private UserRepository userRepository; // Inyección del repositorio de usuarios
 
     public CommentPost addComment(String postId, Integer userId, String content) {
-    // Verificar si el usuario está registrado
-    User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("User not found"));
+        // Verificar si el usuario está registrado
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-    // Verificar si el post al que se añadirá el comentario existe
-    Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new PostNotFoundException("Post not found"));
+        // Verificar si el post al que se añadirá el comentario existe
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
 
-    // Crear una nueva instancia de CommentPost con el usuario y el contenido proporcionado
-    CommentPost comment = new CommentPost(post.getPostId(), user.getUser_id(), content);
+        // Crear una nueva instancia de CommentPost con el usuario y el contenido
+        // proporcionado
+        CommentPost comment = new CommentPost(post.getPostId(), user.getUser_id(), content);
 
-    // Generar un ID único para el comentario (opcional, ya lo hace el constructor)
-    comment.setCommentId(UUID.randomUUID().toString());
+        // Generar un ID único para el comentario (opcional, ya lo hace el constructor)
+        comment.setCommentId(UUID.randomUUID().toString());
 
-    // Guardar el comentario en el repositorio de comentarios
-    return commentRepository.save(comment);
-}
-
+        // Guardar el comentario en el repositorio de comentarios
+        return commentRepository.save(comment);
+    }
 
     public List<CommentPost> getCommentsByPostId(String postId) {
         return commentRepository.findByPostId(postId);
@@ -62,9 +62,20 @@ public class CommentPostService {
 
     // Obtener comentarios paginados por postId
     public List<CommentPost> getCommentsByPostId(String postId, int page, int pageSize) {
+        // Crear el objeto PageRequest para la paginación
         PageRequest pageReq = PageRequest.of(page, pageSize);
-        Page<CommentPost> comments = commentRepository.findByPostId(postId, pageReq);
-        return comments.getContent();
+
+        // Obtener los comentarios paginados del repositorio
+        Page<CommentPost> commentsPage = commentRepository.findByPostId(postId, pageReq);
+        List<CommentPost> comments = commentsPage.getContent();
+
+        // Rellenar el campo userFullName para cada comentario
+        comments.forEach(comment -> {
+            Optional<User> user = userRepository.findById(comment.getUserId());
+            user.ifPresent(u -> comment.setUserFullName(u.getFullName()));
+        });
+
+        return comments;
     }
 
     public CommentPost editComment(String postId, String commentId, String content) {

@@ -42,6 +42,9 @@ public class Post {
 
     //private List<String> mediaUrls;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String userFullName; // Nombre completo del usuario
+
 
     private int ratingSum = 0;  // Suma total de las calificaciones
     private int ratingCount = 0; // Contador de calificaciones
@@ -130,5 +133,14 @@ public class Post {
     public void setMediaUrls(List<String> mediaUrls) {
         this.mediaUrls = mediaUrls;
     }*/
+
+    // Getter y Setter para userFullName
+    public String getUserFullName() {
+        return userFullName;
+    }
+
+    public void setUserFullName(String userFullName) {
+        this.userFullName = userFullName;
+    }
 
 }
