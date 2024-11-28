@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.modelmapper.ModelMapper;
+import java.util.Map;
 // import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.proyecto.SazonIA.DTO.CommentRecipeDTO;
 import com.proyecto.SazonIA.model.CommentRecipe;
 import com.proyecto.SazonIA.service.CommentRecipeService;
@@ -51,6 +53,8 @@ public class CommentRecipeController {
         @Autowired
         private ModelMapper modelMapper;
 
+        private final Gson gson = new Gson();
+
         @Operation(summary = "Get a comment by Id")
         @ApiResponse(responseCode = "200", description = "The comment has been found", content = {
                         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentRecipe.class))) })
@@ -76,15 +80,15 @@ public class CommentRecipeController {
                 comment.setComment_time_stamp(Timestamp.valueOf(LocalDateTime.now()) + "");
                 comment.setUser(userService.getById(idUser));
                 if (userService.getById(idUser) == null) {
-                        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")), HttpStatus.NOT_FOUND);
 
                 }
                 comment.setRecipe(recipeService.getById(idRecipe));
                 if (recipeService.getById(idRecipe) == null) {
-                        return new ResponseEntity<>("Recipe not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Recipe not found")), HttpStatus.NOT_FOUND);
                 }
                 commentService.save(comment);
-                return new ResponseEntity<>("Comment Saved", HttpStatus.OK);
+                return new ResponseEntity<>(gson.toJson(Map.of("info", "Comment saved")), HttpStatus.OK);
 
         }
 
@@ -101,13 +105,13 @@ public class CommentRecipeController {
                 CommentRecipe aux = commentService.getById(idComment);
                 comment.setUser(aux.getUser());
                 if (commentService.getById(idComment) == null) {
-                        return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Comment not found")), HttpStatus.NOT_FOUND);
 
                 }
                 comment.setRecipe(aux.getRecipe());
                 comment.setComment_time_stamp(aux.getComment_time_stamp());
                 commentService.save(comment);
-                return new ResponseEntity<>("Comment Updated", HttpStatus.OK);
+                return new ResponseEntity<>(gson.toJson(Map.of("info", "Comment Updated")), HttpStatus.OK);
         }
 
         @Operation(summary = "Delete a comment by Id")
@@ -120,10 +124,10 @@ public class CommentRecipeController {
         @DeleteMapping("/{idComment}")
         public ResponseEntity<?> delete(@PathVariable Integer idComment) {
                 if (commentService.getById(idComment) == null) {
-                        return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Comment not found")), HttpStatus.NOT_FOUND);
                 }
                 commentService.delete(idComment);
-                return new ResponseEntity<>("Comment Deleted", HttpStatus.OK);
+                return new ResponseEntity<>(gson.toJson(Map.of("info", "Comment Deleted")), HttpStatus.OK);
         }
 
         @Operation(summary = "Get all coments from a recipe paginated")
@@ -139,7 +143,7 @@ public class CommentRecipeController {
                         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
                 if (userService.getById(idRecipe) == null) {
-                        return new ResponseEntity<>("Recipe not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Recipe not found")), HttpStatus.NOT_FOUND);
                 }
                 page = page * pageSize;
                 List<CommentRecipe> comments = commentService.getCommentsByRecipe(idRecipe, pageSize, page);

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.proyecto.SazonIA.DTO.RecipeDTO;
 import com.proyecto.SazonIA.model.Recipe;
 import com.proyecto.SazonIA.model.User;
@@ -51,6 +53,8 @@ public class RecipeController {
 
         @Autowired
         private ModelMapper modelMapper;
+        
+        private final Gson gson = new Gson();
 
         @Operation(summary = "Get recipes by pagination")
         @GetMapping(value = "pagination", params = { "page", "pageSize" })
@@ -86,11 +90,11 @@ public class RecipeController {
                 User user = userService.getById(idUser);
                 recipe.setUser(user);
                 if (user == null) {
-                        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("info", "User not found")), HttpStatus.NOT_FOUND);
                 }
                 recipe.setRecipe_time_stamp(Timestamp.valueOf(LocalDateTime.now()) + "");
                 recipeService.save(recipe);
-                return new ResponseEntity<>("Recipe saved", HttpStatus.OK);
+                return new ResponseEntity<>(gson.toJson(Map.of("info", "Recipe saved")), HttpStatus.OK);
 
         }
 
@@ -109,7 +113,7 @@ public class RecipeController {
                 recipe.setUser(usAux);
                 recipe.setRecipe_time_stamp(aux.getRecipe_time_stamp());
                 recipeService.save(recipe);
-                return new ResponseEntity<>("Recipe Updated", HttpStatus.OK);
+                return new ResponseEntity<>(gson.toJson(Map.of("info", "")), HttpStatus.OK);
         }
 
         @Operation(summary = "Delete a recipe by id")
@@ -123,10 +127,10 @@ public class RecipeController {
         public ResponseEntity<?> delete(@PathVariable Integer idRecipe) {
                 Recipe recipe = recipeService.getById(idRecipe);
                 if (recipe == null) {
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Recipe not found")), HttpStatus.NOT_FOUND);
                 }
                 recipeService.delete(idRecipe);
-                return new ResponseEntity<>("Recipe Deleted", HttpStatus.OK);
+                return new ResponseEntity<>(gson.toJson(Map.of("info", "The recipe was deleted")), HttpStatus.OK);
 
         }
 
@@ -143,7 +147,7 @@ public class RecipeController {
                         @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
                 User user = userService.getById(idUser);
                 if (user == null) {
-                        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "User was not found")), HttpStatus.NOT_FOUND);
                 }
                 page = page * pageSize;
                 List<Recipe> recipes = recipeService.getRecipesByUser(idUser, pageSize, page);

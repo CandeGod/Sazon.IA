@@ -85,12 +85,12 @@ public class ReplyCommentRecipeController {
                         @RequestParam(value = "idComment", required = true) Integer idComment,
                         @RequestParam(value = "idUser", required = true) Integer idUser) {
                 if (commentService.getById(idComment) == null) {
-                        return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Comment not found")), HttpStatus.NOT_FOUND);
 
                 }
                 reply.setComment(commentService.getById(idComment));
                 if (userService.getById(idUser) == null) {
-                        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "User not found")), HttpStatus.NOT_FOUND);
                 }
                 reply.setUser(userService.getById(idUser));
                 reply.setReply_time_stamp(Timestamp.valueOf(LocalDateTime.now()) + "");
@@ -110,13 +110,13 @@ public class ReplyCommentRecipeController {
                         @RequestBody ReplyCommentRecipe reply) {
                 ReplyCommentRecipe aux = replyCommentService.getById(idReply);
                 if (replyCommentService.getById(idReply) == null) {
-                        return new ResponseEntity<>("Reply not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Reply not found")), HttpStatus.NOT_FOUND);
                 }
                 reply.setReply_time_stamp(aux.getReply_time_stamp());
                 reply.setUser(userService.getById(aux.getUser().getUser_id()));
                 reply.setComment(commentService.getById(aux.getComment().getComment_id()));
                 replyCommentService.save(reply);
-                return new ResponseEntity<>("Reply Updated", HttpStatus.OK);
+                return new ResponseEntity<>(gson.toJson(Map.of("info", "Reply Updated")), HttpStatus.OK);
         }
 
         @Operation(summary = "Delete a reply by Id")
@@ -129,10 +129,10 @@ public class ReplyCommentRecipeController {
         @DeleteMapping("/{idReply}")
         public ResponseEntity<?> delete(@PathVariable Integer idReply) {
                 if (replyCommentService.getById(idReply) == null) {
-                        return new ResponseEntity<>("Reply not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Reply not found")), HttpStatus.NOT_FOUND);
                 }
                 replyCommentService.delete(idReply);
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>(gson.toJson(Map.of("info", "Reply deleted")),HttpStatus.OK);
         }
 
         @Operation(summary = "Get all replies from a comment paginated")
@@ -148,7 +148,7 @@ public class ReplyCommentRecipeController {
                         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
                 if (commentService.getById(idComment) == null) {
-                        return new ResponseEntity<>("Comment not found", HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Comment not found")), HttpStatus.NOT_FOUND);
                 }
                 page = page * pageSize;
                 List<ReplyCommentRecipe> replies = replyCommentService.getRepliesByComment(idComment, pageSize, page);
