@@ -122,4 +122,13 @@ public boolean deleteRatingComment(String ratingId) {
         }
         return false; // Si no existe, retornamos false
     }
+
+    public Optional<RatingCommentPost> findRatingByCommentIdAndUserId(String commentId, Integer userId) {
+        List<RatingCommentPost> ratings = ratingCommentRepository.findByCommentIdAndUserId(commentId, userId);
+        if (ratings.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(ratings.get(0)); // Consideramos el primero si hay duplicados inesperados
+    }
+    
 }

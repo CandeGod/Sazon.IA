@@ -111,5 +111,9 @@ public class RatingPostService {
         }
         return false; // Si no existe, retornamos false
     }
+
+    public Optional<RatingPost> getRatingByPostIdAndUserId(String postId, Integer userId) {
+        return ratingPostRepository.findByPostIdAndUserId(postId, userId);
+    }
     
 }

@@ -11,4 +11,6 @@ import java.util.List;
 public interface RatingCommentPostRepository extends MongoRepository<RatingCommentPost, String> {
     // Método para encontrar todas las valoraciones asociadas a un comentario específico
     List<RatingCommentPost> findByCommentId(String commentId);
+    List<RatingCommentPost> findByCommentIdAndUserId(String commentId, Integer userId);
+
 }

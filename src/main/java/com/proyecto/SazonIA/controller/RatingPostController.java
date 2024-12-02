@@ -96,7 +96,7 @@ public class RatingPostController {
             @RequestParam String postId,
             @RequestParam(value = "userId", defaultValue = "1") @Min(1) Integer userId,
             @RequestParam(value = "value", defaultValue = "5") @Min(1) @Max(5) Integer value) {
-        
+
         Optional<RatingPost> rating = ratingService.getRatingById(ratingId);
         if (!rating.isPresent()) {
             return new ResponseEntity<>(gson.toJson(Map.of("error", "Rating not found")), HttpStatus.NOT_FOUND);
@@ -117,7 +117,7 @@ public class RatingPostController {
 
         // Actualizar la valoración
         RatingPost updatedRating = ratingService.updateRating(ratingId, value);
-            // Respuesta de éxito
+        // Respuesta de éxito
         Map<String, Object> response = Map.of("status", "success", "data", updatedRating);
         String jsonResponse = gson.toJson(response);
         return ResponseEntity.ok(jsonResponse);
@@ -142,7 +142,8 @@ public class RatingPostController {
         if (isDeleted) {
             return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating deleted successfully")), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating could not be deleted")), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating could not be deleted")),
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -163,4 +164,26 @@ public class RatingPostController {
             return new ResponseEntity<>(gson.toJson(Map.of("error", "Rating not found")), HttpStatus.NOT_FOUND);
         }
     }
+
+    @Operation(summary = "Get a rating by postId and userId")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rating retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = RatingPost.class))),
+            @ApiResponse(responseCode = "404", description = "Rating not found", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<String> getRatingByPostIdAndUserId(
+            @PathVariable Integer userId,
+            @RequestParam String postId) {
+
+        Optional<RatingPost> rating = ratingService.getRatingByPostIdAndUserId(postId, userId);
+
+        if (rating.isPresent()) {
+            Map<String, Object> response = Map.of("status", "success", "data", rating.get());
+            return ResponseEntity.ok(gson.toJson(response));
+        } else {
+            return new ResponseEntity<>(gson.toJson(Map.of("error", "Rating not found")), HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

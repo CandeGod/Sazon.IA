@@ -138,7 +138,8 @@ public class RatingCommentPostController {
         if (isDeleted) {
             return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating deleted successfully")), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating could not be deleted")), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(gson.toJson(Map.of("info", "Rating could not be deleted")),
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -159,4 +160,24 @@ public class RatingCommentPostController {
             return new ResponseEntity<>(gson.toJson(Map.of("error", "Rating not found")), HttpStatus.NOT_FOUND);
         }
     }
+
+    @Operation(summary = "Get a rating by comment ID and user ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rating retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = RatingCommentPost.class))),
+            @ApiResponse(responseCode = "404", description = "Rating not found", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<String> getRatingByCommentIdAndUserId(
+            @RequestParam String commentId,
+            @RequestParam Integer userId) {
+        Optional<RatingCommentPost> rating = ratingCommentService.findRatingByCommentIdAndUserId(commentId, userId);
+        if (rating.isPresent()) {
+            Map<String, Object> response = Map.of("status", "success", "data", rating.get());
+            return ResponseEntity.ok(gson.toJson(response));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gson.toJson(Map.of("error", "Rating not found")));
+        }
+    }
+
 }
