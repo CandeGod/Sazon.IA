@@ -46,6 +46,7 @@ public class FollowerController {
     private final Gson gson = new Gson();
 
     // Seguir a un usuario
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Follow a user")
     @ApiResponse(responseCode = "201", description = "User followed", content = @Content(mediaType = "application/json"))
     @PostMapping("/follow")
@@ -71,6 +72,7 @@ public class FollowerController {
     }
 
     // Dejar de seguir a un usuario
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Unfollow a user")
     @ApiResponse(responseCode = "200", description = "User unfollowed", content = @Content(mediaType = "application/json"))
     @DeleteMapping("/unfollow")
@@ -96,6 +98,7 @@ public class FollowerController {
     }
 
     // Obtener los seguidores de un usuario con paginación
+    @CrossOrigin(origins = "http://localhost:4200")
 @Operation(summary = "Get followers of a user with pagination")
 @ApiResponse(responseCode = "200", description = "Followers retrieved", content = {
         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Follower.class))) })
@@ -116,6 +119,7 @@ public ResponseEntity<?> getFollowers(
 }
 
 // Obtener los seguidos de un usuario con paginación
+@CrossOrigin(origins = "http://localhost:4200")
 @Operation(summary = "Get followings of a user with pagination")
 @ApiResponse(responseCode = "200", description = "Following users retrieved", content = {
         @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Follower.class))) })
@@ -134,6 +138,32 @@ public ResponseEntity<?> getFollowing(
     Page<Follower> following = service.getFollowing(follower, page, pageSize);
     return new ResponseEntity<>(following, HttpStatus.OK);
 }
+
+@CrossOrigin(origins = "http://localhost:4200")
+@GetMapping("/isFollowing")
+@Operation(summary = "Check if a user is following another user")
+@ApiResponse(responseCode = "200", description = "Check result", content = @Content(mediaType = "application/json"))
+@ApiResponse(responseCode = "404", description = "User not found")
+@ApiResponse(responseCode = "400", description = "Invalid user request")
+public ResponseEntity<Map<String, Object>> isFollowing(
+        @RequestParam("userId") @Min(1) int userId,
+        @RequestParam("followedId") @Min(1) int followedId) {
+    User follower = service.findUserById(userId);
+    User followed = service.findUserById(followedId);
+
+    // Validaciones
+    if (follower == null || followed == null) {
+        return new ResponseEntity<>(Map.of("error", "User not found"), HttpStatus.NOT_FOUND);
+    }
+    if (follower.getUser_id() == followed.getUser_id()) {
+        return new ResponseEntity<>(Map.of("error", "You cannot check following status for yourself"), HttpStatus.BAD_REQUEST);
+    }
+
+    boolean following = service.isFollowing(follower, followed);
+    return new ResponseEntity<>(Map.of("isFollowing", following), HttpStatus.OK);
+}
+
+
 
 
 }
