@@ -109,6 +109,9 @@ public class RecipeController {
         public ResponseEntity<?> update(@RequestBody Recipe recipe,
                         @PathVariable Integer idRecipe) {
                 Recipe aux = recipeService.getById(idRecipe);
+                if (aux == null) {
+                        return new ResponseEntity<>(gson.toJson(Map.of("error", "Recipe not found")), HttpStatus.NOT_FOUND);
+                }
                 User usAux = userService.getById(aux.getUser().getUser_id());
                 recipe.setUser(usAux);
                 recipe.setRecipe_time_stamp(aux.getRecipe_time_stamp());
